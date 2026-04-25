@@ -60,7 +60,8 @@
     { "year": "2026", "events": [
       { "month": "2月", "text": "车载边缘计算系统与数字加工中心安装完成", "en": "On-board edge computing system and digital fabrication center installed." },
       { "month": "3月", "text": "基地车官网上线，开放在线报名通道", "en": "MCV official website launched, online registration opened." },
-      { "month": "4月", "text": "「普罗米修斯号」计划从深圳正式启程", "en": "Prometheus planned to officially depart from Shenzhen." }
+      { "month": "4月", "text": "「普罗米修斯号」联合「深圳科技馆」首发，从深圳正式启程", "en": "Prometheus made its debut with the Shenzhen Science & Technology Museum and officially departed from Shenzhen." },
+      { "month": "4月", "text": "华南首站：深圳·广州·阳江", "en": "South China first leg: Shenzhen · Guangzhou · Yangjiang." }
     ]}
   ],
   "phases": [
