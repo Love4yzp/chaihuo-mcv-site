@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import {
   motion,
+  AnimatePresence,
   useInView,
   useMotionValue,
   useTransform,
@@ -13,11 +14,11 @@ const Slider = (
 ) as typeof ReactSlick;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Play, ChevronDown } from "lucide-react";
+import { Play, ChevronDown, ArrowUpRight, MapPin } from "lucide-react";
 import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import chinaGeoJson from "@/data/china-provinces.json";
-import { routeCities } from "@/data/route-cities";
+import { routeCities, type RouteCity } from "@/data/route-cities";
 import {
   fadeUp,
   fadeLeft,
@@ -77,16 +78,28 @@ function CountUp({ end, label }: { end: string; label: string }) {
 const horseRouteD = 'M 508,453 L 446,450 L 438.39,424.40 L 433.76,409.20 L 438.97,375.11 L 417.72,343.01 L 361.33,340.87 L 325.98,353.08 L 260.39,339.59 L 239.16,356.46 L 246.45,366.64 L 272.85,364.39 L 276.21,369.07 L 273.91,382.00 L 258.63,380.85 L 240.83,381.29 L 220.20,367.20 L 218.99,360.29 L 233.39,320.94 L 196.83,303.59 L 178.32,321.61 L 187.57,346.64 L 171.38,357.13 L 164.12,315.48 L 192.56,283.92 L 202.93,282.16 L 234.60,284.33 L 230.96,228.09 L 216.61,208.60 L 205.58,213.78 L 196.10,211.37 L 175.90,220.80 L 169.93,220.36 L 163.01,227.95 L 153.40,221.06 L 152.44,207.01 L 159.37,201.08 L 187.96,180.20 L 193.85,165.17 L 213.35,151.76 L 212.87,131.10 L 223.54,137.29 L 226.24,147.50 L 237.06,140.48 L 237.92,151.05 L 256.87,150.50 L 272.39,165.54 L 296.15,175.15 L 288.58,177.88 L 312.34,204.12 L 323.38,206.83 L 326.37,221.62 L 342.19,216.05 L 338.07,228.21 L 362.48,243.67 L 398.43,246.27 L 411.56,235.30 L 454.34,219.72 L 472.30,227.36 L 478.62,198.55 L 506.15,154.60 L 530.95,142.77 L 564.26,118.63 L 567.79,124.28 L 576.40,114.81 L 586.43,104.52 L 601.22,99.75 L 594.25,114.19 L 623.33,95.86 L 619.45,129.10 L 598.66,150.27 L 615.73,149.47 L 592.52,167.15 L 573.70,166.18 L 556.34,174.70 L 535.06,201.16 L 515.59,202.94 L 479.96,237.69 L 492.94,250.85 L 507.46,281.08 L 509.09,298.32 L 504.36,343.86 L 514.80,350.35 L 568.68,316.58 L 569.79,326.68 L 564.53,348.67 L 546.36,355.33 L 509.20,369.71 L 488.89,359.71 L 469.61,331.84 L 465.86,379.47 L 449.71,416 L 484.34,432 L 492,440 L 508,453 Z';
 
 // ─── 地图投影 ───
-const MAP_WIDTH = 800;
+// viewBox 比例 = 容器 aspect-[3/2]，无横向留白浪费
+const MAP_WIDTH = 900;
 const MAP_HEIGHT = 600;
 
-const geoData = chinaGeoJson as unknown as FeatureCollection<MultiPolygon | Polygon>;
+// 过滤掉"南海诸岛/九段线"feature（adcode = 100000_JD），顶部腾出更多空间
+const rawGeo = chinaGeoJson as unknown as FeatureCollection<MultiPolygon | Polygon>;
+const geoData: FeatureCollection<MultiPolygon | Polygon> = {
+  ...rawGeo,
+  features: rawGeo.features.filter((f) => {
+    const ad = (f.properties as any)?.adcode;
+    const name = (f.properties as any)?.name;
+    if (typeof ad === 'string' && ad.includes('_JD')) return false;
+    if (!name) return false;
+    return true;
+  }),
+};
 
-// 手动投影参数 — 居中中国大陆，scale 控制缩放
+// 手动投影参数 — 居中中国大陆，translate Y 下沉 50px 给顶部留白
 const projection = geoMercator()
   .center([104, 35])
   .scale(MAP_WIDTH / 1.3)
-  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2]);
+  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2 + 50]);
 
 const pathGenerator = geoPath().projection(projection);
 
@@ -105,20 +118,48 @@ function buildCityLines(cities: typeof routeCities) {
   return segments;
 }
 
-// 中国路线图 — 双层：马形背景 + 城市进度前景
-function ChinaRouteMap({ t }: { t: Record<string, string> }) {
+// Localize a single city to the active locale (uses _en fields when present)
+function localizeCity(c: RouteCity, locale: Locale): RouteCity {
+  if (locale === 'zh') return c;
+  const next: RouteCity = { ...c };
+  if (c.label_en) next.label = c.label_en;
+  if (c.event) {
+    next.event = {
+      ...c.event,
+      summary: c.event.summary_en ?? c.event.summary,
+      linkLabel: c.event.linkLabel_en ?? c.event.linkLabel,
+    };
+  }
+  return next;
+}
+
+// 中国路线图 — 进度先行，马图浮现在后
+function ChinaRouteMap({
+  cities,
+  selectedKey,
+  onSelect,
+  t,
+}: {
+  cities: RouteCity[];
+  selectedKey: string | null;
+  onSelect: (key: string) => void;
+  t: Record<string, string>;
+}) {
   const mapRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(mapRef, { once: true, amount: 0.3 });
-  const segments = buildCityLines(routeCities);
+  const segments = buildCityLines(cities);
 
-  // Find the last visited city (progress head)
-  const sortedCities = [...routeCities].sort((a, b) => a.order - b.order);
+  const sortedCities = [...cities].sort((a, b) => a.order - b.order);
   const lastVisited = [...sortedCities].reverse().find(c => c.visited);
+
+  // Animation budget: cities first (0–1.2s), horse outline fades in after (1.0–2.5s)
+  const cityDelay = (order: number, visited: boolean) =>
+    visited ? 0.05 + order * 0.06 : 0.6 + order * 0.03;
 
   return (
     <div
       ref={mapRef}
-      className="relative w-full h-full bg-surface overflow-hidden"
+      className="relative w-full h-full bg-surface overflow-hidden rounded-md"
     >
       <svg
         viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
@@ -152,86 +193,111 @@ function ChinaRouteMap({ t }: { t: Record<string, string> }) {
           })}
         </g>
 
-        {/* 层一：马形路线 — 背景层，可辨识但不抢前景 */}
+        {/* 层一（底）：马形路线 — 城市连线之后浮现，作为水印
+            transform 同步跟随 viewBox 宽度（+50）和投影下沉（+50） */}
         <motion.path
           d={horseRouteD}
+          transform="translate(50, 50)"
           stroke="#f3d230"
-          strokeWidth="6"
+          strokeWidth="5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="rgba(243,210,48,0.06)"
-          opacity={0.35}
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={isInView ? { pathLength: 1, opacity: 0.35 } : {}}
-          transition={{ pathLength: { duration: 2.5, ease: 'easeInOut', delay: 0.2 }, opacity: { duration: 0.3, delay: 0.2 } }}
+          fill="rgba(243,210,48,0.04)"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 0.22 } : {}}
+          transition={{ duration: 1.6, ease: 'easeOut', delay: 1.0 }}
+          style={{ pointerEvents: 'none' }}
         />
 
-        {/* 层二：城市间连线 */}
+        {/* 层二：城市间连线 — 已访问优先动 */}
         {segments.map((seg, i) => {
           const fromPt = projection([seg.from.lng, seg.from.lat]);
           const toPt = projection([seg.to.lng, seg.to.lat]);
           if (!fromPt || !toPt) return null;
 
-          // Slight curve via quadratic bezier
           const midX = (fromPt[0] + toPt[0]) / 2;
           const midY = (fromPt[1] + toPt[1]) / 2;
           const dx = toPt[0] - fromPt[0];
           const dy = toPt[1] - fromPt[1];
-          // Perpendicular offset for curve
           const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
           const cpX = midX + (dy > 0 ? -offset : offset) * 0.5;
           const cpY = midY + (dx > 0 ? offset : -offset) * 0.5;
 
           const d = `M ${fromPt[0]} ${fromPt[1]} Q ${cpX} ${cpY} ${toPt[0]} ${toPt[1]}`;
+          // Visited segments draw immediately; planned segments after
+          const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
 
           return (
             <motion.path
               key={`seg-${i}`}
               d={d}
-              stroke={seg.visited ? '#f3d230' : '#c4b89c'}
-              strokeWidth={seg.visited ? 2.5 : 1.5}
+              stroke={seg.visited ? '#f3d230' : '#b8a87f'}
+              strokeWidth={seg.visited ? 2.8 : 1.4}
               strokeLinecap="round"
-              strokeDasharray={seg.visited ? 'none' : '4 4'}
+              strokeDasharray={seg.visited ? 'none' : '4 5'}
               fill="none"
-              opacity={seg.visited ? 1 : 0.4}
+              opacity={seg.visited ? 1 : 0.45}
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.4 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
               transition={{
-                pathLength: { duration: 0.6, ease: 'easeOut', delay: 2.8 + i * 0.12 },
-                opacity: { duration: 0.2, delay: 2.8 + i * 0.12 },
+                pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
+                opacity: { duration: 0.2, delay: segDelay },
               }}
             />
           );
         })}
 
-        {/* 城市节点 */}
+        {/* 城市节点 + 标签 */}
         {sortedCities.map((city) => {
           const projected = projection([city.lng, city.lat]);
           if (!projected) return null;
           const [cx, cy] = projected;
-          const delay = 3.0 + city.order * 0.1;
-          const r = city.isOrigin ? 6 : city.visited ? 5 : 3.5;
+          const delay = cityDelay(city.order, city.visited);
+          const isSelected = selectedKey === city.label;
+          const r = city.isOrigin ? 6.5 : city.visited ? 5.5 : 3.5;
           const [labelDx, labelDy] = city.labelOffset ?? [10, -8];
+          const isLatest = lastVisited && city.label === lastVisited.label;
+          // Labels render only for visited / origin / anchor — others stay dot-only
+          // to keep the map readable. Planned non-anchors expose name via hover tooltip.
+          const showLabel = city.visited || city.isOrigin || !!city.anchor;
+          const labelFontSize = city.visited ? 13 : 10;
 
           return (
             <g key={city.label}>
-              {/* Progress head pulse — only on last visited city */}
-              {lastVisited && city.label === lastVisited.label && (
+              {/* 当前所在城市的呼吸圈 */}
+              {isLatest && (
                 <motion.circle
                   cx={cx}
                   cy={cy}
-                  r={10}
+                  r={11}
                   fill="#f3d230"
                   opacity={0}
                   initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: [0, 0.3, 0], scale: [1, 1.5, 1] } : {}}
+                  animate={isInView ? { opacity: [0, 0.35, 0], scale: [1, 1.6, 1] } : {}}
                   transition={{
-                    duration: 2,
+                    duration: 2.2,
                     delay: delay + 0.5,
                     repeat: Infinity,
-                    repeatDelay: 0.5,
+                    repeatDelay: 0.4,
                   }}
-                  style={{ transformOrigin: `${cx}px ${cy}px` }}
+                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                />
+              )}
+
+              {/* 选中外圈（点击反馈） */}
+              {isSelected && (
+                <motion.circle
+                  cx={cx}
+                  cy={cy}
+                  r={13}
+                  fill="none"
+                  stroke="#1f2937"
+                  strokeWidth="1.5"
+                  initial={{ opacity: 0, scale: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.6 }}
+                  transition={{ type: "spring", damping: 18, stiffness: 260 }}
+                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                 />
               )}
 
@@ -245,9 +311,9 @@ function ChinaRouteMap({ t }: { t: Record<string, string> }) {
                   stroke="#f3d230"
                   strokeWidth="1.5"
                   initial={{ opacity: 0, scale: 0.5 }}
-                  animate={isInView ? { opacity: 0.4, scale: 1 } : {}}
+                  animate={isInView ? { opacity: 0.45, scale: 1 } : {}}
                   transition={{ type: "spring", damping: 15, delay }}
-                  style={{ transformOrigin: `${cx}px ${cy}px` }}
+                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                 />
               )}
 
@@ -257,55 +323,85 @@ function ChinaRouteMap({ t }: { t: Record<string, string> }) {
                 cy={cy}
                 r={r}
                 fill={city.visited ? '#f3d230' : 'white'}
-                stroke={city.visited ? 'white' : '#c4b89c'}
-                strokeWidth={city.visited ? 2 : 1.5}
+                stroke={city.visited ? 'white' : '#9c8c66'}
+                strokeWidth={city.visited ? 2 : 1.4}
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : { scale: 0 }}
                 transition={{
                   type: "spring",
                   damping: 15,
-                  stiffness: 200,
+                  stiffness: 220,
                   delay,
                 }}
-                style={{ transformOrigin: `${cx}px ${cy}px` }}
+                style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
               />
 
-              {/* 城市名称 */}
-              <motion.text
-                x={cx + labelDx}
-                y={cy + labelDy}
-                fill={city.visited ? '#333' : '#999'}
-                fontSize={city.visited ? '11' : '9'}
-                fontWeight={city.visited ? 'bold' : 'normal'}
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.3, delay: delay + 0.15 }}
-              >
-                {city.label}
-              </motion.text>
+              {/* 城市名称 — 白色描边防糊 */}
+              {showLabel && (
+                <motion.text
+                  x={cx + labelDx}
+                  y={cy + labelDy}
+                  fill={city.visited ? '#1f2937' : '#6b6149'}
+                  fontSize={labelFontSize}
+                  fontWeight={city.visited ? 600 : 400}
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.3, delay: delay + 0.15 }}
+                  style={{
+                    paintOrder: 'stroke',
+                    stroke: '#ece8df',
+                    strokeWidth: 3.5,
+                    strokeLinejoin: 'round',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
+                >
+                  {city.label}
+                </motion.text>
+              )}
 
               {/* 出发标签 */}
               {city.isOrigin && (
                 <motion.text
                   x={cx + labelDx}
-                  y={cy + labelDy + 13}
-                  fill="#f3d230"
-                  fontSize="8"
-                  fontWeight="bold"
+                  y={cy + labelDy + 14}
+                  fill="#9b7f10"
+                  fontSize="9"
+                  fontWeight={700}
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : {}}
                   transition={{ duration: 0.3, delay: delay + 0.3 }}
+                  style={{
+                    paintOrder: 'stroke',
+                    stroke: '#ece8df',
+                    strokeWidth: 3,
+                    strokeLinejoin: 'round',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
                 >
                   {t['map.origin']}
                 </motion.text>
               )}
+
+              {/* 扩大命中区：所有城市都有 tooltip；visited 可点击切换面板 */}
+              <circle
+                cx={cx}
+                cy={cy}
+                r={city.visited ? 16 : 10}
+                fill="transparent"
+                className={city.visited ? 'cursor-pointer' : 'cursor-help'}
+                onClick={city.visited ? () => onSelect(city.label) : undefined}
+              >
+                <title>{`${city.label}${city.event?.date ? ` · ${city.event.date}` : ''}`}</title>
+              </circle>
             </g>
           );
         })}
       </svg>
 
-      {/* 图例 — 精简 */}
-      <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-md text-xs text-neutral-500 flex items-center gap-4">
+      {/* 图例 */}
+      <div className="absolute bottom-3 left-3 bg-white/92 backdrop-blur-sm px-3 py-2 rounded-md text-xs text-neutral-600 flex items-center gap-4 shadow-sm">
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-brand" />
           {t['map.visited']}
@@ -316,15 +412,168 @@ function ChinaRouteMap({ t }: { t: Record<string, string> }) {
         </span>
       </div>
       {/* 马年标注 */}
-      <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-md text-xs text-neutral-400 select-none">
+      <div className="absolute top-3 right-3 bg-white/92 backdrop-blur-sm px-3 py-1.5 rounded-md text-xs text-neutral-500 select-none shadow-sm">
         {t['map.horseYear']}
+      </div>
+      {/* 提示：点击查看 */}
+      <div className="absolute top-3 left-3 bg-neutral-900/85 text-white px-3 py-1.5 rounded-md text-xs select-none flex items-center gap-1.5 shadow-sm">
+        <MapPin className="w-3 h-3" />
+        {t['journal.tapHint']}
       </div>
     </div>
   );
 }
 
+// 行程手账 — 显示选中城市的事件
+function JournalPanel({
+  city,
+  totalLegs,
+  isLatest,
+  t,
+  hero = false,
+}: {
+  city: RouteCity | null;
+  totalLegs: number;
+  isLatest: boolean;
+  t: Record<string, string>;
+  hero?: boolean;
+}) {
+  if (!city) {
+    return (
+      <div className={`flex flex-col items-center justify-center text-center px-6 py-12 bg-white border border-neutral-200 rounded-md ${hero ? 'min-h-[200px]' : 'min-h-[320px] h-full'}`}>
+        <MapPin className="w-6 h-6 text-neutral-300 mb-3" />
+        <p className="text-sm text-neutral-500 max-w-[36ch] leading-relaxed">
+          {t['journal.empty']}
+        </p>
+      </div>
+    );
+  }
+
+  const legCounter = city.isOrigin
+    ? null
+    : t['journal.legCounter']
+        .replace('{n}', String(city.order))
+        .replace('{total}', String(totalLegs));
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.article
+        key={city.label}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        className={`bg-white border border-neutral-200 rounded-md flex flex-col ${
+          hero
+            ? 'p-6 md:p-8 md:flex-row md:gap-10 md:items-start'
+            : 'p-6 md:p-7 h-full min-h-[320px]'
+        }`}
+      >
+        {/* 顶部：进程标签 + 城市名 */}
+        <header className={hero ? 'md:w-[34%] md:flex-shrink-0 mb-5 md:mb-0' : 'mb-5'}>
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            {legCounter && (
+              <span className="inline-flex items-center text-[10px] uppercase tracking-[0.18em] text-neutral-500 border border-neutral-200 px-2 py-0.5 rounded-sm">
+                {legCounter}
+              </span>
+            )}
+            {isLatest && !city.isOrigin && (
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-[0.18em] text-brand-foreground bg-brand px-2 py-0.5 rounded-sm font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-foreground animate-pulse" />
+                {t['journal.latest']}
+              </span>
+            )}
+            {city.isOrigin && (
+              <span className="inline-flex items-center text-[10px] uppercase tracking-[0.18em] text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-sm font-semibold">
+                {t['journal.origin']}
+              </span>
+            )}
+          </div>
+          <h3 className={`font-bold text-neutral-900 leading-tight ${hero ? 'text-4xl md:text-5xl' : 'text-3xl md:text-4xl'}`}>
+            {city.label}
+          </h3>
+          {city.event?.date && (
+            <p className="mt-2 font-mono text-xs text-neutral-500 tracking-wider">
+              {city.event.date}
+            </p>
+          )}
+        </header>
+
+        {/* 内容区 */}
+        <div className={hero ? 'flex-1 flex flex-col' : 'flex-1 flex flex-col'}>
+          {city.event ? (
+            <>
+              <div className="flex-1">
+                <p className={`text-neutral-700 leading-relaxed ${hero ? 'text-base md:text-lg' : 'text-[15px]'}`}>
+                  {city.event.summary}
+                </p>
+              </div>
+              {city.event.link && (
+                <a
+                  href={city.event.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 inline-flex items-center gap-1.5 text-sm text-neutral-900 font-medium border-b border-neutral-900 pb-0.5 self-start hover:text-brand hover:border-brand transition-colors duration-200 cursor-pointer"
+                >
+                  {city.event.linkLabel ?? city.event.link}
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col gap-3">
+              <span className="inline-flex w-fit items-center text-[10px] uppercase tracking-[0.18em] text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-sm font-semibold">
+                {t['journal.upcoming']}
+              </span>
+              <p className="text-sm text-neutral-500 leading-relaxed">
+                {t['journal.upcomingDesc']}
+              </p>
+            </div>
+          )}
+        </div>
+      </motion.article>
+    </AnimatePresence>
+  );
+}
+
 export default function HomeContent({ heroImages, locale = 'zh', t }: Props) {
   const [comingSoonTip, setComingSoonTip] = useState(false);
+
+  // Localized cities for current locale
+  const localizedCities = useMemo(
+    () => routeCities.map(c => localizeCity(c, locale)),
+    [locale],
+  );
+  const sortedCities = useMemo(
+    () => [...localizedCities].sort((a, b) => a.order - b.order),
+    [localizedCities],
+  );
+  const lastVisited = useMemo(
+    () => [...sortedCities].reverse().find(c => c.visited) ?? null,
+    [sortedCities],
+  );
+
+  // Selected city for journal panel — defaults to most recent visited
+  const [selectedCityKey, setSelectedCityKey] = useState<string | null>(
+    lastVisited?.label ?? null,
+  );
+  const selectedCity = useMemo(
+    () => localizedCities.find(c => c.label === selectedCityKey) ?? null,
+    [localizedCities, selectedCityKey],
+  );
+
+  // Journal panel ref — scroll into view on mobile when a city is tapped
+  const journalRef = useRef<HTMLDivElement>(null);
+  const handleCitySelect = useCallback((key: string) => {
+    setSelectedCityKey(key);
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 1023px)').matches &&
+      journalRef.current
+    ) {
+      journalRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   const sliderSettings = {
     dots: true,
@@ -474,13 +723,65 @@ export default function HomeContent({ heroImages, locale = 'zh', t }: Props) {
             </motion.div>
           </div>
 
-          {/* 中国路线地图 — 全宽无圆角 */}
+          {/* 地图全宽 — 主视觉。容器比例匹配 viewBox 4:3，避免横向留白裁掉地图 */}
           <motion.div
-            className="w-full aspect-[4/3] md:aspect-[16/10] overflow-hidden"
+            className="w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[3/2] mt-10"
             variants={fadeIn}
           >
-            <ChinaRouteMap t={t} />
+            <ChinaRouteMap
+              cities={localizedCities}
+              selectedKey={selectedCityKey}
+              onSelect={handleCitySelect}
+              t={t}
+            />
           </motion.div>
+
+          {/* 行程手账 — hero 卡片紧贴地图下方 */}
+          <motion.div
+            ref={journalRef}
+            className="mt-4 lg:mt-5"
+            variants={fadeIn}
+          >
+            <JournalPanel
+              city={selectedCity}
+              totalLegs={sortedCities.length - 1}
+              isLatest={selectedCity?.label === lastVisited?.label}
+              t={t}
+              hero
+            />
+          </motion.div>
+
+          {/* 已访问城市快速切换 — 缩略 chip 行 */}
+          {sortedCities.filter(c => c.visited).length > 1 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-neutral-400 mr-1">
+                {t['map.visited']}
+              </span>
+              {sortedCities
+                .filter(c => c.visited)
+                .map(c => {
+                  const active = selectedCityKey === c.label;
+                  return (
+                    <button
+                      key={c.label}
+                      onClick={() => handleCitySelect(c.label)}
+                      className={`text-xs px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer ${
+                        active
+                          ? 'bg-neutral-900 text-white border-neutral-900'
+                          : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900'
+                      }`}
+                    >
+                      {c.label}
+                      {c.event?.date && (
+                        <span className={`ml-1.5 font-mono text-[10px] ${active ? 'text-neutral-400' : 'text-neutral-400'}`}>
+                          {c.event.date.slice(5)}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+            </div>
+          )}
         </div>
       </motion.section>
 
