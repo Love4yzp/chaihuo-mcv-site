@@ -65,11 +65,38 @@ export const routeCities: RouteCity[] = [
       linkLabel_en: 'Read field notes',
     },
   },
+  {
+    label: '玉林', label_en: 'Yulin',
+    lng: 110.181, lat: 22.654, visited: true, order: 3, labelOffset: [10, 14],
+    event: {
+      date: '2026.04.28',
+      summary: '在玉林科技馆开展路展，并联合举办 AI 硬件工作坊。',
+      summary_en: 'Road show at the Yulin Science & Technology Museum with a companion AI hardware workshop.',
+      link: 'https://www.yuque.com/chaihuo-mcv/home',
+      linkLabel: '阅读现场记录',
+      linkLabel_en: 'Read field notes',
+    },
+  },
   // ── 计划路线 ──
   // anchor: 标注少数地理/叙事地标，给地图留参照点；其余 dot only + hover tooltip
-  { label: '钦州', label_en: 'Qinzhou', lng: 108.624, lat: 21.967, visited: false, order: 3, labelOffset: [-30, 12] },
-  { label: '玉林', label_en: 'Yulin', lng: 110.181, lat: 22.654, visited: false, order: 4, labelOffset: [10, 14] },
-  { label: '柳州', label_en: 'Liuzhou', lng: 109.412, lat: 24.327, visited: false, order: 5, labelOffset: [-30, -6] },
+  {
+    label: '南宁', label_en: 'Nanning',
+    lng: 108.366, lat: 22.817, visited: false, order: 4, anchor: true, labelOffset: [-32, 14],
+    event: {
+      date: '2026.04.29',
+      summary: '在广西科技馆开展路展。',
+      summary_en: 'Road show at the Guangxi Science & Technology Museum.',
+    },
+  },
+  {
+    label: '柳州', label_en: 'Liuzhou',
+    lng: 109.412, lat: 24.327, visited: false, order: 5, anchor: true, labelOffset: [-30, -6],
+    event: {
+      date: '2026.04.30',
+      summary: '走进柳州·三都镇的农业养殖种植基地，与新农人面对面，开展技术行业交流。',
+      summary_en: 'Visit to the agricultural & aquaculture base in Sandu Town, Liuzhou — exchanging notes with new-generation farmers and the local tech community.',
+    },
+  },
   { label: '肇兴', label_en: 'Zhaoxing', lng: 109.116, lat: 25.863, visited: false, order: 6, labelOffset: [-32, -6] },
   { label: '酉阳', label_en: 'Youyang', lng: 108.770, lat: 28.840, visited: false, order: 7, labelOffset: [-30, -6] },
   { label: '雅安', label_en: 'Ya’an', lng: 103.001, lat: 29.988, visited: false, order: 8, labelOffset: [-30, -6] },
