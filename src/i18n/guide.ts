@@ -35,13 +35,20 @@ const guide: Record<Locale, Record<string, string>> = {
     'apply.local': '在地合作：',
     'apply.localDetail': '扫描卡片中的二维码填写合作意向，我们会第一时间对接沟通',
 
-    'crew.eyebrow': '车上的人',
+    'crew.eyebrow': '在路上',
     'crew.title': '同行者',
-    'crew.alumni': '曾同行',
-    'crew.alumni.count': '曾同行（{count}人）',
-    'crew.status.onboard': '在途',
+    'crew.subtitle': '每一个同行的人，都是故事的一部分',
+    'crew.alumni': '走过的路',
+    'crew.alumni.count': '走过的路（{count}人）',
+    'crew.status.onboard': '在路上',
     'crew.duration.days': '同行 {days} 天',
     'crew.duration.from_to': '{from} → {to}',
+    'crew.all': '全部',
+
+    'guide.cta.eyebrow': 'THE JOURNEY CONTINUES',
+    'guide.cta.title': '在路上的人',
+    'guide.cta.body': '每一次出发，都有同行者。了解谁与基地车同行，以及他们走过的路。',
+    'guide.cta.button': '查看同行者',
 
     'team.title': '基地车成员',
 
@@ -82,13 +89,20 @@ const guide: Record<Locale, Record<string, string>> = {
     'apply.local': 'For local partnerships: ',
     'apply.localDetail': "Scan the QR code on the cards above to submit your interest — we'll get back to you ASAP",
 
-    'crew.eyebrow': 'On Board',
+    'crew.eyebrow': 'ON THE ROAD',
     'crew.title': 'The Crew',
-    'crew.alumni': 'Travelled With Us',
-    'crew.alumni.count': 'Travelled With Us ({count})',
-    'crew.status.onboard': 'On Board',
+    'crew.subtitle': 'Everyone who rides along becomes part of the story',
+    'crew.alumni': 'The Road Behind',
+    'crew.alumni.count': 'The Road Behind ({count})',
+    'crew.status.onboard': 'On the Road',
     'crew.duration.days': '{days} days together',
     'crew.duration.from_to': '{from} → {to}',
+    'crew.all': 'All',
+
+    'guide.cta.eyebrow': 'THE JOURNEY CONTINUES',
+    'guide.cta.title': 'Those On the Road',
+    'guide.cta.body': 'Every departure has companions. See who rides with the MCV and the roads they have travelled.',
+    'guide.cta.button': 'View the Crew',
 
     'team.title': 'The Crew',
 
