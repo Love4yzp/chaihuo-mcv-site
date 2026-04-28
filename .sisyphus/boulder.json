@@ -36,6 +36,22 @@
       "agent": "Sisyphus-Junior",
       "category": "deep",
       "updated_at": "2026-04-28T02:06:05.178Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Guide 页面集成",
+      "session_id": "ses_22e0d400cffexW70WpzE5C2G2K",
+      "agent": "build",
+      "updated_at": "2026-04-28T02:43:44.063Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "构建验证与清理",
+      "session_id": "ses_22e060ab6ffeMeCyzS67UaOBz3",
+      "agent": "build",
+      "updated_at": "2026-04-28T02:47:04.341Z"
     }
   }
 }

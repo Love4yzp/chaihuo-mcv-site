@@ -509,7 +509,7 @@ Wave FINAL (Review):
   **Commit**: YES
   - Message: `feat(components): add CrewFlow main component with role grouping`
 
-- [ ] 7. Guide 页面集成
+- [x] 7. Guide 页面集成
 
   **What to do**:
   - 修改 `src/pages/guide.astro`
@@ -563,7 +563,7 @@ Wave FINAL (Review):
   **Commit**: YES
   - Message: `feat(pages): integrate CrewFlow into Guide page`
 
-- [ ] 8. 英文页面同步
+- [x] 8. 英文页面同步
 
   **What to do**:
   - 修改 `src/pages/en/guide.astro`
@@ -602,7 +602,7 @@ Wave FINAL (Review):
 
   **Commit**: YES (groups with Task 7)
 
-- [ ] 9. 构建验证与清理
+- [x] 9. 构建验证与清理
 
   **What to do**:
   - 运行 `pnpm build` 验证无错误

@@ -4,6 +4,7 @@ export const prerender = true;
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import GuideContent from '@/app/components/GuideContent';
 import teamData from '@/data/team.json';
+import boardingsData from '@/data/boardings.json';
 import faqData from '@/data/faq.json';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
@@ -24,6 +25,8 @@ const faqGroups = faqData.map(g => {
     items: loc.items.map(item => localize(item, ['question', 'answer'], locale)),
   };
 });
+
+const humanTeam = teamData.filter(m => !m.isRobot);
 ---
 
 <BaseLayout title={t['title']} description={t['description']}>
@@ -33,5 +36,7 @@ const faqGroups = faqData.map(g => {
     faqGroups={faqGroups}
     locale={locale}
     t={t}
+    team={humanTeam}
+    boardings={boardingsData}
   />
 </BaseLayout>
