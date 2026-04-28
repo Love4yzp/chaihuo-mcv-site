@@ -334,7 +334,7 @@ Wave FINAL (Review):
 
   **Commit**: YES (groups with Task 1)
 
-- [ ] 4. CrewMemberCard 子组件
+- [x] 4. CrewMemberCard 子组件
 
   **What to do**:
   - 创建 `src/app/components/CrewMemberCard.tsx`
@@ -399,7 +399,7 @@ Wave FINAL (Review):
   **Commit**: YES
   - Message: `feat(components): add CrewMemberCard with active/alumni variants`
 
-- [ ] 5. CrewAlumni 历史面板
+- [x] 5. CrewAlumni 历史面板
 
   **What to do**:
   - 创建 `src/app/components/CrewAlumni.tsx`
@@ -449,7 +449,7 @@ Wave FINAL (Review):
 
   **Commit**: YES (groups with Task 4)
 
-- [ ] 6. CrewFlow 主组件
+- [x] 6. CrewFlow 主组件
 
   **What to do**:
   - 创建 `src/app/components/CrewFlow.tsx`（替换 CrewManifest）

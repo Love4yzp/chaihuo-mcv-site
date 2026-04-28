@@ -18,6 +18,24 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-04-28T01:52:02.879Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "CrewMemberCard 子组件",
+      "session_id": "ses_22e32f9e0ffew0kkgBerq363x5",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-04-28T01:59:36.000Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "CrewFlow 主组件",
+      "session_id": "ses_22e2d93b5ffet2P8qyRhliYD4J",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-04-28T02:06:05.178Z"
     }
   }
 }
