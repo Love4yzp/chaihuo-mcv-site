@@ -29,6 +29,16 @@
     "image": "/people/ray-pipi.jpg"
   },
   {
+    "id": "xiaomei",
+    "name": "黎晓梅",
+    "name_en": "Xiaomei Li",
+    "role": "媒体担当",
+    "role_en": "Media Lead",
+    "bio": "内容创作者与传播策划，负责用影像、文字和社媒记录基地车的现场故事与创作瞬间。",
+    "bio_en": "Content creator and communications planner, documenting the MCV's on-site stories and creative moments through visuals, writing, and social media.",
+    "image": "/people/xiaomei.svg"
+  },
+  {
     "id": "reachy",
     "name": "Reachy Mini",
     "role": "具身智能",

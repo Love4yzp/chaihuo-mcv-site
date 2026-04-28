@@ -1,0 +1,50 @@
+[
+  {
+    "id": "b1",
+    "crewId": "feng",
+    "role": "领队",
+    "boardedAt": {
+      "date": "2026-04-22",
+      "location": "深圳科技馆",
+      "location_en": "Shenzhen Science Museum"
+    },
+    "disembarkedAt": null
+  },
+  {
+    "id": "b2",
+    "crewId": "zhipeng",
+    "role": "技术担当",
+    "boardedAt": {
+      "date": "2026-04-22",
+      "location": "深圳科技馆",
+      "location_en": "Shenzhen Science Museum"
+    },
+    "disembarkedAt": null
+  },
+  {
+    "id": "b3",
+    "crewId": "ray",
+    "role": "媒体担当",
+    "boardedAt": {
+      "date": "2026-04-22",
+      "location": "深圳科技馆",
+      "location_en": "Shenzhen Science Museum"
+    },
+    "disembarkedAt": {
+      "date": "2026-04-26",
+      "location": "阳江科技馆",
+      "location_en": "Yangjiang Science Museum"
+    }
+  },
+  {
+    "id": "b4",
+    "crewId": "xiaomei",
+    "role": "媒体担当",
+    "boardedAt": {
+      "date": "2026-04-26",
+      "location": "阳江科技馆",
+      "location_en": "Yangjiang Science Museum"
+    },
+    "disembarkedAt": null
+  }
+]

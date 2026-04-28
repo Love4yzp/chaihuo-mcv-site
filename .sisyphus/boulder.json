@@ -1,0 +1,23 @@
+{
+  "active_plan": "/Users/spencer/Seeed/dev/web-design/mcv-chaihuo-org/.sisyphus/plans/crew-flow-redesign.md",
+  "started_at": "2026-04-28T00:44:03.363Z",
+  "session_ids": [
+    "ses_22ed64c16ffeB6iYMsrSrDz16B"
+  ],
+  "session_origins": {
+    "ses_22ed64c16ffeB6iYMsrSrDz16B": "direct"
+  },
+  "plan_name": "crew-flow-redesign",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "重构数据模型",
+      "session_id": "ses_22e3b1d9cffe5ZRLxJLeYo4JGY",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-04-28T01:52:02.879Z"
+    }
+  }
+}

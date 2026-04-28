@@ -35,6 +35,14 @@ const guide: Record<Locale, Record<string, string>> = {
     'apply.local': '在地合作：',
     'apply.localDetail': '扫描卡片中的二维码填写合作意向，我们会第一时间对接沟通',
 
+    'crew.eyebrow': '车上的人',
+    'crew.title': '同行者',
+    'crew.alumni': '曾同行',
+    'crew.alumni.count': '曾同行（{count}人）',
+    'crew.status.onboard': '在途',
+    'crew.duration.days': '同行 {days} 天',
+    'crew.duration.from_to': '{from} → {to}',
+
     'team.title': '基地车成员',
 
     'faq.title': '常见问题',
@@ -73,6 +81,14 @@ const guide: Record<Locale, Record<string, string>> = {
     'apply.rideSubject': ', subject line: "Chaihuo MCV Ride-Along Application"',
     'apply.local': 'For local partnerships: ',
     'apply.localDetail': "Scan the QR code on the cards above to submit your interest — we'll get back to you ASAP",
+
+    'crew.eyebrow': 'On Board',
+    'crew.title': 'The Crew',
+    'crew.alumni': 'Travelled With Us',
+    'crew.alumni.count': 'Travelled With Us ({count})',
+    'crew.status.onboard': 'On Board',
+    'crew.duration.days': '{days} days together',
+    'crew.duration.from_to': '{from} → {to}',
 
     'team.title': 'The Crew',
 
