@@ -52,6 +52,14 @@
       "session_id": "ses_22e060ab6ffeMeCyzS67UaOBz3",
       "agent": "build",
       "updated_at": "2026-04-28T02:47:04.341Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**构建验证** — `quick`",
+      "session_id": "ses_22dffb3a0ffeUW6se7BFQVsL2W",
+      "agent": "build",
+      "updated_at": "2026-04-28T02:54:10.887Z"
     }
   }
 }

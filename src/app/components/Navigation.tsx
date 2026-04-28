@@ -21,6 +21,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
     { to: localePath('/', locale), label: dict['nav.home'], match: '/' },
     { to: localePath('/deconstruct', locale), label: dict['nav.deconstruct'], match: '/deconstruct' },
     { to: localePath('/documentation', locale), label: dict['nav.documentation'], match: '/documentation' },
+    { to: localePath('/crew', locale), label: dict['nav.crew'], match: '/crew' },
     { to: localePath('/guide', locale), label: dict['nav.guide'], match: '/guide' },
     { to: localePath('/about', locale), label: dict['nav.about'], match: '/about' },
   ];

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
 import { ChevronDown, Mail, Truck, Sprout, Zap } from 'lucide-react';
-import CrewFlow from './CrewFlow';
 import qrCoCreationImport from '@/assets/qr-co-creation.png';
 import qrEmpowermentImport from '@/assets/qr-empowerment.png';
 import type { Locale } from '@/i18n/index';
@@ -30,17 +29,9 @@ interface GuideContentProps {
   faqGroups: FaqGroup[];
   locale?: Locale;
   t: Record<string, string>;
-  team: Array<{ id: string; name: string; name_en: string; image?: string }>;
-  boardings: Array<{
-    id: string;
-    crewId: string;
-    role: string;
-    boardedAt: { date: string; location: string; location_en: string };
-    disembarkedAt?: { date: string; location: string; location_en: string } | null;
-  }>;
 }
 
-export default function GuideContent({ teamMembers, faqGroups, locale = 'zh', t, team, boardings }: GuideContentProps) {
+export default function GuideContent({ teamMembers, faqGroups, locale = 'zh', t }: GuideContentProps) {
   const [openFAQs, setOpenFAQs] = useState<Set<string>>(new Set());
 
   return (
@@ -232,7 +223,38 @@ export default function GuideContent({ teamMembers, faqGroups, locale = 'zh', t,
         </div>
       </section>
 
-      <CrewFlow team={team} boardings={boardings} locale={locale} t={t} />
+      {/* Team Members */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t['team.title']}</h2>
+          <motion.div
+            variants={stagger(0.1)}
+            initial="hidden"
+            whileInView="visible"
+            viewport={defaultViewport}
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            {teamMembers.map((member, index) => (
+              <motion.div key={index} variants={fadeUp} transition={springTransition} className="group">
+                <div className={`relative overflow-hidden rounded-lg aspect-[3/4] mb-4 ${member.isRobot ? 'bg-neutral-900' : 'bg-neutral-100'}`}>
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${member.isRobot ? 'object-contain p-8' : ''}`}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                    <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                    <p className="text-brand text-sm">{member.role}</p>
+                  </div>
+                </div>
+                {member.bio && (
+                  <p className="text-sm text-neutral-500 leading-relaxed">{member.bio}</p>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
       {/* FAQ Section — 分组展示 */}
       <section className="py-20 px-6 bg-white">

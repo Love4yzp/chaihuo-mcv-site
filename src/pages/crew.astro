@@ -1,0 +1,27 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CrewFlow from '@/app/components/CrewFlow';
+import teamData from '@/data/team.json';
+import boardingsData from '@/data/boardings.json';
+import type { Locale } from '@/i18n/index';
+import guideDict from '@/i18n/guide';
+
+const locale = (Astro.currentLocale ?? 'zh') as Locale;
+const t = guideDict[locale];
+
+const humanTeam = teamData.filter(m => !m.isRobot);
+---
+
+<BaseLayout title={t['crew.title']} description={t['crew.eyebrow']}>
+  <main class="pt-20">
+    <CrewFlow
+      client:load
+      team={humanTeam}
+      boardings={boardingsData}
+      locale={locale}
+      t={t}
+    />
+  </main>
+</BaseLayout>
