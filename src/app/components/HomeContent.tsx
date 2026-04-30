@@ -250,24 +250,25 @@ function ChinaRouteMap({
           // Visited segments draw immediately; planned segments after
           const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
 
-          // Direction arrow on visited segments — placed at ~60% along the
-          // straight chord, oriented along (dx, dy). Gives the line a flow
-          // without colliding with the city dots at either end.
+          // Direction arrow on visited segments — placed at the true
+          // mid-point of the quadratic Bezier (t=0.5), with the chord
+          // direction. Skipped on very short segments to avoid colliding
+          // with the city dots.
           let arrow: ReactElement | null = null;
-          if (seg.visited) {
-            const at = 0.6;
-            const ax = fromPt[0] + dx * at;
-            const ay = fromPt[1] + dy * at;
+          const segLen = Math.hypot(dx, dy);
+          if (seg.visited && segLen > 26) {
+            const ax = 0.25 * fromPt[0] + 0.5 * cpX + 0.25 * toPt[0];
+            const ay = 0.25 * fromPt[1] + 0.5 * cpY + 0.25 * toPt[1];
             const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-            const s = 4;
+            const s = 3.2;
             arrow = (
               <motion.path
                 key={`arrow-${i}`}
-                d={`M ${-s} ${-s * 0.7} L ${s * 0.7} 0 L ${-s} ${s * 0.7} Z`}
+                d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
                 transform={`translate(${ax} ${ay}) rotate(${angle})`}
-                fill="#f3d230"
-                stroke="#ffffff"
-                strokeWidth={0.6}
+                fill="#1f2937"
+                stroke="#ece8df"
+                strokeWidth={1}
                 strokeLinejoin="round"
                 initial={{ opacity: 0, scale: 0.3 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -305,13 +306,18 @@ function ChinaRouteMap({
           const [cx, cy] = projected;
           const delay = cityDelay(city.order, city.visited);
           const isSelected = selectedKey === city.label;
-          const r = city.isOrigin ? 6.5 : city.visited ? 5.5 : 3.5;
-          const [labelDx, labelDy] = city.labelOffset ?? [10, -8];
           const isLatest = lastVisited && city.label === lastVisited.label;
+          // Current location is rendered as a target/pin: a slightly larger
+          // gold disc with a small dark inner core, keeping the warm palette
+          // intact while standing out from the cluster of visited dots.
+          const r = isLatest ? 5.2 : city.isOrigin ? 5 : city.visited ? 4 : 3;
+          const [labelDx, labelDy] = city.labelOffset ?? [10, -8];
           // Labels render only for visited / origin / anchor — others stay dot-only
           // to keep the map readable. Planned non-anchors expose name via hover tooltip.
           const showLabel = city.visited || city.isOrigin || !!city.anchor;
-          const labelFontSize = city.visited ? 13 : 10;
+          // Current city's label is bumped up modestly; other labels shrink
+          // so the city dots and route arrows can breathe.
+          const labelFontSize = isLatest ? 11 : city.visited ? 10.5 : 9;
 
           return (
             <g key={city.label}>
@@ -335,17 +341,18 @@ function ChinaRouteMap({
                 />
               )}
 
-              {/* 选中外圈（点击反馈） */}
-              {isSelected && (
+              {/* 选中外圈（点击反馈）— 仅当用户主动选中"非当前所在"的城市时显示，
+                  避免和 latest 的呼吸圈/pin 视觉叠加 */}
+              {isSelected && !isLatest && (
                 <motion.circle
                   cx={cx}
                   cy={cy}
-                  r={13}
+                  r={11}
                   fill="none"
-                  stroke="#1f2937"
-                  strokeWidth="1.5"
+                  stroke="#3a3328"
+                  strokeWidth="1.2"
                   initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  animate={{ opacity: 0.7, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.6 }}
                   transition={{ type: "spring", damping: 18, stiffness: 260 }}
                   style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
@@ -375,7 +382,7 @@ function ChinaRouteMap({
                 r={r}
                 fill={city.visited ? '#f3d230' : 'white'}
                 stroke={city.visited ? 'white' : '#9c8c66'}
-                strokeWidth={city.visited ? 2 : 1.4}
+                strokeWidth={city.visited ? 1.5 : 1}
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : { scale: 0 }}
                 transition={{
@@ -387,14 +394,33 @@ function ChinaRouteMap({
                 style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
               />
 
+              {/* 当前位置内核 — 靶心 pin，金色外圈 + 深棕内点 */}
+              {isLatest && (
+                <motion.circle
+                  cx={cx}
+                  cy={cy}
+                  r={1.8}
+                  fill="#3a2f0e"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
+                  transition={{
+                    type: "spring",
+                    damping: 14,
+                    stiffness: 260,
+                    delay: delay + 0.12,
+                  }}
+                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                />
+              )}
+
               {/* 城市名称 — 白色描边防糊 */}
               {showLabel && (
                 <motion.text
                   x={cx + labelDx}
                   y={cy + labelDy}
-                  fill={city.visited ? '#1f2937' : '#6b6149'}
+                  fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
                   fontSize={labelFontSize}
-                  fontWeight={city.visited ? 600 : 400}
+                  fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
                   initial={{ opacity: 0 }}
                   animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                   transition={{ duration: 0.3, delay: delay + 0.15 }}
