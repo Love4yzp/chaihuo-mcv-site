@@ -66,7 +66,6 @@ const team = defineCollection({
     image: z.string(),
     bio: z.string().optional(),
     bio_en: z.string().optional(),
-    isRobot: z.boolean().optional(),
   }),
 });
 

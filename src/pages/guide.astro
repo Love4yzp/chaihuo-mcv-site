@@ -3,7 +3,6 @@ export const prerender = true;
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import GuideContent from '@/app/components/GuideContent';
-import teamData from '@/data/team.json';
 import faqData from '@/data/faq.json';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
@@ -12,11 +11,6 @@ import guideDict from '@/i18n/guide';
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = guideDict[locale];
 
-const teamMembers = teamData.map(m => {
-  const loc = localize(m, ['name', 'role', 'bio'], locale);
-  return { name: loc.name, role: loc.role, image: loc.image, bio: loc.bio, isRobot: loc.isRobot };
-});
-
 const faqGroups = faqData.map(g => {
   const loc = localize(g, ['label'], locale);
   return {
@@ -24,13 +18,11 @@ const faqGroups = faqData.map(g => {
     items: loc.items.map(item => localize(item, ['question', 'answer'], locale)),
   };
 });
-
 ---
 
 <BaseLayout title={t['title']} description={t['description']}>
   <GuideContent
     client:load
-    teamMembers={teamMembers}
     faqGroups={faqGroups}
     locale={locale}
     t={t}

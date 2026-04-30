@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
-import { ChevronDown, Mail, Truck, Sprout, Zap, ArrowRight } from 'lucide-react';
+import { ChevronDown, Mail, Truck, Sprout, Zap } from 'lucide-react';
 import qrCoCreationImport from '@/assets/qr-co-creation.png';
 import qrEmpowermentImport from '@/assets/qr-empowerment.png';
 import type { Locale } from '@/i18n/index';
@@ -11,27 +11,18 @@ const qrCoCreation = typeof qrCoCreationImport === 'object' && qrCoCreationImpor
 const qrEmpowerment = typeof qrEmpowermentImport === 'object' && qrEmpowermentImport !== null && 'src' in qrEmpowermentImport
   ? (qrEmpowermentImport as { src: string }).src : qrEmpowermentImport as string;
 
-interface TeamMember {
-  name: string;
-  role: string;
-  image: string;
-  bio?: string;
-  isRobot?: boolean;
-}
-
 interface FaqGroup {
   label: string;
   items: { question: string; answer: string }[];
 }
 
 interface GuideContentProps {
-  teamMembers: TeamMember[];
   faqGroups: FaqGroup[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function GuideContent({ teamMembers, faqGroups, locale = 'zh', t }: GuideContentProps) {
+export default function GuideContent({ faqGroups, locale = 'zh', t }: GuideContentProps) {
   const [openFAQs, setOpenFAQs] = useState<Set<string>>(new Set());
 
   return (
@@ -219,81 +210,6 @@ export default function GuideContent({ teamMembers, faqGroups, locale = 'zh', t 
             <p className="mt-2">
               <strong className="text-neutral-900">{t['apply.local']}</strong>{t['apply.localDetail']}
             </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Team Members */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">{t['team.title']}</h2>
-          <motion.div
-            variants={stagger(0.1)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={defaultViewport}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-          >
-            {teamMembers.map((member) => (
-              <motion.div key={member.name} variants={fadeUp} transition={springTransition} className="group">
-                <div className={`relative overflow-hidden rounded-lg aspect-[3/4] mb-4 ${member.isRobot ? 'bg-neutral-900' : 'bg-neutral-100'}`}>
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${member.isRobot ? 'object-contain p-8' : ''}`}
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                    <h3 className="text-xl font-bold text-white">{member.name}</h3>
-                    <p className="text-brand text-sm">{member.role}</p>
-                  </div>
-                </div>
-                {member.bio && (
-                  <p className="text-sm text-neutral-500 leading-relaxed">{member.bio}</p>
-                )}
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="py-20 px-6 bg-neutral-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            variants={stagger(0.15)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={defaultViewport}
-          >
-            <motion.p
-              variants={fadeUp}
-              transition={springTransition}
-              className="text-sm tracking-[0.3em] text-neutral-400 uppercase mb-4"
-            >
-              {t['guide.cta.eyebrow']}
-            </motion.p>
-            <motion.h2
-              variants={fadeUp}
-              transition={springTransition}
-              className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4"
-            >
-              {t['guide.cta.title']}
-            </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              transition={springTransition}
-              className="text-neutral-500 mb-8 max-w-xl mx-auto leading-relaxed"
-            >
-              {t['guide.cta.body']}
-            </motion.p>
-            <motion.a
-              variants={fadeUp}
-              transition={springTransition}
-              href="/crew"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-full font-medium hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
-              {t['guide.cta.button']}
-              <ArrowRight className="w-4 h-4" />
-            </motion.a>
           </motion.div>
         </div>
       </section>

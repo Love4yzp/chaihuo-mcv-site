@@ -1,0 +1,10 @@
+{
+  "id": "reachy",
+  "name": "皮皮虾",
+  "name_en": "Pipixia",
+  "role": "具身智能",
+  "role_en": "Embodied AI",
+  "bio": "原型为 Pollen Robotics 打造的开源机器人 Reachy Mini，在车上我们叫它「皮皮虾」——基地车的 AI 具身智能伙伴。",
+  "bio_en": "Based on Reachy Mini, the open-source robot by Pollen Robotics. Onboard the MCV we call it \"Pipixia\" — our embodied AI companion.",
+  "image": "/people/reachy.svg"
+}

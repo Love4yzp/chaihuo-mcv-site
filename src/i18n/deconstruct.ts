@@ -23,6 +23,9 @@ const deconstruct: Record<Locale, Record<string, string>> = {
     'equipment.title': '装备清单',
     'equipment.subtitle': '荒野生存的全部家当',
 
+    'companion.eyebrow': 'AI 伙伴',
+    'companion.title': '车上的具身智能',
+
     'cta.title': '想亲身体验普罗米修斯号？',
     'cta.body': '从跟车同行到在地合作，多种方式等你参与',
     'cta.button': '查看上车指南',
@@ -48,6 +51,9 @@ const deconstruct: Record<Locale, Record<string, string>> = {
 
     'equipment.title': 'Equipment List',
     'equipment.subtitle': 'Everything for off-grid survival',
+
+    'companion.eyebrow': 'AI Companion',
+    'companion.title': 'Embodied Intelligence Onboard',
 
     'cta.title': 'Want to experience Prometheus in person?',
     'cta.body': 'From riding along to local partnerships — many ways to participate',

@@ -37,15 +37,5 @@
     "bio": "内容创作者与传播策划，负责用影像、文字和社媒记录基地车的现场故事与创作瞬间。",
     "bio_en": "Content creator and communications planner, documenting the MCV's on-site stories and creative moments through visuals, writing, and social media.",
     "image": "/people/xiaomei.svg"
-  },
-  {
-    "id": "reachy",
-    "name": "Reachy Mini",
-    "role": "具身智能",
-    "role_en": "Embodied AI",
-    "bio": "由 Pollen Robotics 打造的开源机器人，基地车的 AI 具身智能伙伴。",
-    "bio_en": "An open-source robot by Pollen Robotics — the MCV's embodied AI companion.",
-    "isRobot": true,
-    "image": "/people/reachy.svg"
   }
 ]
