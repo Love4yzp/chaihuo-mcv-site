@@ -5,8 +5,8 @@
     "role": "领队",
     "boardedAt": {
       "date": "2026-04-22",
-      "location": "深圳科技馆",
-      "location_en": "Shenzhen Science Museum"
+      "location": "深圳",
+      "location_en": "Shenzhen"
     },
     "disembarkedAt": null
   },
@@ -16,8 +16,8 @@
     "role": "技术担当",
     "boardedAt": {
       "date": "2026-04-22",
-      "location": "深圳科技馆",
-      "location_en": "Shenzhen Science Museum"
+      "location": "深圳",
+      "location_en": "Shenzhen"
     },
     "disembarkedAt": null
   },
@@ -27,13 +27,14 @@
     "role": "媒体担当",
     "boardedAt": {
       "date": "2026-04-22",
-      "location": "深圳科技馆",
-      "location_en": "Shenzhen Science Museum"
+      "location": "深圳",
+      "location_en": "Shenzhen"
     },
     "disembarkedAt": {
       "date": "2026-04-26",
-      "location": "阳江科技馆",
-      "location_en": "Yangjiang Science Museum"
+      "location": "阳江",
+      "location_en": "Yangjiang",
+      "handoffTo": "xiaomei"
     }
   },
   {
@@ -42,8 +43,8 @@
     "role": "媒体担当",
     "boardedAt": {
       "date": "2026-04-26",
-      "location": "阳江科技馆",
-      "location_en": "Yangjiang Science Museum"
+      "location": "阳江",
+      "location_en": "Yangjiang"
     },
     "disembarkedAt": null
   }

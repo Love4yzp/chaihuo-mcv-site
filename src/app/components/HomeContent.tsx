@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { Fragment, useState, useCallback, useRef, useEffect, useMemo, type ReactElement } from "react";
 import {
   motion,
   AnimatePresence,
@@ -31,6 +31,7 @@ import {
 } from "../components/motion";
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
+import RoleTimeline from './RoleTimeline';
 
 // ─── Types ───
 
@@ -39,8 +40,30 @@ interface HeroImage {
   alt?: string;
 }
 
+interface TimelineSegment {
+  id: string;
+  role: string;
+  crewId: string;
+  name: string;
+  image: string;
+  startDate: string;
+  endDate: string | null;
+  handoffName: string | null;
+  startLocation: string;
+  endLocation: string | null;
+}
+
+interface TimelineData {
+  roles: Array<{ key: string; label: string }>;
+  segments: TimelineSegment[];
+  monthMarkers: Array<{ label: string; pct: number }>;
+  projectStart: string;
+  projectEnd: string;
+}
+
 interface Props {
   heroImages: HeroImage[];
+  timeline: TimelineData;
   locale?: Locale;
   t: Record<string, string>;
 }
@@ -227,23 +250,51 @@ function ChinaRouteMap({
           // Visited segments draw immediately; planned segments after
           const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
 
+          // Direction arrow on visited segments — placed at ~60% along the
+          // straight chord, oriented along (dx, dy). Gives the line a flow
+          // without colliding with the city dots at either end.
+          let arrow: ReactElement | null = null;
+          if (seg.visited) {
+            const at = 0.6;
+            const ax = fromPt[0] + dx * at;
+            const ay = fromPt[1] + dy * at;
+            const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+            const s = 4;
+            arrow = (
+              <motion.path
+                key={`arrow-${i}`}
+                d={`M ${-s} ${-s * 0.7} L ${s * 0.7} 0 L ${-s} ${s * 0.7} Z`}
+                transform={`translate(${ax} ${ay}) rotate(${angle})`}
+                fill="#f3d230"
+                stroke="#ffffff"
+                strokeWidth={0.6}
+                strokeLinejoin="round"
+                initial={{ opacity: 0, scale: 0.3 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.3, delay: segDelay + 0.45, ease: 'easeOut' }}
+              />
+            );
+          }
+
           return (
-            <motion.path
-              key={`seg-${i}`}
-              d={d}
-              stroke={seg.visited ? '#f3d230' : '#b8a87f'}
-              strokeWidth={seg.visited ? 2.8 : 1.4}
-              strokeLinecap="round"
-              strokeDasharray={seg.visited ? 'none' : '4 5'}
-              fill="none"
-              opacity={seg.visited ? 1 : 0.45}
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
-              transition={{
-                pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
-                opacity: { duration: 0.2, delay: segDelay },
-              }}
-            />
+            <Fragment key={`seg-${i}`}>
+              <motion.path
+                d={d}
+                stroke={seg.visited ? '#f3d230' : '#b8a87f'}
+                strokeWidth={seg.visited ? 2.8 : 1.4}
+                strokeLinecap="round"
+                strokeDasharray={seg.visited ? 'none' : '4 5'}
+                fill="none"
+                opacity={seg.visited ? 1 : 0.45}
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
+                transition={{
+                  pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
+                  opacity: { duration: 0.2, delay: segDelay },
+                }}
+              />
+              {arrow}
+            </Fragment>
           );
         })}
 
@@ -536,7 +587,7 @@ function JournalPanel({
   );
 }
 
-export default function HomeContent({ heroImages, locale = 'zh', t }: Props) {
+export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
   const [comingSoonTip, setComingSoonTip] = useState(false);
 
   // Localized cities for current locale
@@ -784,6 +835,17 @@ export default function HomeContent({ heroImages, locale = 'zh', t }: Props) {
           )}
         </div>
       </motion.section>
+
+      {/* 在路上的人 - 三角色时间轴 */}
+      <RoleTimeline
+        roles={timeline.roles}
+        segments={timeline.segments}
+        monthMarkers={timeline.monthMarkers}
+        projectStart={timeline.projectStart}
+        projectEnd={timeline.projectEnd}
+        locale={locale}
+        t={t}
+      />
 
       {/* 基地车概况 - 流动的基础设施 */}
       <section className="py-20 px-6 bg-white">

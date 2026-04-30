@@ -37,6 +37,15 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.upcoming': '即将抵达',
     'journal.upcomingDesc': '此城正在计划中，更多细节将在抵达前公开。',
 
+    'timeline.eyebrow': '在路上的人',
+    'timeline.title': '一棒接一棒，200 天',
+    'timeline.body': '三个核心岗位接力前行——领队、技术担当、媒体担当。每一段同行，都是项目的一部分。',
+    'timeline.totalDays': '共 {days} 天',
+    'timeline.today': '今日',
+    'timeline.onTheRoad': '在路上',
+    'timeline.currentlyAboard': '当前在车',
+    'timeline.scrollHint': '← 拖动查看完整 200 天 →',
+
     'lab.title': '移动的AI实验室',
     'lab.subtitle': '一个可移动的AI实验室，集成边缘算力、数字加工与实验场景能力',
     'lab.aiTitle': 'AI 边缘算力',
@@ -87,6 +96,15 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.latest': 'Latest',
     'journal.upcoming': 'Upcoming',
     'journal.upcomingDesc': 'This stop is still being planned. Details will appear closer to arrival.',
+
+    'timeline.eyebrow': 'People on the Road',
+    'timeline.title': 'A Relay, 200 Days Long',
+    'timeline.body': 'Three core roles passed hand to hand — Team Lead, Tech Lead, Media Lead. Every leg is part of the story.',
+    'timeline.totalDays': '{days} days total',
+    'timeline.today': 'Today',
+    'timeline.onTheRoad': 'On the road',
+    'timeline.currentlyAboard': 'Currently Aboard',
+    'timeline.scrollHint': '← Drag to see all 200 days →',
 
     'lab.title': 'Mobile AI Laboratory',
     'lab.subtitle': 'A mobile lab integrating edge computing, digital fabrication, and open experimentation',
