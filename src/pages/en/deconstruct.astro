@@ -14,8 +14,8 @@ const locale = (Astro.currentLocale ?? 'en') as Locale;
 const t = deconstructDict[locale];
 
 const companion = (() => {
-  const loc = localize(companionData, ['name', 'role', 'bio'], locale);
-  return { name: loc.name, role: loc.role, image: loc.image, bio: loc.bio };
+  const loc = localize(companionData, ['name', 'bio'], locale);
+  return { name: loc.name, image: loc.image, bio: loc.bio };
 })();
 
 const notesCollection = await getCollection('notes');

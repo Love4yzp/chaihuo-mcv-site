@@ -1,15 +1,7 @@
-import { Suspense, lazy } from 'react';
 import { motion } from 'motion/react';
-import { fadeUp, fadeIn, stagger, springTransition, defaultViewport } from './motion';
+import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
-
-// SSR 阶段跳过 Three.js 解析 — 返回永不 resolve 的 Promise，Suspense 渲染 fallback
-const VehicleExplodedView = lazy(() =>
-  typeof window === 'undefined'
-    ? new Promise<{ default: React.ComponentType }>(() => {})
-    : import('./VehicleExplodedView').then((m) => ({ default: m.VehicleExplodedView })),
-);
 import { Cpu, Factory, BatteryCharging, ChevronRight } from 'lucide-react';
 
 // ─── Types ───
@@ -30,7 +22,6 @@ interface EquipmentCategory {
 
 interface Companion {
   name: string;
-  role: string;
   image: string;
   bio?: string;
 }
@@ -117,24 +108,6 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             ))}
           </motion.div>
 
-          {/* 车辆 3D 爆炸图 — R3F + Drei */}
-          <motion.div
-            variants={fadeIn}
-            initial="hidden"
-            whileInView="visible"
-            viewport={defaultViewport}
-            transition={{ duration: 0.8 }}
-          >
-            <Suspense
-              fallback={
-                <div className="w-full h-[500px] md:h-[600px] rounded-xl bg-gradient-to-b from-neutral-100 to-neutral-300 flex items-center justify-center">
-                  <div className="text-neutral-500 text-sm animate-pulse">{t['loading3d']}</div>
-                </div>
-              }
-            >
-              <VehicleExplodedView />
-            </Suspense>
-          </motion.div>
         </div>
       </section>
 
@@ -277,9 +250,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
       {/* AI 伙伴 — 车上的具身智能节点 */}
       {companion && (
         <section className="px-6 pb-20">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <motion.div
-              className="text-center mb-12"
+              className="text-center mb-10"
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
@@ -300,20 +273,19 @@ export default function DeconstructContent({ notes, equipment, companion, locale
               whileInView="visible"
               viewport={defaultViewport}
               transition={springTransition}
-              className="flex flex-col md:flex-row items-center gap-8 rounded-2xl border border-neutral-200 bg-white p-6 md:p-10"
+              className="flex flex-col md:flex-row items-center gap-6 rounded-xl border border-neutral-200 bg-white p-6"
             >
-              <div className="relative w-40 h-40 md:w-56 md:h-56 shrink-0 overflow-hidden rounded-2xl bg-neutral-900">
+              <div className="relative w-28 h-28 md:w-36 md:h-36 shrink-0 overflow-hidden rounded-xl bg-neutral-900">
                 <img
                   src={companion.image}
                   alt={companion.name}
-                  className="w-full h-full object-contain p-6"
+                  className="w-full h-full object-contain p-4"
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">{companion.name}</h3>
-                <p className="text-brand text-xs font-semibold uppercase tracking-[0.2em] mb-4">{companion.role}</p>
+                <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-3">{companion.name}</h3>
                 {companion.bio && (
-                  <p className="text-neutral-600 leading-relaxed">{companion.bio}</p>
+                  <p className="text-sm text-neutral-600 leading-relaxed">{companion.bio}</p>
                 )}
               </div>
             </motion.div>

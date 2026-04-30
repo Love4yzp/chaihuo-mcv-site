@@ -126,16 +126,118 @@ const projection = geoMercator()
 
 const pathGenerator = geoPath().projection(projection);
 
-// 城市连线路径 — 按 order 排序，依次连接
-function buildCityLines(cities: typeof routeCities) {
+// ─── label placement (auto, no manual offsets) ───
+// Convention follows mainstream maps (Google/Mapbox/Amap): label sits BELOW
+// the dot by default; only swaps to N/E/W/diagonals when below collides.
+type ProjectedCity = RouteCity & {
+  cx: number;
+  cy: number;
+  isLatest: boolean;
+  showLabel: boolean;
+  fontSize: number;
+};
+
+type Rect = readonly [number, number, number, number]; // [x0, y0, x1, y1]
+
+function projectCities(cities: RouteCity[]): ProjectedCity[] {
   const sorted = [...cities].sort((a, b) => a.order - b.order);
-  const segments: { from: typeof cities[0]; to: typeof cities[0]; visited: boolean }[] = [];
-  for (let i = 0; i < sorted.length - 1; i++) {
+  const lastVisited = [...sorted].reverse().find((c) => c.visited);
+  return sorted.flatMap((c) => {
+    const p = projection([c.lng, c.lat]);
+    if (!p) return [];
+    const isLatest = !!lastVisited && c.label === lastVisited.label;
+    return [{
+      ...c,
+      cx: p[0],
+      cy: p[1],
+      isLatest,
+      showLabel: c.visited || !!c.isOrigin || !!c.anchor,
+      fontSize: isLatest ? 11 : c.visited ? 10.5 : 9,
+    }];
+  });
+}
+
+function rectsOverlap(a: Rect, b: Rect): boolean {
+  return !(a[2] < b[0] || b[2] < a[0] || a[3] < b[1] || b[3] < a[1]);
+}
+
+// Approximate label dims. Chinese chars are full-width; use a conservative
+// 0.95 × fontSize per char so we leave a little air vs. the actual glyph.
+function labelDims(c: ProjectedCity): { w: number; h: number } {
+  return {
+    w: c.label.length * c.fontSize * 0.95 + 2,
+    h: c.fontSize * 1.1,
+  };
+}
+
+// SVG <text> default anchor is left-baseline. baseline = cy + dy.
+function bboxAt(c: ProjectedCity, dx: number, dy: number): Rect {
+  const { w, h } = labelDims(c);
+  const x0 = c.cx + dx;
+  const y0 = c.cy + dy - h * 0.85;
+  return [x0, y0, x0 + w, y0 + h];
+}
+
+// Map-software ordering: below-center first, then above, sides, diagonals.
+function candidateOffsets(c: ProjectedCity): Array<[number, number]> {
+  const { w, h } = labelDims(c);
+  const PAD = c.isOrigin ? 16 : 7; // origin has a r=12 outer ring → push label out
+  const half = PAD * 0.5;
+  return [
+    [-w / 2, PAD + h * 0.85],                  // S  (default — under the dot)
+    [-w / 2, -PAD - h * 0.15],                 // N
+    [PAD, h * 0.35],                           // E
+    [-(w + PAD), h * 0.35],                    // W
+    [half, PAD * 0.7 + h * 0.85],              // SE
+    [-(w + half), PAD * 0.7 + h * 0.85],       // SW
+    [half, -PAD * 0.7 - h * 0.15],             // NE
+    [-(w + half), -PAD * 0.7 - h * 0.15],      // NW
+  ];
+}
+
+function placeLabels(cities: ProjectedCity[]): Map<string, [number, number] | null> {
+  const priority = (c: ProjectedCity) =>
+    c.isLatest ? 4 : c.isOrigin ? 3 : c.visited ? 2 : c.anchor ? 1 : 0;
+  const ordered = cities
+    .filter((c) => c.showLabel)
+    .sort((a, b) => priority(b) - priority(a));
+
+  // dot bboxes for ALL cities — labels must avoid every dot, not just labeled ones
+  const dotBoxes: Rect[] = cities.map((c) => {
+    const r = c.isLatest || c.isOrigin ? 6 : c.visited ? 5 : 4;
+    return [c.cx - r, c.cy - r, c.cx + r, c.cy + r];
+  });
+
+  const placed: Rect[] = [];
+  const result = new Map<string, [number, number] | null>();
+
+  for (const c of ordered) {
+    let chosen: [number, number] | null = null;
+    for (const [dx, dy] of candidateOffsets(c)) {
+      const bb = bboxAt(c, dx, dy);
+      if (placed.some((r) => rectsOverlap(r, bb))) continue;
+      const hitsDot = cities.some(
+        (other, i) => other.label !== c.label && rectsOverlap(dotBoxes[i], bb),
+      );
+      if (hitsDot) continue;
+      chosen = [dx, dy];
+      placed.push(bb);
+      break;
+    }
+    result.set(c.label, chosen);
+  }
+  return result;
+}
+
+// 城市连线路径 — 已按 order 排序（projectCities 处理）
+function buildCityLines(cities: ProjectedCity[]) {
+  const segments: { from: ProjectedCity; to: ProjectedCity; visited: boolean }[] = [];
+  for (let i = 0; i < cities.length - 1; i++) {
     segments.push({
-      from: sorted[i],
-      to: sorted[i + 1],
+      from: cities[i],
+      to: cities[i + 1],
       // A segment is visited only if BOTH endpoints are visited
-      visited: sorted[i].visited && sorted[i + 1].visited,
+      visited: cities[i].visited && cities[i + 1].visited,
     });
   }
   return segments;
@@ -170,10 +272,10 @@ function ChinaRouteMap({
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(mapRef, { once: true, amount: 0.3 });
-  const segments = buildCityLines(cities);
 
-  const sortedCities = [...cities].sort((a, b) => a.order - b.order);
-  const lastVisited = [...sortedCities].reverse().find(c => c.visited);
+  const projected = useMemo(() => projectCities(cities), [cities]);
+  const labelPositions = useMemo(() => placeLabels(projected), [projected]);
+  const segments = useMemo(() => buildCityLines(projected), [projected]);
 
   // Animation budget: cities first (0–1.2s), horse outline fades in after (1.0–2.5s)
   const cityDelay = (order: number, visited: boolean) =>
@@ -234,9 +336,8 @@ function ChinaRouteMap({
 
         {/* 层二：城市间连线 — 已访问优先动 */}
         {segments.map((seg, i) => {
-          const fromPt = projection([seg.from.lng, seg.from.lat]);
-          const toPt = projection([seg.to.lng, seg.to.lat]);
-          if (!fromPt || !toPt) return null;
+          const fromPt: [number, number] = [seg.from.cx, seg.from.cy];
+          const toPt: [number, number] = [seg.to.cx, seg.to.cy];
 
           const midX = (fromPt[0] + toPt[0]) / 2;
           const midY = (fromPt[1] + toPt[1]) / 2;
@@ -300,24 +401,19 @@ function ChinaRouteMap({
         })}
 
         {/* 城市节点 + 标签 */}
-        {sortedCities.map((city) => {
-          const projected = projection([city.lng, city.lat]);
-          if (!projected) return null;
-          const [cx, cy] = projected;
+        {projected.map((city) => {
+          const { cx, cy, isLatest, fontSize: labelFontSize } = city;
           const delay = cityDelay(city.order, city.visited);
           const isSelected = selectedKey === city.label;
-          const isLatest = lastVisited && city.label === lastVisited.label;
           // Current location is rendered as a target/pin: a slightly larger
           // gold disc with a small dark inner core, keeping the warm palette
           // intact while standing out from the cluster of visited dots.
           const r = isLatest ? 5.2 : city.isOrigin ? 5 : city.visited ? 4 : 3;
-          const [labelDx, labelDy] = city.labelOffset ?? [10, -8];
-          // Labels render only for visited / origin / anchor — others stay dot-only
-          // to keep the map readable. Planned non-anchors expose name via hover tooltip.
-          const showLabel = city.visited || city.isOrigin || !!city.anchor;
-          // Current city's label is bumped up modestly; other labels shrink
-          // so the city dots and route arrows can breathe.
-          const labelFontSize = isLatest ? 11 : city.visited ? 10.5 : 9;
+          // Labels render only when placement found a non-colliding spot.
+          // Planned non-anchors stay dot-only and expose their name via tooltip.
+          const placement = labelPositions.get(city.label);
+          const showLabel = city.showLabel && placement != null;
+          const [labelDx, labelDy] = placement ?? [0, 0];
 
           return (
             <g key={city.label}>

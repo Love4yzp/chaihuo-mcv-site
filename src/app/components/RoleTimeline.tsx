@@ -312,30 +312,27 @@ export default function RoleTimeline({
             >
               {t['timeline.currentlyAboard']}
             </motion.h3>
-            <div className="grid md:grid-cols-3 gap-8 md:gap-10">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
               {activeSegments.map(seg => (
                 <motion.div
                   key={seg.id}
                   variants={fadeUp}
                   transition={springTransition}
+                  className="group"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-neutral-100 ring-1 ring-neutral-200 shrink-0">
-                      <img
-                        src={seg.image}
-                        alt={seg.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-base font-bold text-neutral-900 leading-tight">
-                        {seg.name}
-                      </h4>
-                      <p className="text-[11px] uppercase tracking-[0.15em] text-brand-dark font-semibold mt-0.5">
-                        {roleLabel.get(seg.role) ?? seg.role}
-                      </p>
-                    </div>
+                  <div className="w-32 h-32 mx-auto rounded-full overflow-hidden bg-neutral-100 ring-1 ring-neutral-200 mb-4">
+                    <img
+                      src={seg.image}
+                      alt={seg.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-brand-dark font-semibold mb-1.5 text-center">
+                    {roleLabel.get(seg.role) ?? seg.role}
+                  </p>
+                  <h4 className="text-lg font-bold text-neutral-900 leading-tight mb-2 text-center">
+                    {seg.name}
+                  </h4>
                   {seg.bio && (
                     <p className="text-sm text-neutral-600 leading-relaxed">{seg.bio}</p>
                   )}
