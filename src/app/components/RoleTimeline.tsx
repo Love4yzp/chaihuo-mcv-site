@@ -336,13 +336,6 @@ export default function RoleTimeline({
                       </p>
                     </div>
                   </div>
-                  <p className="text-xs text-neutral-400 tabular-nums mb-3">
-                    <span>{formatShortDate(seg.startDate, locale)}</span>
-                    <span className="mx-1.5">·</span>
-                    <span>{seg.startLocation}</span>
-                    <span className="mx-1.5 text-neutral-300">·</span>
-                    <span>{t['timeline.onTheRoad']}</span>
-                  </p>
                   {seg.bio && (
                     <p className="text-sm text-neutral-600 leading-relaxed">{seg.bio}</p>
                   )}

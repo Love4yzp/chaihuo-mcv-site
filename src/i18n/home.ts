@@ -12,7 +12,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
 
-    'status.current': '当前状态：在路上 · 华南首站',
+    'status.current': '当前状态：在路上 · 穿越广西',
     'status.departure': '已于 4 月 22 日从深圳启程',
     'status.route': '途经 21 省 26 城',
 
@@ -39,7 +39,7 @@ const home: Record<Locale, Record<string, string>> = {
 
     'timeline.eyebrow': '在路上的人',
     'timeline.title': '一棒接一棒，200 天',
-    'timeline.body': '三个核心岗位接力前行——领队、技术担当、媒体担当。每一段同行，都是项目的一部分。',
+    'timeline.body': '三个核心岗位接力前行——领队、技术担当、媒体担当。',
     'timeline.totalDays': '共 {days} 天',
     'timeline.today': '今日',
     'timeline.onTheRoad': '在路上',
@@ -72,7 +72,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
 
-    'status.current': 'Status: On the road · South China leg',
+    'status.current': 'Status: On the road · Crossing Guangxi',
     'status.departure': 'Departed Shenzhen on April 22',
     'status.route': '21 provinces, 26 cities',
 
@@ -99,7 +99,7 @@ const home: Record<Locale, Record<string, string>> = {
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
-    'timeline.body': 'Three core roles passed hand to hand — Team Lead, Tech Lead, Media Lead. Every leg is part of the story.',
+    'timeline.body': 'Three core roles passed hand to hand — Team Lead, Tech Lead, Media Lead.',
     'timeline.totalDays': '{days} days total',
     'timeline.today': 'Today',
     'timeline.onTheRoad': 'On the road',
