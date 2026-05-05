@@ -1,9 +1,9 @@
 [
   {
-    "id": "van-on-road",
-    "image": "https://images.unsplash.com/photo-1725864832531-f50f4639dd00?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920&q=80",
-    "alt": "基地车穿越山间公路",
-    "alt_en": "MCV traversing mountain highways"
+    "id": "coast-yangjiang",
+    "image": "/heroes/coast-yangjiang.webp",
+    "alt": "基地车驻停海岸亭台 — 阳江夕照",
+    "alt_en": "MCV at a coastal pavilion under sunset clouds — Yangjiang"
   },
   {
     "id": "mountain-road",
@@ -18,9 +18,9 @@
     "alt_en": "Maker workshop with 3D printer and tools"
   },
   {
-    "id": "rural-china",
-    "image": "https://images.unsplash.com/photo-1770298040111-197004339c7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1920&q=80",
-    "alt": "喀斯特山间乡村公路 — 穿越中国",
-    "alt_en": "Rural road through karst mountains in China"
+    "id": "karst-guangxi",
+    "image": "/heroes/karst-guangxi.webp",
+    "alt": "基地车扎营喀斯特田野 — 广西柳江三都",
+    "alt_en": "MCV camped beside karst farmland — Sandu Town, Liujiang, Guangxi"
   }
 ]

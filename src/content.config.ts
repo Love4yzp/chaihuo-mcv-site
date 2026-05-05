@@ -98,7 +98,7 @@ const heroes = defineCollection({
   loader: file('./src/data/heroes.json'),
   schema: z.object({
     id: z.string(),
-    image: z.string().url(),
+    image: z.string(),
     alt: z.string().optional(),
     alt_en: z.string().optional(),
   }),
