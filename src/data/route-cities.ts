@@ -72,9 +72,9 @@ export const routeCities: RouteCity[] = [
       date: '2026.04.28',
       summary: '在玉林科技馆开展路展、AI 硬件工作坊，并走进玉东新区第三小学开展科普活动。',
       summary_en: 'Road show and AI hardware workshop at the Yulin Science & Technology Museum, plus a science outreach session at Yudong District No.3 Primary School.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
+      link: 'https://www.yuque.com/mouseart/gu0t4w/ktc4kr4o0w4auwiy?singleDoc',
+      linkLabel: '阅读领队日记',
+      linkLabel_en: "Read leader's diary",
     },
   },
   {
@@ -96,9 +96,9 @@ export const routeCities: RouteCity[] = [
       date: '2026.04.30',
       summary: '走进柳州·三都镇的农业养殖种植基地，与新农人面对面，开展技术行业交流。',
       summary_en: 'Visit to the agricultural & aquaculture base in Sandu Town, Liuzhou — exchanging notes with new-generation farmers and the local tech community.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
+      link: 'https://www.yuque.com/mouseart/gu0t4w/gzlp7usk115m7dns?singleDoc',
+      linkLabel: '阅读领队日记',
+      linkLabel_en: "Read leader's diary",
     },
   },
   // ── 计划中（临近确认） ──
@@ -106,11 +106,14 @@ export const routeCities: RouteCity[] = [
   // event.date 让地图 hover tooltip 能显示计划日期。
   {
     label: '贵阳', label_en: 'Guiyang',
-    lng: 106.713, lat: 26.578, visited: false, order: 6, anchor: true,
+    lng: 106.713, lat: 26.578, visited: true, order: 6, anchor: true,
     event: {
       date: '2026.05.05',
-      summary: '计划停靠贵阳；现场行程随当地科技馆与社区合作伙伴最终确认后更新。',
-      summary_en: 'Planned stop in Guiyang; on-site activities will be confirmed with local science museums and community partners.',
+      summary: '走进贵阳，与两位当地创客面对面，畅聊科创教育的一线观察与实践路径。',
+      summary_en: 'In Guiyang, sat down with two local makers for a candid exchange on STEM education — from on-the-ground observations to the paths they are forging.',
+      link: 'https://www.yuque.com/chaihuo-mcv/home',
+      linkLabel: '阅读现场记录',
+      linkLabel_en: 'Read field notes',
     },
   },
   {
