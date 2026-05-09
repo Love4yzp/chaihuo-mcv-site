@@ -14,7 +14,7 @@ const Slider = (
 ) as typeof ReactSlick;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Play, ChevronDown, ArrowUpRight, MapPin } from "lucide-react";
+import { Play, ChevronDown, ArrowUpRight, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import chinaGeoJson from "@/data/china-provinces.json";
@@ -748,8 +748,28 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     }
   }, []);
 
+  const SliderPrevArrow = ({ onClick }: { onClick?: () => void }) => (
+    <button
+      onClick={onClick}
+      className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white border border-white/20 hover:border-white/50 transition-all duration-200 cursor-pointer"
+      aria-label="上一张"
+    >
+      <ChevronLeft size={20} />
+    </button>
+  );
+
+  const SliderNextArrow = ({ onClick }: { onClick?: () => void }) => (
+    <button
+      onClick={onClick}
+      className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white border border-white/20 hover:border-white/50 transition-all duration-200 cursor-pointer"
+      aria-label="下一张"
+    >
+      <ChevronRight size={20} />
+    </button>
+  );
+
   const sliderSettings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 1000,
     slidesToShow: 1,
@@ -757,8 +777,10 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     autoplay: true,
     autoplaySpeed: 5000,
     fade: true,
-    arrows: false,
-    pauseOnHover: false,
+    arrows: true,
+    pauseOnHover: true,
+    prevArrow: <SliderPrevArrow />,
+    nextArrow: <SliderNextArrow />,
   };
 
   const handleComingSoon = useCallback(() => {
