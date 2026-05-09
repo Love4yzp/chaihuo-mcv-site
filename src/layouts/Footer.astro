@@ -1,5 +1,6 @@
 ---
 import logoHorizontalImport from '@/assets/logo-horizontal.png';
+import wechatQrImport from '@/assets/qr-wechat.png';
 import type { Locale } from '@/i18n/index';
 import ui from '@/i18n/ui';
 import { localePath, t } from '@/i18n/index';
@@ -7,6 +8,9 @@ import { localePath, t } from '@/i18n/index';
 const logoSrc = typeof logoHorizontalImport === 'object' && logoHorizontalImport !== null && 'src' in logoHorizontalImport
   ? (logoHorizontalImport as { src: string }).src
   : logoHorizontalImport as string;
+const wechatQrSrc = typeof wechatQrImport === 'object' && wechatQrImport !== null && 'src' in wechatQrImport
+  ? (wechatQrImport as { src: string }).src
+  : wechatQrImport as string;
 
 interface Props {
   locale?: Locale;
@@ -78,10 +82,33 @@ const d = ui[locale];
           >
             {d['footer.xiaohongshu']}
           </a>
-          <p>{d['footer.wechat']}</p>
-          <p>{d['footer.weibo']}</p>
-          <p>{d['footer.twitter']}</p>
-          <p>{d['footer.github']}</p>
+          <div class="relative group" id="wechat-social">
+            <button
+              class="text-sm text-neutral-500 hover:text-neutral-900 transition-colors duration-200 cursor-pointer text-left group-[.open]:text-neutral-900"
+              onclick="this.closest('#wechat-social').classList.toggle('open')"
+            >
+              {d['footer.wechat']}
+            </button>
+            <div class="absolute bottom-full left-0 mb-2 p-3 bg-white border border-neutral-200 rounded-xl shadow-xl z-50 w-36
+                        opacity-0 invisible pointer-events-none transition-all duration-200
+                        group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto
+                        group-[.open]:opacity-100 group-[.open]:visible group-[.open]:pointer-events-auto">
+              <img
+                src={wechatQrSrc}
+                alt="微信公众号二维码"
+                class="w-28 h-28 mx-auto block"
+              />
+              <p class="text-xs text-center text-neutral-500 mt-1">扫码关注</p>
+            </div>
+          </div>
+          <a
+            href="https://github.com/chaihuo-makerspace/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200"
+          >
+            {d['footer.github']}
+          </a>
         </div>
       </div>
     </div>
