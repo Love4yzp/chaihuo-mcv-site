@@ -48,9 +48,6 @@ export const routeCities: RouteCity[] = [
       date: '2026.04.24 / 04.25',
       summary: '在广州科技中心举办展览；25 日延伸开展一场 AI 硬件编程工作坊。',
       summary_en: 'Exhibition at the Guangzhou Science Center; an AI hardware programming workshop followed on the 25th.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
     },
   },
   {
@@ -60,9 +57,6 @@ export const routeCities: RouteCity[] = [
       date: '2026.04.26',
       summary: '在阳江科技馆举办展览。',
       summary_en: 'Exhibition at the Yangjiang Science Museum.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
     },
   },
   {
@@ -84,9 +78,6 @@ export const routeCities: RouteCity[] = [
       date: '2026.04.29',
       summary: '在广西科技馆向教师展示车内 AI 交互硬件与机械臂，下午举办 AI 硬件工作坊。',
       summary_en: 'At the Guangxi Science & Technology Museum, demonstrated the on-board AI interactive hardware and robotic arm to teachers, followed by an AI hardware workshop in the afternoon.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
     },
   },
   {
@@ -108,17 +99,23 @@ export const routeCities: RouteCity[] = [
     label: '贵阳', label_en: 'Guiyang',
     lng: 106.713, lat: 26.578, visited: true, order: 6, anchor: true,
     event: {
-      date: '2026.05.05',
-      summary: '走进贵阳，与两位当地创客面对面，畅聊科创教育的一线观察与实践路径。',
-      summary_en: 'In Guiyang, sat down with two local makers for a candid exchange on STEM education — from on-the-ground observations to the paths they are forging.',
-      link: 'https://www.yuque.com/chaihuo-mcv/home',
-      linkLabel: '阅读现场记录',
-      linkLabel_en: 'Read field notes',
+      date: '2026.05.05–07',
+      summary: '5日与当地创客面对面，聊科创教育的一线观察；6日下午走进贵阳市第八中学，开展展示与工作坊；7日赴贵州师范学院与贵州大学展示与工作坊。',
+      summary_en: 'May 5: candid exchange with local makers on STEM education. May 6: exhibition and workshop at Guiyang No.8 Middle School. May 7: exhibition and workshop at Guizhou Normal University, then drove through the mountains to Bijie.',
+    },
+  },
+  {
+    label: '毕节', label_en: 'Bijie',
+    lng: 105.285, lat: 27.302, visited: true, order: 7, anchor: true,
+    event: {
+      date: '2026.05.08',
+      summary: '走近创客默，与他近距离交流学习，深入访谈，记录一位在地创客的实践路径与生长故事。',
+      summary_en: 'Up-close exchange and in-depth interviews with maker Mo — learning from his practice, documenting his story as a local creator, with on-location filming.',
     },
   },
   {
     label: '成都', label_en: 'Chengdu',
-    lng: 104.066, lat: 30.572, visited: false, order: 7, anchor: true,
+    lng: 104.066, lat: 30.572, visited: false, order: 8, anchor: true,
     event: {
       date: '2026.05.10',
       summary: '计划停靠成都；现场行程随当地科技馆与社区合作伙伴最终确认后更新。',
