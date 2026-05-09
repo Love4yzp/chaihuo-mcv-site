@@ -115,7 +115,7 @@ export const routeCities: RouteCity[] = [
   },
   {
     label: '成都', label_en: 'Chengdu',
-    lng: 104.066, lat: 30.572, visited: false, order: 8, anchor: true,
+    lng: 104.066, lat: 30.572, visited: true, order: 8, anchor: true,
     event: {
       date: '2026.05.10',
       summary: '计划停靠成都；现场行程随当地科技馆与社区合作伙伴最终确认后更新。',

@@ -37,5 +37,15 @@
     "bio": "内容创作者与传播策划，负责用影像、文字和社媒记录基地车的现场故事与创作瞬间。",
     "bio_en": "Content creator and communications planner, documenting the MCV's on-site stories and creative moments through visuals, writing, and social media.",
     "image": "/people/xiaomei.jpg"
+  },
+  {
+    "id": "bianca",
+    "name": "Bianca",
+    "name_en": "Bianca",
+    "role": "媒体担当",
+    "role_en": "Media Lead",
+    "bio": "内容创作者，用影像与文字记录基地车一路的故事与创作现场。",
+    "bio_en": "Content creator documenting the MCV's journey and creative moments through visuals and writing.",
+    "image": "/people/bianca.jpg"
   }
 ]

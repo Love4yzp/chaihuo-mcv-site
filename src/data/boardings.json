@@ -46,6 +46,22 @@
       "location": "阳江",
       "location_en": "Yangjiang"
     },
+    "disembarkedAt": {
+      "date": "2026-05-07",
+      "location": "贵阳",
+      "location_en": "Guiyang",
+      "handoffTo": "bianca"
+    }
+  },
+  {
+    "id": "b5",
+    "crewId": "bianca",
+    "role": "媒体担当",
+    "boardedAt": {
+      "date": "2026-05-11",
+      "location": "成都",
+      "location_en": "Chengdu"
+    },
     "disembarkedAt": null
   }
 ]

@@ -12,7 +12,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
 
-    'status.current': '当前状态：在路上 · 穿越广西',
+    'status.current': '当前状态：在路上 · {city}',
     'status.departure': '已于 4 月 22 日从深圳启程',
     'status.route': '途经 21 省 26 城',
 
@@ -72,7 +72,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
 
-    'status.current': 'Status: On the road · Crossing Guangxi',
+    'status.current': 'Status: On the road · {city}',
     'status.departure': 'Departed Shenzhen on April 22',
     'status.route': '21 provinces, 26 cities',
 
