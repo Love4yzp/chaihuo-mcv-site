@@ -19,6 +19,22 @@
       "location": "深圳",
       "location_en": "Shenzhen"
     },
+    "disembarkedAt": {
+      "date": "2026-05-12",
+      "location": "成都",
+      "location_en": "Chengdu",
+      "handoffTo": "haonan"
+    }
+  },
+  {
+    "id": "b6",
+    "crewId": "haonan",
+    "role": "技术担当",
+    "boardedAt": {
+      "date": "2026-05-12",
+      "location": "成都",
+      "location_en": "Chengdu"
+    },
     "disembarkedAt": null
   },
   {

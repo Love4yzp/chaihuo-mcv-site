@@ -20,6 +20,16 @@
     "image": "/people/spencer.jpg"
   },
   {
+    "id": "haonan",
+    "name": "张浩楠",
+    "name_en": "Zhang Haonan",
+    "role": "技术担当",
+    "role_en": "Tech Lead",
+    "bio": "负责基地车技术系统的搭建与运维，为沿途创作提供稳定的技术支撑。",
+    "bio_en": "Responsible for building and maintaining the MCV's technical systems, providing reliable support for on-site creation.",
+    "image": "/people/haonan.jpg"
+  },
+  {
     "id": "ray",
     "name": "Ray",
     "role": "媒体担当",
