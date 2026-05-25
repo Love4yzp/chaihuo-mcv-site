@@ -11,6 +11,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.watchVideo': '基地车视频',
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
+    'hero.aboutAction': '了解我们为什么开展这个项目',
 
     'status.current': '当前状态：在路上 · {city}',
     'status.departure': '已于 4 月 22 日从深圳启程',
@@ -72,6 +73,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.watchVideo': 'MCV Video',
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
+    'hero.aboutAction': 'Learn why we started this project',
 
     'status.current': 'Status: On the road · {city}',
     'status.departure': 'Departed Shenzhen on April 22',
