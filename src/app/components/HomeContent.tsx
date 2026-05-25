@@ -925,7 +925,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               </motion.a>
               <motion.a
                 href={localePath('/guide', locale)}
-                className="pointer-events-auto bg-brand text-brand-foreground px-8 py-4 rounded-full flex items-center gap-3 hover:bg-brand-hover transition-colors duration-200 cursor-pointer"
+                className="pointer-events-auto bg-white text-neutral-900 px-8 py-4 rounded-full flex items-center gap-3 hover:bg-neutral-100 hover:text-black transition-colors duration-200 cursor-pointer shadow-[0_10px_30px_rgba(255,255,255,0.06)] font-semibold"
                 {...buttonPress}
               >
                 <span>{t['hero.joinAction']}</span>
