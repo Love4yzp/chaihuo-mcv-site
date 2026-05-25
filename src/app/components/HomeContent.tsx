@@ -918,12 +918,12 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               {/* 了解我们 (About Us) */}
               <motion.a
                 href={localePath('/about', locale)}
-                className="pointer-events-auto border border-white/30 bg-black/10 backdrop-blur-sm text-white px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer group"
+                className="pointer-events-auto border border-white/20 bg-white/5 backdrop-blur-sm text-white px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer group"
                 whileHover={{ 
                   y: -4, 
                   scale: 1.02, 
                   backgroundColor: "rgba(255, 255, 255, 0.15)", 
-                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  borderColor: "rgba(255, 255, 255, 0.4)",
                   boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)" 
                 }}
                 whileTap={{ scale: 0.98 }}
@@ -936,13 +936,13 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               {/* 加入行动 (Join Action) */}
               <motion.a
                 href={localePath('/guide', locale)}
-                className="pointer-events-auto bg-white text-neutral-900 px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer font-semibold group"
+                className="pointer-events-auto border border-brand/35 bg-brand/10 backdrop-blur-md text-brand px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer font-semibold group shadow-[0_4px_20px_rgba(243,210,48,0.08)]"
                 whileHover={{ 
                   y: -4, 
                   scale: 1.02, 
-                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.35)", // Volumetric gold halo!
-                  backgroundColor: "#ffffff",
-                  color: "#000000"
+                  backgroundColor: "rgba(243, 210, 48, 0.2)", 
+                  borderColor: "rgba(243, 210, 48, 0.55)",
+                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.25)" 
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", damping: 20, stiffness: 300 }}
