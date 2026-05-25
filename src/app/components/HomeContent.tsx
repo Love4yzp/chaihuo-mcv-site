@@ -32,6 +32,7 @@ import {
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import RoleTimeline from './RoleTimeline';
+import AntigravityCard from './AntigravityCard';
 
 // ─── Types ───
 
@@ -273,9 +274,36 @@ function ChinaRouteMap({
   const mapRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(mapRef, { once: true, amount: 0.3 });
 
+  const [rotate, setRotate] = useState({ x: 20, y: -8 }); // Isometric baseline tilt
+  const [isHovered, setIsHovered] = useState(false);
+  const [glarePos, setGlarePos] = useState({ x: 0, y: 0 });
+
   const projected = useMemo(() => projectCities(cities), [cities]);
   const labelPositions = useMemo(() => placeLabels(projected), [projected]);
   const segments = useMemo(() => buildCityLines(projected), [projected]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mapRef.current) return;
+    const box = mapRef.current.getBoundingClientRect();
+    const x = (e.clientX - box.left - box.width / 2) / (box.width / 2);
+    const y = (e.clientY - box.top - box.height / 2) / (box.height / 2);
+    
+    // Smooth 3D tilt tracking layered on top of baseline
+    setRotate({
+      x: 20 - y * 8, // tilt pitch range
+      y: -8 + x * 8, // tilt yaw range
+    });
+
+    setGlarePos({
+      x: e.clientX - box.left,
+      y: e.clientY - box.top,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setRotate({ x: 20, y: -8 }); // Reset smoothly to baseline
+  };
 
   // Animation budget: cities first (0–1.2s), horse outline fades in after (1.0–2.5s)
   const cityDelay = (order: number, visited: boolean) =>
@@ -284,313 +312,357 @@ function ChinaRouteMap({
   return (
     <div
       ref={mapRef}
-      className="relative w-full h-full bg-surface overflow-hidden rounded-md"
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{ perspective: 1400, transformStyle: 'preserve-3d' }}
+      className="relative w-full h-full bg-gradient-to-b from-neutral-50/50 to-neutral-100/90 border border-neutral-300/40 overflow-hidden rounded-2xl shadow-[inset_0_4px_30px_rgba(0,0,0,0.02),0_15px_40px_rgba(0,0,0,0.03)] p-6 transition-all duration-300"
     >
-      <svg
-        viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
-        className="w-full h-full"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* Background Holographic Tech Grid Layer */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.025] transition-opacity duration-500"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, transparent 1px)',
+          backgroundSize: '32px 32px',
+          transform: 'rotateX(55deg) scale(2.2) translateY(-10%)',
+        }}
+      />
+
+      {/* Dynamic Hover Glow Backlight */}
+      <div 
+        className="absolute inset-0 pointer-events-none transition-opacity duration-700 select-none"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(circle 380px at ${glarePos.x}px ${glarePos.y}px, rgba(243,210,48,0.1) 0%, transparent 80%)`,
+        }}
+      />
+
+      {/* Tilted Holographic SandBox Map Board */}
+      <motion.div
+        style={{
+          transformStyle: 'preserve-3d',
+        }}
+        animate={{
+          transform: `rotateX(${rotate.x}deg) rotateY(${rotate.y}deg) rotateZ(2deg) translateZ(10px)`,
+        }}
+        transition={{
+          type: "spring",
+          damping: 24,
+          stiffness: 110,
+          mass: 0.5,
+        }}
+        className="w-full h-full relative"
       >
-        {/* 省份轮廓 */}
-        <g>
-          {geoData.features.map((feature) => {
-            const raw = pathGenerator(feature);
-            if (!raw) return null;
-            const parts = raw.split(/(?=M)/);
-            const d = parts.filter((p) => {
-              const firstCoord = p.match(/^M([-\d.]+),([-\d.]+)/);
-              if (!firstCoord) return false;
-              const x = parseFloat(firstCoord[1]);
-              const y = parseFloat(firstCoord[2]);
-              return x > -100 && x < MAP_WIDTH + 100 && y > -100 && y < MAP_HEIGHT + 100;
-            }).join('');
-            if (!d) return null;
+        <svg
+          viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+          className="w-full h-full drop-shadow-[0_12px_35px_rgba(0,0,0,0.04)]"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* 省份轮廓 */}
+          <g>
+            {geoData.features.map((feature) => {
+              const raw = pathGenerator(feature);
+              if (!raw) return null;
+              const parts = raw.split(/(?=M)/);
+              const d = parts.filter((p) => {
+                const firstCoord = p.match(/^M([-\d.]+),([-\d.]+)/);
+                if (!firstCoord) return false;
+                const x = parseFloat(firstCoord[1]);
+                const y = parseFloat(firstCoord[2]);
+                return x > -100 && x < MAP_WIDTH + 100 && y > -100 && y < MAP_HEIGHT + 100;
+              }).join('');
+              if (!d) return null;
+              return (
+                <path
+                  key={feature.properties?.adcode ?? feature.properties?.name}
+                  d={d}
+                  fill="#f2ede4"
+                  stroke="#ded5be"
+                  strokeWidth="0.85"
+                  className="transition-colors duration-300 hover:fill-[#eae4d8]"
+                />
+              );
+            })}
+          </g>
+
+          {/* 层一（底）：马形路线 — 城市连线之后浮现，作为水印
+              transform 同步跟随 viewBox 宽度（+50）和投影下沉（+50） */}
+          <motion.path
+            d={horseRouteD}
+            transform="translate(50, 50)"
+            stroke="#f3d230"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="rgba(243,210,48,0.04)"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 0.25 } : {}}
+            transition={{ duration: 1.6, ease: 'easeOut', delay: 1.0 }}
+            style={{ pointerEvents: 'none' }}
+          />
+
+          {/* 层二：城市间连线 — 已访问优先动 */}
+          {segments.map((seg, i) => {
+            const fromPt: [number, number] = [seg.from.cx, seg.from.cy];
+            const toPt: [number, number] = [seg.to.cx, seg.to.cy];
+
+            const midX = (fromPt[0] + toPt[0]) / 2;
+            const midY = (fromPt[1] + toPt[1]) / 2;
+            const dx = toPt[0] - fromPt[0];
+            const dy = toPt[1] - fromPt[1];
+            const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
+            const cpX = midX + (dy > 0 ? -offset : offset) * 0.5;
+            const cpY = midY + (dx > 0 ? offset : -offset) * 0.5;
+
+            const d = `M ${fromPt[0]} ${fromPt[1]} Q ${cpX} ${cpY} ${toPt[0]} ${toPt[1]}`;
+            // Visited segments draw immediately; planned segments after
+            const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
+
+            // Direction arrow on visited segments — placed at the true
+            // mid-point of the quadratic Bezier (t=0.5), with the chord
+            // direction. Skipped on very short segments to avoid colliding
+            // with the city dots.
+            let arrow: ReactElement | null = null;
+            const segLen = Math.hypot(dx, dy);
+            if (seg.visited && segLen > 26) {
+              const ax = 0.25 * fromPt[0] + 0.5 * cpX + 0.25 * toPt[0];
+              const ay = 0.25 * fromPt[1] + 0.5 * cpY + 0.25 * toPt[1];
+              const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+              const s = 3.2;
+              arrow = (
+                <motion.path
+                  key={`arrow-${i}`}
+                  d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
+                  transform={`translate(${ax} ${ay}) rotate(${angle})`}
+                  fill="#1f2937"
+                  stroke="#ece8df"
+                  strokeWidth={1}
+                  strokeLinejoin="round"
+                  initial={{ opacity: 0, scale: 0.3 }}
+                  animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.3, delay: segDelay + 0.45, ease: 'easeOut' }}
+                />
+              );
+            }
+
             return (
-              <path
-                key={feature.properties?.adcode ?? feature.properties?.name}
-                d={d}
-                fill="#ece8df"
-                stroke="#c4b89c"
-                strokeWidth="0.8"
-              />
+              <Fragment key={`seg-${i}`}>
+                <motion.path
+                  d={d}
+                  stroke={seg.visited ? '#f3d230' : '#b8a87f'}
+                  strokeWidth={seg.visited ? 3.0 : 1.4}
+                  strokeLinecap="round"
+                  strokeDasharray={seg.visited ? 'none' : '4 5'}
+                  fill="none"
+                  opacity={seg.visited ? 1 : 0.45}
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
+                  transition={{
+                    pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
+                    opacity: { duration: 0.2, delay: segDelay },
+                  }}
+                />
+                {arrow}
+              </Fragment>
             );
           })}
-        </g>
 
-        {/* 层一（底）：马形路线 — 城市连线之后浮现，作为水印
-            transform 同步跟随 viewBox 宽度（+50）和投影下沉（+50） */}
-        <motion.path
-          d={horseRouteD}
-          transform="translate(50, 50)"
-          stroke="#f3d230"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="rgba(243,210,48,0.04)"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 0.22 } : {}}
-          transition={{ duration: 1.6, ease: 'easeOut', delay: 1.0 }}
-          style={{ pointerEvents: 'none' }}
-        />
+          {/* 城市节点 + 标签 */}
+          {projected.map((city) => {
+            const { cx, cy, isLatest, fontSize: labelFontSize } = city;
+            const delay = cityDelay(city.order, city.visited);
+            const isSelected = selectedKey === city.label;
+            // Current location is rendered as a target/pin: a slightly larger
+            // gold disc with a small dark inner core, keeping the warm palette
+            // intact while standing out from the cluster of visited dots.
+            const r = isLatest ? 6.0 : city.isOrigin ? 5.5 : city.visited ? 4.5 : 3.5;
+            // Labels render only when placement found a non-colliding spot.
+            // Planned non-anchors stay dot-only and expose their name via tooltip.
+            const placement = labelPositions.get(city.label);
+            const showLabel = city.showLabel && placement != null;
+            const [labelDx, labelDy] = placement ?? [0, 0];
 
-        {/* 层二：城市间连线 — 已访问优先动 */}
-        {segments.map((seg, i) => {
-          const fromPt: [number, number] = [seg.from.cx, seg.from.cy];
-          const toPt: [number, number] = [seg.to.cx, seg.to.cy];
+            return (
+              <g key={city.label}>
+                {/* 当前所在城市的呼吸圈 */}
+                {isLatest && (
+                  <motion.circle
+                    cx={cx}
+                    cy={cy}
+                    r={12}
+                    fill="#f3d230"
+                    opacity={0}
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: [0, 0.4, 0], scale: [1, 1.7, 1] } : {}}
+                    transition={{
+                      duration: 2.2,
+                      delay: delay + 0.5,
+                      repeat: Infinity,
+                      repeatDelay: 0.4,
+                    }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                  />
+                )}
 
-          const midX = (fromPt[0] + toPt[0]) / 2;
-          const midY = (fromPt[1] + toPt[1]) / 2;
-          const dx = toPt[0] - fromPt[0];
-          const dy = toPt[1] - fromPt[1];
-          const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
-          const cpX = midX + (dy > 0 ? -offset : offset) * 0.5;
-          const cpY = midY + (dx > 0 ? offset : -offset) * 0.5;
+                {/* 选中外圈（点击反馈）— 仅当用户主动选中"非当前所在"的城市时显示，
+                    避免和 latest 的呼吸圈/pin 视觉叠加 */}
+                {isSelected && !isLatest && (
+                  <motion.circle
+                    cx={cx}
+                    cy={cy}
+                    r={12}
+                    fill="none"
+                    stroke="#3a3328"
+                    strokeWidth="1.5"
+                    initial={{ opacity: 0, scale: 0.6 }}
+                    animate={{ opacity: 0.85, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.6 }}
+                    transition={{ type: "spring", damping: 18, stiffness: 260 }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                  />
+                )}
 
-          const d = `M ${fromPt[0]} ${fromPt[1]} Q ${cpX} ${cpY} ${toPt[0]} ${toPt[1]}`;
-          // Visited segments draw immediately; planned segments after
-          const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
+                {/* 出发点外圈 */}
+                {city.isOrigin && (
+                  <motion.circle
+                    cx={cx}
+                    cy={cy}
+                    r={13}
+                    fill="none"
+                    stroke="#f3d230"
+                    strokeWidth="1.8"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={isInView ? { opacity: 0.55, scale: 1 } : {}}
+                    transition={{ type: "spring", damping: 15, delay }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                  />
+                )}
 
-          // Direction arrow on visited segments — placed at the true
-          // mid-point of the quadratic Bezier (t=0.5), with the chord
-          // direction. Skipped on very short segments to avoid colliding
-          // with the city dots.
-          let arrow: ReactElement | null = null;
-          const segLen = Math.hypot(dx, dy);
-          if (seg.visited && segLen > 26) {
-            const ax = 0.25 * fromPt[0] + 0.5 * cpX + 0.25 * toPt[0];
-            const ay = 0.25 * fromPt[1] + 0.5 * cpY + 0.25 * toPt[1];
-            const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-            const s = 3.2;
-            arrow = (
-              <motion.path
-                key={`arrow-${i}`}
-                d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
-                transform={`translate(${ax} ${ay}) rotate(${angle})`}
-                fill="#1f2937"
-                stroke="#ece8df"
-                strokeWidth={1}
-                strokeLinejoin="round"
-                initial={{ opacity: 0, scale: 0.3 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.3, delay: segDelay + 0.45, ease: 'easeOut' }}
-              />
-            );
-          }
-
-          return (
-            <Fragment key={`seg-${i}`}>
-              <motion.path
-                d={d}
-                stroke={seg.visited ? '#f3d230' : '#b8a87f'}
-                strokeWidth={seg.visited ? 2.8 : 1.4}
-                strokeLinecap="round"
-                strokeDasharray={seg.visited ? 'none' : '4 5'}
-                fill="none"
-                opacity={seg.visited ? 1 : 0.45}
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
-                transition={{
-                  pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
-                  opacity: { duration: 0.2, delay: segDelay },
-                }}
-              />
-              {arrow}
-            </Fragment>
-          );
-        })}
-
-        {/* 城市节点 + 标签 */}
-        {projected.map((city) => {
-          const { cx, cy, isLatest, fontSize: labelFontSize } = city;
-          const delay = cityDelay(city.order, city.visited);
-          const isSelected = selectedKey === city.label;
-          // Current location is rendered as a target/pin: a slightly larger
-          // gold disc with a small dark inner core, keeping the warm palette
-          // intact while standing out from the cluster of visited dots.
-          const r = isLatest ? 5.2 : city.isOrigin ? 5 : city.visited ? 4 : 3;
-          // Labels render only when placement found a non-colliding spot.
-          // Planned non-anchors stay dot-only and expose their name via tooltip.
-          const placement = labelPositions.get(city.label);
-          const showLabel = city.showLabel && placement != null;
-          const [labelDx, labelDy] = placement ?? [0, 0];
-
-          return (
-            <g key={city.label}>
-              {/* 当前所在城市的呼吸圈 */}
-              {isLatest && (
+                {/* 城市圆点 */}
                 <motion.circle
                   cx={cx}
                   cy={cy}
-                  r={11}
-                  fill="#f3d230"
-                  opacity={0}
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: [0, 0.35, 0], scale: [1, 1.6, 1] } : {}}
-                  transition={{
-                    duration: 2.2,
-                    delay: delay + 0.5,
-                    repeat: Infinity,
-                    repeatDelay: 0.4,
-                  }}
-                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
-                />
-              )}
-
-              {/* 选中外圈（点击反馈）— 仅当用户主动选中"非当前所在"的城市时显示，
-                  避免和 latest 的呼吸圈/pin 视觉叠加 */}
-              {isSelected && !isLatest && (
-                <motion.circle
-                  cx={cx}
-                  cy={cy}
-                  r={11}
-                  fill="none"
-                  stroke="#3a3328"
-                  strokeWidth="1.2"
-                  initial={{ opacity: 0, scale: 0.6 }}
-                  animate={{ opacity: 0.7, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.6 }}
-                  transition={{ type: "spring", damping: 18, stiffness: 260 }}
-                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
-                />
-              )}
-
-              {/* 出发点外圈 */}
-              {city.isOrigin && (
-                <motion.circle
-                  cx={cx}
-                  cy={cy}
-                  r={12}
-                  fill="none"
-                  stroke="#f3d230"
-                  strokeWidth="1.5"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={isInView ? { opacity: 0.45, scale: 1 } : {}}
-                  transition={{ type: "spring", damping: 15, delay }}
-                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
-                />
-              )}
-
-              {/* 城市圆点 */}
-              <motion.circle
-                cx={cx}
-                cy={cy}
-                r={r}
-                fill={city.visited ? '#f3d230' : 'white'}
-                stroke={city.visited ? 'white' : '#9c8c66'}
-                strokeWidth={city.visited ? 1.5 : 1}
-                initial={{ scale: 0 }}
-                animate={isInView ? { scale: 1 } : { scale: 0 }}
-                transition={{
-                  type: "spring",
-                  damping: 15,
-                  stiffness: 220,
-                  delay,
-                }}
-                style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
-              />
-
-              {/* 当前位置内核 — 靶心 pin，金色外圈 + 深棕内点 */}
-              {isLatest && (
-                <motion.circle
-                  cx={cx}
-                  cy={cy}
-                  r={1.8}
-                  fill="#3a2f0e"
+                  r={r}
+                  fill={city.visited ? '#f3d230' : 'white'}
+                  stroke={city.visited ? 'white' : '#9c8c66'}
+                  strokeWidth={city.visited ? 1.8 : 1.2}
                   initial={{ scale: 0 }}
                   animate={isInView ? { scale: 1 } : { scale: 0 }}
                   transition={{
                     type: "spring",
-                    damping: 14,
-                    stiffness: 260,
-                    delay: delay + 0.12,
+                    damping: 15,
+                    stiffness: 220,
+                    delay,
                   }}
+                  whileHover={{ scale: 1.35 }}
                   style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                 />
-              )}
 
-              {/* 城市名称 — 白色描边防糊 */}
-              {showLabel && (
-                <motion.text
-                  x={cx + labelDx}
-                  y={cy + labelDy}
-                  fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
-                  fontSize={labelFontSize}
-                  fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{ duration: 0.3, delay: delay + 0.15 }}
-                  style={{
-                    paintOrder: 'stroke',
-                    stroke: '#ece8df',
-                    strokeWidth: 3.5,
-                    strokeLinejoin: 'round',
-                    pointerEvents: 'none',
-                    userSelect: 'none',
-                  }}
+                {/* 当前位置内核 — 靶心 pin，金色外圈 + 深棕内点 */}
+                {isLatest && (
+                  <motion.circle
+                    cx={cx}
+                    cy={cy}
+                    r={2.2}
+                    fill="#3a2f0e"
+                    initial={{ scale: 0 }}
+                    animate={isInView ? { scale: 1 } : { scale: 0 }}
+                    transition={{
+                      type: "spring",
+                      damping: 14,
+                      stiffness: 260,
+                      delay: delay + 0.12,
+                    }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                  />
+                )}
+
+                {/* 城市名称 — 白色描边防糊 */}
+                {showLabel && (
+                  <motion.text
+                    x={cx + labelDx}
+                    y={cy + labelDy}
+                    fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
+                    fontSize={labelFontSize}
+                    fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                    transition={{ duration: 0.3, delay: delay + 0.15 }}
+                    style={{
+                      paintOrder: 'stroke',
+                      stroke: '#f2ede4',
+                      strokeWidth: 3.5,
+                      strokeLinejoin: 'round',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {city.label}
+                  </motion.text>
+                )}
+
+                {/* 出发标签 */}
+                {city.isOrigin && (
+                  <motion.text
+                    x={cx + labelDx}
+                    y={cy + labelDy + 14}
+                    fill="#9b7f10"
+                    fontSize="9"
+                    fontWeight={700}
+                    initial={{ opacity: 0 }}
+                    animate={isInView ? { opacity: 1 } : {}}
+                    transition={{ duration: 0.3, delay: delay + 0.3 }}
+                    style={{
+                      paintOrder: 'stroke',
+                      stroke: '#f2ede4',
+                      strokeWidth: 3,
+                      strokeLinejoin: 'round',
+                      pointerEvents: 'none',
+                      userSelect: 'none',
+                    }}
+                  >
+                    {t['map.origin']}
+                  </motion.text>
+                )}
+
+                {/* 扩大命中区：所有城市都有 tooltip；visited 可点击切换面板 */}
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r={city.visited ? 18 : 12}
+                  fill="transparent"
+                  className={city.visited ? 'cursor-pointer' : 'cursor-help'}
+                  onClick={city.visited ? () => onSelect(city.label) : undefined}
                 >
-                  {city.label}
-                </motion.text>
-              )}
-
-              {/* 出发标签 */}
-              {city.isOrigin && (
-                <motion.text
-                  x={cx + labelDx}
-                  y={cy + labelDy + 14}
-                  fill="#9b7f10"
-                  fontSize="9"
-                  fontWeight={700}
-                  initial={{ opacity: 0 }}
-                  animate={isInView ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.3, delay: delay + 0.3 }}
-                  style={{
-                    paintOrder: 'stroke',
-                    stroke: '#ece8df',
-                    strokeWidth: 3,
-                    strokeLinejoin: 'round',
-                    pointerEvents: 'none',
-                    userSelect: 'none',
-                  }}
-                >
-                  {t['map.origin']}
-                </motion.text>
-              )}
-
-              {/* 扩大命中区：所有城市都有 tooltip；visited 可点击切换面板 */}
-              <circle
-                cx={cx}
-                cy={cy}
-                r={city.visited ? 16 : 10}
-                fill="transparent"
-                className={city.visited ? 'cursor-pointer' : 'cursor-help'}
-                onClick={city.visited ? () => onSelect(city.label) : undefined}
-              >
-                <title>{`${city.label}${city.event?.date ? ` · ${city.event.date}` : ''}`}</title>
-              </circle>
-            </g>
-          );
-        })}
-      </svg>
+                  <title>{`${city.label}${city.event?.date ? ` · ${city.event.date}` : ''}`}</title>
+                </circle>
+              </g>
+            );
+          })}
+        </svg>
+      </motion.div>
 
       {/* 图例 */}
-      <div className="absolute bottom-3 left-3 bg-white/92 backdrop-blur-sm px-3 py-2 rounded-md text-xs text-neutral-600 flex items-center gap-4 shadow-sm">
-        <span className="flex items-center gap-1.5">
+      <div className="absolute bottom-4 left-4 bg-white/85 backdrop-blur-md px-3.5 py-2.5 rounded-xl text-xs text-neutral-600 flex items-center gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-white/40">
+        <span className="flex items-center gap-1.5 font-medium">
           <span className="w-2.5 h-2.5 rounded-full bg-brand" />
           {t['map.visited']}
         </span>
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-1.5 font-medium">
           <span className="w-2.5 h-2.5 rounded-full bg-white border border-neutral-400" />
           {t['map.planned']}
         </span>
       </div>
+
       {/* 马年标注 */}
-      <div className="absolute top-3 right-3 bg-white/92 backdrop-blur-sm px-3 py-1.5 rounded-md text-xs text-neutral-500 select-none shadow-sm">
+      <div className="absolute top-4 right-4 bg-white/85 backdrop-blur-md px-3.5 py-2 rounded-xl text-xs text-neutral-500 font-medium select-none shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-white/40">
         {t['map.horseYear']}
       </div>
+
       {/* 提示：点击查看 */}
-      <div className="absolute top-3 left-3 bg-neutral-900/85 text-white px-3 py-1.5 rounded-md text-xs select-none flex items-center gap-1.5 shadow-sm">
-        <MapPin className="w-3 h-3" />
+      <div className="absolute top-4 left-4 bg-neutral-900/90 backdrop-blur-sm text-white px-3.5 py-2 rounded-xl text-xs font-semibold select-none flex items-center gap-1.5 shadow-lg border border-white/10">
+        <MapPin className="w-3.5 h-3.5 text-brand animate-bounce" />
         {t['journal.tapHint']}
       </div>
     </div>
@@ -615,12 +687,12 @@ function JournalPanel({
 }) {
   if (!city) {
     return (
-      <div className={`flex flex-col items-center justify-center text-center px-6 py-12 bg-white border border-neutral-200 rounded-md ${hero ? 'min-h-[200px]' : 'min-h-[320px] h-full'}`}>
+      <AntigravityCard className={`flex flex-col items-center justify-center text-center px-6 py-12 ${hero ? 'min-h-[200px]' : 'min-h-[320px] h-full'}`}>
         <MapPin className="w-6 h-6 text-neutral-300 mb-3" />
         <p className="text-sm text-neutral-500 max-w-[36ch] leading-relaxed">
           {t['journal.empty']}
         </p>
-      </div>
+      </AntigravityCard>
     );
   }
 
@@ -632,18 +704,19 @@ function JournalPanel({
 
   return (
     <AnimatePresence mode="wait">
-      <motion.article
-        key={city.label}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -6 }}
-        transition={{ duration: 0.25, ease: 'easeOut' }}
-        className={`bg-white border border-neutral-200 rounded-md flex flex-col ${
-          hero
-            ? 'p-6 md:p-8 md:flex-row md:gap-10 md:items-start'
-            : 'p-6 md:p-7 h-full min-h-[320px]'
-        }`}
-      >
+      <div key={city.label} className="w-full">
+        <AntigravityCard className={`w-full ${hero ? 'p-6 md:p-8' : 'p-6 md:p-7'}`}>
+          <motion.article
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className={`w-full bg-transparent flex flex-col ${
+              hero
+                ? 'md:flex-row md:gap-10 md:items-start'
+                : 'h-full min-h-[320px]'
+            }`}
+          >
         {/* 顶部：进程标签 + 城市名 */}
         <header className={hero ? 'md:w-[34%] md:flex-shrink-0 mb-5 md:mb-0' : 'mb-5'}>
           <div className="flex items-center gap-2 mb-3 flex-wrap">
@@ -720,7 +793,9 @@ function JournalPanel({
           )}
         </div>
       </motion.article>
-    </AnimatePresence>
+    </AntigravityCard>
+   </div>
+  </AnimatePresence>
   );
 }
 
@@ -875,6 +950,14 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
                   </motion.div>
                 )}
               </div>
+              <motion.a
+                href={localePath('/about', locale)}
+                className="pointer-events-auto border border-white/20 backdrop-blur-md bg-white/10 text-white px-8 py-4 rounded-full flex items-center gap-3 hover:bg-white/20 hover:border-white/30 transition-all duration-300 cursor-pointer shadow-[0_4px_30px_rgba(0,0,0,0.1)] group"
+                {...buttonPress}
+              >
+                <span>{t['hero.aboutAction']}</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </motion.a>
             </motion.div>
           </motion.div>
         </div>

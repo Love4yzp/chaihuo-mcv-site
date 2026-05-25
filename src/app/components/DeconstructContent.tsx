@@ -109,8 +109,6 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             ))}
           </motion.div>
 
-
-
         </div>
       </section>
 
