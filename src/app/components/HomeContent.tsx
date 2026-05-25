@@ -14,7 +14,7 @@ const Slider = (
 ) as typeof ReactSlick;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Play, ChevronDown, ArrowUpRight, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ArrowUpRight, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import chinaGeoJson from "@/data/china-provinces.json";
@@ -800,8 +800,6 @@ function JournalPanel({
 }
 
 export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
-  const [comingSoonTip, setComingSoonTip] = useState(false);
-
   // Localized cities for current locale
   const localizedCities = useMemo(
     () => routeCities.map(c => localizeCity(c, locale)),
@@ -873,11 +871,6 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     nextArrow: <SliderNextArrow />,
   };
 
-  const handleComingSoon = useCallback(() => {
-    setComingSoonTip(true);
-    setTimeout(() => setComingSoonTip(false), 2500);
-  }, []);
-
   return (
     <div className="min-h-screen">
       {/* Hero Banner */}
@@ -923,40 +916,20 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
             </motion.p>
             <motion.div variants={fadeLeft} transition={springTransition} className="flex flex-wrap gap-4">
               <motion.a
+                href={localePath('/about', locale)}
+                className="pointer-events-auto border border-white/30 bg-transparent text-white px-8 py-4 rounded-full flex items-center gap-2 hover:bg-white/10 hover:border-white/50 transition-all duration-300 cursor-pointer group"
+                {...buttonPress}
+              >
+                <span>{t['hero.aboutAction']}</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+              </motion.a>
+              <motion.a
                 href={localePath('/guide', locale)}
                 className="pointer-events-auto bg-brand text-brand-foreground px-8 py-4 rounded-full flex items-center gap-3 hover:bg-brand-hover transition-colors duration-200 cursor-pointer"
                 {...buttonPress}
               >
                 <span>{t['hero.joinAction']}</span>
                 <ChevronDown className="w-4 h-4 -rotate-90" />
-              </motion.a>
-              <div className="relative">
-                <motion.button
-                  onClick={handleComingSoon}
-                  className="pointer-events-auto border-2 border-white/60 text-white px-8 py-4 rounded-full flex items-center gap-3 hover:bg-white/10 transition-colors duration-200 cursor-pointer"
-                  {...buttonPress}
-                >
-                  <Play className="w-5 h-5" />
-                  <span>{t['hero.watchVideo']}</span>
-                </motion.button>
-                {comingSoonTip && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute left-1/2 -translate-x-1/2 top-full mt-3 whitespace-nowrap bg-neutral-900/95 text-white text-sm px-4 py-2 rounded-lg shadow-lg backdrop-blur-sm"
-                  >
-                    {t['hero.comingSoon']}
-                  </motion.div>
-                )}
-              </div>
-              <motion.a
-                href={localePath('/about', locale)}
-                className="pointer-events-auto border border-white/10 bg-transparent text-white/85 hover:text-white px-6 py-4 rounded-full flex items-center gap-2 hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer group"
-                {...buttonPress}
-              >
-                <span>{t['hero.aboutAction']}</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </motion.a>
             </motion.div>
           </motion.div>
