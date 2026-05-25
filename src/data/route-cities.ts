@@ -5,6 +5,7 @@ export interface RouteCityEvent {
   link?: string;
   linkLabel?: string;
   linkLabel_en?: string;
+  localSlug?: string;
 }
 
 export interface RouteCity {
@@ -38,6 +39,7 @@ export const routeCities: RouteCity[] = [
       link: 'https://www.yuque.com/chaihuo-mcv/home',
       linkLabel: '查看出发记',
       linkLabel_en: 'Read departure log',
+      localSlug: 'village-teacher-interview',
     },
   },
   // ── 已到达 ──

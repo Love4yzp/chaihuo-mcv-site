@@ -603,12 +603,14 @@ function JournalPanel({
   totalLegs,
   isLatest,
   t,
+  locale = 'zh',
   hero = false,
 }: {
   city: RouteCity | null;
   totalLegs: number;
   isLatest: boolean;
   t: Record<string, string>;
+  locale?: Locale;
   hero?: boolean;
 }) {
   if (!city) {
@@ -681,17 +683,30 @@ function JournalPanel({
                   {city.event.summary}
                 </p>
               </div>
-              {city.event.link && (
-                <a
-                  href={city.event.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-6 inline-flex items-center gap-1.5 text-sm text-neutral-900 font-medium border-b border-neutral-900 pb-0.5 self-start hover:text-brand hover:border-brand transition-colors duration-200 cursor-pointer"
-                >
-                  {city.event.linkLabel ?? city.event.link}
-                  <ArrowUpRight className="w-3.5 h-3.5" />
-                </a>
-              )}
+              <div className="mt-6 flex flex-wrap gap-4 items-center">
+                {city.event.localSlug && (
+                  <a
+                    href={localePath('/documentation/' + city.event.localSlug, locale)}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold bg-brand text-brand-foreground hover:bg-brand-hover px-5 py-2.5 rounded-full transition-all duration-200 cursor-pointer shadow-sm"
+                  >
+                    <span>{t['journal.readLocal'] || '阅读深度纪实'}</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {city.event.link && (
+                  <a
+                    href={city.event.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center gap-1.5 text-sm font-medium border-b pb-0.5 hover:text-brand hover:border-brand transition-colors duration-200 cursor-pointer ${
+                      city.event.localSlug ? 'text-neutral-500 hover:text-neutral-900 border-neutral-300' : 'text-neutral-900 border-neutral-900'
+                    }`}
+                  >
+                    {city.event.linkLabel ?? city.event.link}
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
             </>
           ) : (
             <div className="flex-1 flex flex-col gap-3">
@@ -942,6 +957,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               totalLegs={sortedCities.length - 1}
               isLatest={selectedCity?.label === lastVisited?.label}
               t={t}
+              locale={locale}
               hero
             />
           </motion.div>

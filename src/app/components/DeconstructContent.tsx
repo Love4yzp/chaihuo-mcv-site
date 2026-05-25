@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'motion/react';
 import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
 import type { Locale } from '@/i18n/index';
@@ -107,6 +108,8 @@ export default function DeconstructContent({ notes, equipment, companion, locale
               </motion.div>
             ))}
           </motion.div>
+
+
 
         </div>
       </section>
