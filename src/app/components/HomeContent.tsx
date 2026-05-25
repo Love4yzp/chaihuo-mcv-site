@@ -891,7 +891,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
         {/* Hero 内容 */}
         <div className="absolute inset-0 flex flex-col justify-center pointer-events-none px-6 md:px-[12%] lg:px-[16%]">
           <motion.div
-            className="max-w-2xl"
+            className="max-w-2xl pointer-events-auto"
             variants={stagger(0.2)}
             initial="hidden"
             animate="visible"
