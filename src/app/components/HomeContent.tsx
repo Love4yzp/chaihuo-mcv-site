@@ -915,21 +915,40 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               {t['hero.body']}
             </motion.p>
             <motion.div variants={fadeLeft} transition={springTransition} className="flex flex-wrap gap-4">
+              {/* 了解我们 (About Us) */}
               <motion.a
                 href={localePath('/about', locale)}
-                className="pointer-events-auto border border-white/30 bg-transparent text-white px-8 py-4 rounded-full flex items-center gap-2 hover:bg-white/10 hover:border-white/50 transition-all duration-300 cursor-pointer group"
-                {...buttonPress}
+                className="pointer-events-auto border border-white/30 bg-black/10 backdrop-blur-sm text-white px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer group"
+                whileHover={{ 
+                  y: -4, 
+                  scale: 1.02, 
+                  backgroundColor: "rgba(255, 255, 255, 0.15)", 
+                  borderColor: "rgba(255, 255, 255, 0.5)",
+                  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)" 
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
               >
                 <span>{t['hero.aboutAction']}</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
               </motion.a>
+
+              {/* 加入行动 (Join Action) */}
               <motion.a
                 href={localePath('/guide', locale)}
-                className="pointer-events-auto bg-white text-neutral-900 px-8 py-4 rounded-full flex items-center gap-3 hover:bg-neutral-100 hover:text-black transition-colors duration-200 cursor-pointer shadow-[0_10px_30px_rgba(255,255,255,0.06)] font-semibold"
-                {...buttonPress}
+                className="pointer-events-auto bg-white text-neutral-900 px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer font-semibold group"
+                whileHover={{ 
+                  y: -4, 
+                  scale: 1.02, 
+                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.35)", // Volumetric gold halo!
+                  backgroundColor: "#ffffff",
+                  color: "#000000"
+                }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
               >
                 <span>{t['hero.joinAction']}</span>
-                <ChevronDown className="w-4 h-4 -rotate-90" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
               </motion.a>
             </motion.div>
           </motion.div>
