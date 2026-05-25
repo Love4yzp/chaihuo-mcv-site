@@ -125,7 +125,6 @@ export default function DocumentationContent({ docs, locale = 'zh', t, categorie
           <div className="md:hidden absolute left-6 top-0 bottom-0 w-px bg-neutral-300" />
 
           <motion.div
-            key={activeCategory}
             variants={stagger(0.15)}
             initial="hidden"
             animate="visible"
@@ -137,6 +136,7 @@ export default function DocumentationContent({ docs, locale = 'zh', t, categorie
               return (
                 <motion.div
                   key={entry.id}
+                  layout
                   variants={fadeUp}
                   transition={springTransition}
                   className="relative"

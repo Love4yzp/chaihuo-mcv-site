@@ -36,6 +36,33 @@ const CATEGORY_COLORS: Record<string, string> = {
 ---
 
 <BaseLayout title={title}>
+  <div id="reading-progress" class="fixed top-0 left-0 w-0 h-[3px] bg-brand z-50 transition-all duration-75"></div>
+
+  <script>
+    const updateProgress = () => {
+      const progress = document.getElementById('reading-progress');
+      if (!progress) return;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      progress.style.width = `${pct}%`;
+    };
+
+    const setupListeners = () => {
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress, { passive: true });
+      updateProgress();
+    };
+
+    // Works with Astro view transitions
+    document.addEventListener('astro:page-load', setupListeners);
+    // Cleanup to prevent memory leaks when page unmounts
+    document.addEventListener('astro:before-preparation', () => {
+      window.removeEventListener('scroll', updateProgress);
+      window.removeEventListener('resize', updateProgress);
+    });
+  </script>
+
   <article class="bg-surface min-h-screen">
 
     {/* 返回导航 */}
@@ -94,6 +121,7 @@ const CATEGORY_COLORS: Record<string, string> = {
         prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-neutral-200 prose-h2:pb-2
         prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
         prose-p:text-neutral-600 prose-p:leading-[1.8] prose-p:mb-5
+        prose-p:first-of-type:first-letter:text-5xl prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:mr-2.5 prose-p:first-of-type:first-letter:text-brand-dark prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:pt-1
         prose-blockquote:border-l-4 prose-blockquote:border-brand prose-blockquote:bg-brand-light prose-blockquote:rounded-r-lg prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic
         prose-blockquote:text-neutral-700
         prose-li:text-neutral-600 prose-li:leading-[1.8]
