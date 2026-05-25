@@ -952,7 +952,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               </div>
               <motion.a
                 href={localePath('/about', locale)}
-                className="pointer-events-auto border border-white/20 backdrop-blur-md bg-white/10 text-white px-8 py-4 rounded-full flex items-center gap-3 hover:bg-white/20 hover:border-white/30 transition-all duration-300 cursor-pointer shadow-[0_4px_30px_rgba(0,0,0,0.1)] group"
+                className="pointer-events-auto border border-white/10 bg-transparent text-white/85 hover:text-white px-6 py-4 rounded-full flex items-center gap-2 hover:bg-white/5 hover:border-white/30 transition-all duration-300 cursor-pointer group"
                 {...buttonPress}
               >
                 <span>{t['hero.aboutAction']}</span>
