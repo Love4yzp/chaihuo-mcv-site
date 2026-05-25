@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "node ./dist/server/entry.mjs"
+    "start": "node ./dist/server/entry.mjs",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@astrojs/node": "^10.1.0",
@@ -43,7 +44,11 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/d3-geo": "^3.1.0",
     "dxf-parser": "^1.1.2",
+    "simple-git-hooks": "^2.13.1",
     "tailwindcss": "^4.2.2",
     "vite": "^7"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "bash scripts/validate-lockfile.sh"
   }
 }

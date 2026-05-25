@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
+import AntigravityCard from './AntigravityCard';
+import { ChevronDown, Sparkles } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -33,7 +35,7 @@ interface AboutContentProps {
   t: Record<string, string>;
 }
 
-const HIGHLIGHT_YEARS = new Set(['2011', '2012', '2015', '2016']);
+const HIGHLIGHT_YEARS = new Set(['2011', '2012', '2015', '2016', '2026']);
 
 /* ── Enrich year entries with phase info ── */
 interface EnrichedYear {
@@ -57,326 +59,222 @@ function enrichYears(data: YearEntry[], phases: Phase[]): EnrichedYear[] {
   });
 }
 
-/* ── Panorama Grid View ── */
-function PanoramaView({ items, onClose, locale = 'zh', t }: { items: EnrichedYear[]; onClose: () => void; locale?: Locale; t: Record<string, string> }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-50 bg-white overflow-y-auto"
-    >
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-neutral-200 px-6 md:px-[8%] pt-6 pb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-neutral-900">{t['panorama.title']}</h2>
-          <p className="text-xs text-neutral-400 mt-0.5">{t['panorama.subtitle']}</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-sm text-neutral-600 transition-colors duration-200 cursor-pointer"
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          {t['panorama.close']}
-        </button>
-      </div>
-
-      {/* Grid */}
-      <div className="px-6 md:px-[8%] py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {items.map((item) => (
-            <motion.div
-              key={item.year}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.03 * items.indexOf(item) }}
-              className={`p-5 rounded-xl border transition-colors duration-200 ${
-                item.isHighlight
-                  ? 'border-brand/30 bg-brand-light'
-                  : 'border-neutral-200 bg-white hover:border-neutral-300'
-              }`}
-            >
-              {/* Phase tag */}
-              {item.isPhaseStart && (
-                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-brand mb-2 block">
-                  {item.phase}
-                </span>
-              )}
-
-              {/* Year */}
-              <div className={`text-3xl font-black leading-none mb-3 ${
-                item.isHighlight ? 'text-brand' : 'text-neutral-200'
-              }`}>
-                {item.year}
-              </div>
-
-              {/* Events */}
-              <div className="space-y-2">
-                {item.events.map((ev, j) => (
-                  <div key={j}>
-                    <p className="text-sm text-neutral-700 leading-snug">
-                      <span className="text-brand-dark font-medium mr-1">{ev.month}</span>
-                      {locale === 'en' && ev.en ? ev.en : ev.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 /* ── Year Spotlight Timeline ── */
+// Premium milestone title mapping to immediately define focus for each milestone year
+const MILESTONE_TITLES: Record<string, { zh: string; en: string }> = {
+  '2011': { zh: '创客萌芽：柴火诞生', en: 'The Seed: Chaihuo Born' },
+  '2012': { zh: '走向国际：引入 Maker Faire', en: 'Going Global: First Maker Faire' },
+  '2015': { zh: '总理来访：荣誉会员登门', en: 'Historic Peak: Premier Li Keqiang Visits' },
+  '2016': { zh: '全球焦点：拍摄硬件硅谷', en: 'Global Focus: WIRED Shenzhen Documentary' },
+  '2026': { zh: '普罗米修斯：基地车正式启程', en: 'Prometheus: The Journey Begins' }
+};
+
 function YearSpotlight({ items, locale = 'zh', t }: { items: EnrichedYear[]; locale?: Locale; t: Record<string, string> }) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const yearRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const phaseRef = useRef<HTMLDivElement>(null);
-  const stRef = useRef<ScrollTrigger | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [showPanorama, setShowPanorama] = useState(false);
+  // Separate timeline into curated highlights (Milestones) and minor chronicles
+  const milestones = useMemo(() => items.filter(item => item.isHighlight), [items]);
+  const minorYears = useMemo(() => items.filter(item => !item.isHighlight), [items]);
 
-  const scrollPerYear = 350;
-  const totalScroll = items.length * scrollPerYear;
+  const [activeYear, setActiveYear] = useState(milestones[0]?.year);
+  const [showFullHistory, setShowFullHistory] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
-
-    const ctx = gsap.context(() => {
-      stRef.current = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: 'top top',
-        end: () => `+=${totalScroll}`,
-        pin: true,
-        scrub: 0.3,
-        anticipatePin: 1,
-        onUpdate: (self) => {
-          const rawIndex = self.progress * items.length;
-          const idx = Math.min(Math.floor(rawIndex), items.length - 1);
-          setActiveIndex(idx);
-        },
+    const observers = milestones.map((item) => {
+      const el = document.getElementById(`year-section-${item.year}`);
+      if (!el) return null;
+      
+      const observer = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          setActiveYear(item.year);
+        }
+      }, {
+        rootMargin: "-25% 0px -50% 0px"
       });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [items, totalScroll]);
-
-  // Jump to a specific year index via scroll position
-  const jumpToYear = useCallback((idx: number) => {
-    if (!stRef.current) return;
-    const st = stRef.current;
-    const targetProgress = (idx + 0.5) / items.length;
-    const targetScroll = st.start + targetProgress * (st.end - st.start);
-    gsap.to(window, {
-      scrollTo: { y: targetScroll },
-      duration: 0.6,
-      ease: 'power2.inOut',
+      observer.observe(el);
+      return observer;
     });
-  }, [items.length]);
-
-  // Arrow key navigation
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (showPanorama) return;
-      if (!stRef.current) return;
-      // Only respond when timeline is pinned (active in viewport)
-      const st = stRef.current;
-      if (st.progress <= 0 || st.progress >= 1) return;
-
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        jumpToYear(Math.min(activeIndex + 1, items.length - 1));
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        e.preventDefault();
-        jumpToYear(Math.max(activeIndex - 1, 0));
-      }
+    
+    return () => {
+      observers.forEach(obs => obs?.disconnect());
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [activeIndex, items.length, jumpToYear, showPanorama]);
+  }, [milestones]);
 
-  const active = items[activeIndex];
-
-  // Animate year number change
-  useEffect(() => {
-    if (!yearRef.current) return;
-    gsap.fromTo(yearRef.current,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.25, ease: 'power2.out', overwrite: true }
-    );
-  }, [activeIndex]);
-
-  // Animate content change
-  useEffect(() => {
-    if (!contentRef.current) return;
-    gsap.fromTo(contentRef.current,
-      { opacity: 0, y: 16 },
-      { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', delay: 0.05, overwrite: true }
-    );
-  }, [activeIndex]);
-
-  // Animate phase label change
-  useEffect(() => {
-    if (!phaseRef.current) return;
-    if (active.isPhaseStart) {
-      gsap.fromTo(phaseRef.current,
-        { opacity: 0, x: -10 },
-        { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out', overwrite: true }
-      );
+  const jumpToSection = (year: string) => {
+    const el = document.getElementById(`year-section-${year}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, [activeIndex, active.isPhaseStart]);
-
-  const progressFraction = useMemo(() => {
-    return (activeIndex + 0.5) / items.length;
-  }, [activeIndex, items.length]);
-
-  // Lock body scroll when panorama is open
-  useEffect(() => {
-    document.body.style.overflow = showPanorama ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [showPanorama]);
+  };
 
   return (
-    <>
-      <div ref={sectionRef} className="relative h-screen overflow-hidden bg-neutral-50 border-y border-neutral-200">
+    <div ref={containerRef} className="bg-neutral-50/50 border-y border-neutral-200/60 py-20 px-6 md:px-[10%] lg:px-[12%] relative scroll-mt-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
+          
+          {/* Left column - Sticky Year Tracker (Desktop Only) */}
+          <div className="hidden lg:block w-[28%] shrink-0">
+            <div className="sticky top-32 h-[50vh] flex flex-col justify-center pl-6 border-l-2 border-neutral-200/80 relative">
+              
+              {/* Glowing Active Track Indicator */}
+              <div className="absolute left-[-2px] w-[2px] bg-brand h-12 transition-all duration-300" 
+                style={{
+                  top: `${(milestones.findIndex(item => item.year === activeYear) / milestones.length) * 100}%`,
+                  height: `${100 / milestones.length}%`
+                }}
+              />
 
-        {/* Panorama toggle button — top right */}
-        <button
-          onClick={() => setShowPanorama(true)}
-          className="absolute top-20 right-6 md:right-[10%] lg:right-[12%] z-20 flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-sm text-neutral-600 hover:text-neutral-900 transition-all duration-200 cursor-pointer shadow-sm"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.2" />
-            <rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.2" />
-            <rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.2" />
-            <rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
-          {t['panorama.button']}
-        </button>
-
-        {/* Main content area */}
-        <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-[10%] lg:px-[12%]">
-
-          {/* Phase label */}
-          <div ref={phaseRef} className="mb-6 h-6">
-            {active.isPhaseStart && (
-              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand">
-                {active.phase}
-              </span>
-            )}
-          </div>
-
-          {/* Year + Events — 移动端上下堆叠，桌面端左右双栏 */}
-          <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-16 lg:gap-24">
-            {/* Year number */}
-            <div className="shrink-0">
-              <div
-                ref={yearRef}
-                className={`text-[72px] md:text-[160px] lg:text-[200px] font-black leading-none tracking-tight select-none transition-colors duration-300 ${
-                  active.isHighlight
-                    ? 'text-brand'
-                    : 'text-neutral-200'
-                }`}
-              >
-                {active.year}
-              </div>
-            </div>
-
-            {/* Events */}
-            <div ref={contentRef} className="flex-1 max-w-lg md:pt-8">
-              <div className="space-y-4 md:space-y-5">
-                {active.events.map((ev, j) => (
-                  <div key={`${active.year}-${j}`}>
-                    <p className="text-neutral-800 text-sm md:text-lg leading-relaxed">
-                      <span className="text-brand-dark font-medium mr-2">{ev.month}</span>
-                      {locale === 'en' && ev.en ? ev.en : ev.text}
-                    </p>
-                    {locale === 'zh' && ev.en && (
-                      <p className="text-neutral-400 text-xs md:text-sm mt-1 leading-relaxed">{ev.en}</p>
-                    )}
-                  </div>
-                ))}
+              <div className="space-y-5">
+                {milestones.map((item) => {
+                  const isActive = item.year === activeYear;
+                  return (
+                    <button
+                      key={item.year}
+                      onClick={() => jumpToSection(item.year)}
+                      className="w-full text-left focus:outline-none block cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${isActive ? 'bg-brand scale-125' : 'bg-neutral-300 group-hover:bg-brand/50'}`} />
+                        <span className={`font-black text-2xl transition-all duration-300 tracking-tight ${isActive ? 'text-brand scale-110 pl-2' : 'text-neutral-300 group-hover:text-neutral-500'}`}>
+                          {item.year}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Bottom progress bar — clickable */}
-        <div className="absolute bottom-6 md:bottom-10 left-4 right-4 md:left-[10%] md:right-[10%] lg:left-[12%] lg:right-[12%]">
-          {/* Track line */}
-          <div className="relative h-[2px] bg-neutral-200 rounded-full">
-            <div
-              className="absolute top-0 left-0 h-full bg-brand rounded-full transition-all duration-300 ease-out"
-              style={{ width: `${progressFraction * 100}%` }}
-            />
-          </div>
-
-          {/* Year dots — clickable, mobile: horizontally scrollable */}
-          <div className="relative flex justify-between mt-[-5px] overflow-x-auto scrollbar-none">
-            {items.map((item, i) => {
-              const isActive = i === activeIndex;
-              const isPast = i < activeIndex;
-
+          {/* Right column - Continuous Curated Milestones */}
+          <div className="flex-1 space-y-16">
+            {milestones.map((item) => {
+              const mTitle = MILESTONE_TITLES[item.year]?.[locale === 'en' ? 'en' : 'zh'] || '';
               return (
-                <button
-                  key={item.year}
-                  onClick={() => jumpToYear(i)}
-                  className="flex flex-col items-center cursor-pointer group py-1 min-w-[20px] md:min-w-0"
-                  title={`${item.year}`}
+                <div 
+                  key={item.year} 
+                  id={`year-section-${item.year}`}
+                  className="scroll-mt-36"
                 >
-                  {/* Dot */}
-                  <div
-                    className={`rounded-full transition-all duration-300 group-hover:scale-150 ${
-                      isActive
-                        ? 'w-3 h-3 bg-brand shadow-[0_0_12px_rgba(243,210,48,0.4)]'
-                        : isPast
-                          ? 'w-2 h-2 bg-brand/60 group-hover:bg-brand'
-                          : 'w-2 h-2 bg-neutral-300 group-hover:bg-brand/40'
-                    }`}
-                  />
-                  {/* Year label — mobile: only show active; desktop: show active + highlights + hover */}
-                  <span
-                    className={`text-[9px] md:text-[10px] mt-1.5 md:mt-2 font-medium transition-all duration-300 ${
-                      isActive
-                        ? 'text-neutral-700 opacity-100'
-                        : item.isHighlight
-                          ? 'text-neutral-400 hidden md:block opacity-100 group-hover:text-neutral-700'
-                          : 'text-neutral-400 opacity-0 hidden md:block group-hover:opacity-100'
-                    }`}
-                  >
-                    {item.year}
-                  </span>
-                </button>
+                  {/* Year Header (Mobile Sticky, Desktop Clean Title) */}
+                  <div className="sticky lg:relative top-16 lg:top-0 bg-neutral-50/95 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-3.5 lg:py-0 mb-4 z-20 border-b border-neutral-200/50 lg:border-none flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="lg:hidden text-2xl font-black text-brand tracking-tight">
+                        {item.year}
+                      </span>
+                      {item.isPhaseStart && (
+                        <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.18em] text-brand bg-brand-light border border-brand/20 px-2.5 py-0.5 rounded-full">
+                          {item.phase}
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 bg-neutral-200/60 px-2.5 py-0.5 rounded-md">
+                      <Sparkles className="w-2.5 h-2.5 text-brand" />
+                      {t['panorama.highlight'] || 'Milestone'}
+                    </span>
+                  </div>
+
+                  {/* Curated Milestone Header */}
+                  {mTitle && (
+                    <h3 className="text-xl md:text-2xl font-bold text-neutral-900 mb-6 tracking-tight flex items-center gap-2">
+                      {mTitle}
+                    </h3>
+                  )}
+
+                  {/* Event Bento Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {item.events.map((ev, j) => {
+                      const isLongText = ev.text.length > 80;
+                      return (
+                        <motion.div
+                          key={j}
+                          initial={{ opacity: 0, y: 15 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true, amount: 0.15 }}
+                          transition={{ type: "spring", damping: 20, stiffness: 260 }}
+                          className={`flex flex-col p-6 rounded-2xl border border-neutral-200/60 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-[0_15px_30px_rgba(243,210,48,0.05)] hover:border-brand/40 transition-all duration-300 ${
+                            isLongText || item.events.length === 1 ? 'md:col-span-2' : ''
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                            <span className="text-xs font-mono font-bold text-brand-dark tracking-widest uppercase">
+                              {ev.month}
+                            </span>
+                          </div>
+                          
+                          <p className="text-sm md:text-base text-neutral-850 leading-relaxed font-semibold">
+                            {locale === 'en' && ev.en ? ev.en : ev.text}
+                          </p>
+                          
+                          {locale === 'zh' && ev.en && (
+                            <p className="text-xs text-neutral-400 font-normal mt-2 leading-relaxed">
+                              {ev.en}
+                            </p>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
         </div>
 
-        {/* Scroll hint — fade out after first scroll */}
-        <div
-          className="absolute bottom-16 md:bottom-28 left-1/2 -translate-x-1/2 flex items-center gap-2 text-neutral-400 text-xs select-none transition-opacity duration-500"
-          style={{ opacity: activeIndex === 0 ? 1 : 0 }}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="animate-bounce">
-            <path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {t['scroll.hint']}
+        {/* Collapsible Chronicle Drawer for Minor Years */}
+        <div className="mt-20 border-t border-neutral-200/60 pt-12 text-center">
+          <button
+            onClick={() => setShowFullHistory(!showFullHistory)}
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-neutral-800 font-bold transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
+          >
+            <span>{showFullHistory ? (locale === 'en' ? "Hide Complete Chronicle" : "收起完整历程") : (locale === 'en' ? "Expand Full 15-Year Chronicle" : "展开 15 年完整发展历程")}</span>
+            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFullHistory ? 'rotate-180 text-brand' : ''}`} />
+          </button>
+
+          <AnimatePresence>
+            {showFullHistory && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.45, ease: "easeInOut" }}
+                className="overflow-hidden mt-8 max-w-2xl mx-auto"
+              >
+                <div className="relative pl-6 border-l border-neutral-250 space-y-6 text-left py-4">
+                  {items.map((item) => (
+                    <div key={item.year} className="relative group">
+                      {/* Highlighted indicator for milestone years */}
+                      <span className={`absolute left-[-29px] top-1.5 w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
+                        item.isHighlight 
+                          ? 'bg-brand border-brand/50 scale-125 shadow-[0_0_8px_rgba(243,210,48,0.6)] animate-pulse' 
+                          : 'bg-neutral-300 border-white group-hover:bg-brand group-hover:scale-105'
+                      }`} />
+                      <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                        <span className={`text-base font-black shrink-0 select-none transition-colors duration-200 ${
+                          item.isHighlight 
+                            ? 'text-brand font-extrabold' 
+                            : 'text-neutral-400 group-hover:text-brand'
+                        }`}>
+                          {item.year}
+                        </span>
+                        <div className="space-y-1.5 flex-1">
+                          {item.events.map((ev, idx) => (
+                            <p key={idx} className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-850 font-bold' : 'text-neutral-600 font-medium'}`}>
+                              <span className="text-brand-dark font-mono mr-1.5 uppercase font-bold">{ev.month}</span>
+                              {locale === 'en' && ev.en ? ev.en : ev.text}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* Panorama overlay */}
-      <AnimatePresence>
-        {showPanorama && (
-          <PanoramaView items={items} onClose={() => setShowPanorama(false)} locale={locale} t={t} />
-        )}
-      </AnimatePresence>
-    </>
+    </div>
   );
 }
 
@@ -452,8 +350,8 @@ export default function AboutContent({ timelineData, phases, partners, heroImage
             </motion.p>
           </motion.div>
 
-          {/* 数据条 */}
-          <div className="flex gap-8">
+          {/* 3D Glass Bento Grid stats dashboard */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 w-full max-w-2xl">
             {STATS.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -461,11 +359,14 @@ export default function AboutContent({ timelineData, phases, partners, heroImage
                 initial="hidden"
                 animate="visible"
                 transition={{ ...springTransition, delay: 0.3 + i * 0.08 }}
+                className="w-full flex"
               >
-                <div className="text-2xl md:text-3xl font-black text-brand leading-none">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                </div>
-                <p className="text-[11px] text-neutral-400 mt-1">{stat.label}</p>
+                <AntigravityCard className="p-5 flex flex-col justify-center items-start w-full bg-white/75 shadow-[0_15px_30px_rgba(0,0,0,0.02)]" maxTilt={12}>
+                  <div className="text-3xl font-black text-brand leading-none tracking-tight">
+                    <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+                  </div>
+                  <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mt-2.5">{stat.label}</p>
+                </AntigravityCard>
               </motion.div>
             ))}
           </div>
@@ -508,14 +409,18 @@ export default function AboutContent({ timelineData, phases, partners, heroImage
             <motion.div
               key={partner.name}
               variants={fadeUp}
-              transition={springTransition}
-              className="flex flex-col items-center justify-center py-6 px-4 w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(16.666%-20px)] rounded-xl border border-neutral-200 bg-white hover:border-brand/30 hover:shadow-sm transition-all duration-200"
+              transition={{ type: "spring", damping: 16, stiffness: 220 }}
+              whileHover={{ y: -6, scale: 1.04 }}
+              className="flex flex-col items-center justify-center py-6 px-4 w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(16.666%-20px)] rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-md hover:border-brand/40 shadow-sm hover:shadow-[0_15px_35px_rgba(243,210,48,0.06)] transition-all duration-300 relative overflow-hidden group cursor-pointer"
             >
-              <span className="text-lg font-bold text-neutral-400 hover:text-neutral-900 transition-colors duration-200 cursor-default">
+              {/* Internal Holographic Light Aura on hover */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-brand/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              
+              <span className="text-lg font-bold text-neutral-400 group-hover:text-neutral-900 transition-colors duration-200 cursor-pointer">
                 {partner.name}
               </span>
               {partner.description && (
-                <span className="text-xs text-neutral-400 mt-1.5 text-center">{partner.description}</span>
+                <span className="text-xs text-neutral-400 group-hover:text-neutral-500 mt-1.5 text-center transition-colors duration-200">{partner.description}</span>
               )}
             </motion.div>
           ))}

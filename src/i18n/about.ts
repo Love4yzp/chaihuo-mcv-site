@@ -7,6 +7,7 @@ const about: Record<Locale, Record<string, string>> = {
     'hero.subtitle': 'About Chaihuo',
     'hero.title': '柴火 15 年，从创客空间到基地车。',
     'hero.body': '自 2011 年成立以来，柴火创客空间始终是连接创意与制造的桥梁。十五年来，无数想法在这里萌芽、原型化、量产直至走向全球。',
+    'hero.discoverMission': '了解基地车起源与使命 🚀',
     'hero.image.alt': '基地车旅途风光',
 
     'stats.years': '持续深耕',
@@ -36,6 +37,7 @@ const about: Record<Locale, Record<string, string>> = {
     'hero.subtitle': 'About Chaihuo',
     'hero.title': '15 years of Chaihuo: from makerspace to MCV.',
     'hero.body': 'Since its founding in 2011, Chaihuo Makerspace has been the bridge between creativity and manufacturing. Over fifteen years, countless ideas have sprouted, prototyped, scaled, and gone global here.',
+    'hero.discoverMission': 'Discover MCV Origins & Mission 🚀',
     'hero.image.alt': 'MCV journey landscape',
 
     'stats.years': 'Years of impact',

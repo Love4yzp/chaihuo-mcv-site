@@ -16,25 +16,85 @@ interface NavigationProps {
 }
 
 export default function Navigation({ pathname, locale = 'zh' }: NavigationProps) {
-  const dict = ui[locale];
-  const NAV_LINKS = [
-    { to: localePath('/', locale), label: dict['nav.home'], match: '/' },
-    { to: localePath('/deconstruct', locale), label: dict['nav.deconstruct'], match: '/deconstruct' },
-    { to: localePath('/documentation', locale), label: dict['nav.documentation'], match: '/documentation' },
-    { to: localePath('/guide', locale), label: dict['nav.guide'], match: '/guide' },
-    { to: localePath('/about', locale), label: dict['nav.about'], match: '/about' },
-  ];
-
-  const alternate = getAlternateUrl(pathname);
-
-  const isHome = pathname === '/' || pathname === '/en';
+  const [currentPathname, setCurrentPathname] = useState(pathname);
+  const [currentLocale, setCurrentLocale] = useState<Locale>(locale);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
+
+  // Sync state if props change initially or during normal rendering
+  useEffect(() => {
+    setCurrentPathname(pathname);
+    setCurrentLocale(locale);
+  }, [pathname, locale]);
+
+  // Listen to Astro View Transition page swaps to maintain exact path/locale reactivity
+  useEffect(() => {
+    const handleNavigation = () => {
+      const path = window.location.pathname;
+      setCurrentPathname(path);
+      const isEn = path.startsWith('/en/') || path === '/en';
+      setCurrentLocale(isEn ? 'en' : 'zh');
+      
+      // Reset mobile menu
+      setMenuOpen(false);
+      
+      // Reset scroll-based states for the new page layout
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 60);
+      setVisible(true);
+    };
+
+    document.addEventListener('astro:page-load', handleNavigation);
+    document.addEventListener('astro:after-swap', handleNavigation);
+
+    return () => {
+      document.removeEventListener('astro:page-load', handleNavigation);
+      document.removeEventListener('astro:after-swap', handleNavigation);
+    };
+  }, []);
+
+  const dict = ui[currentLocale];
+  const NAV_LINKS = [
+    { to: localePath('/', currentLocale), label: dict['nav.home'], match: '/' },
+    { to: localePath('/deconstruct', currentLocale), label: dict['nav.deconstruct'], match: '/deconstruct' },
+    { to: localePath('/documentation', currentLocale), label: dict['nav.documentation'], match: '/documentation' },
+    { to: localePath('/guide', currentLocale), label: dict['nav.guide'], match: '/guide' },
+    { to: localePath('/about', currentLocale), label: dict['nav.about'], match: '/about' },
+  ];
+
+  const alternate = getAlternateUrl(currentPathname);
+
+  const isHome = currentPathname === '/' || currentPathname === '/en';
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
+    let lastY = window.scrollY;
+
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // 1. Scrolled state threshold
+      setScrolled(currentScrollY > 60);
+
+      // 2. Hide/reveal navigation depending on scroll direction (Only on Home page to leave room for full-screen map)
+      const path = window.location.pathname;
+      const localIsHome = path === '/' || path === '/en' || path.startsWith('/en/');
+
+      if (!localIsHome) {
+        setVisible(true);
+      } else if (currentScrollY < 60) {
+        setVisible(true);
+      } else if (currentScrollY > lastY && currentScrollY > 120) {
+        setVisible(false);
+      } else if (currentScrollY < lastY) {
+        setVisible(true);
+      }
+
+      lastY = currentScrollY;
+    };
+
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -55,7 +115,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
   const isLight = !isHome || scrolled;
 
   // Match active link — strip /en prefix for comparison
-  const normalizedPath = pathname.replace(/^\/en/, '') || '/';
+  const normalizedPath = currentPathname.replace(/^\/en/, '') || '/';
 
   const linkClass = (matchPath: string, mobile = false) => {
     const isActive = normalizedPath === matchPath || (matchPath !== '/' && normalizedPath.startsWith(matchPath));
@@ -82,9 +142,11 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
         isLight
           ? 'bg-white/95 backdrop-blur-md border-b border-neutral-300/50 shadow-sm'
           : 'bg-transparent'
+      } ${
+        visible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       }`}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href={localePath('/', locale)} className="flex items-center">
+          <a href={localePath('/', currentLocale)} className="flex items-center">
             <img
               src={logoHorizontal}
               alt={dict['site.name']}
@@ -109,7 +171,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
               title={dict['nav.switchLang']}
             >
               <Globe className="w-4 h-4" />
-              <span className="text-xs font-medium">{locale === 'zh' ? 'EN' : '中文'}</span>
+              <span className="text-xs font-medium">{currentLocale === 'zh' ? 'EN' : '中文'}</span>
             </a>
           </div>
 
@@ -184,7 +246,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
                     onClick={closeMenu}
                   >
                     <Globe className="w-4 h-4" />
-                    <span>{locale === 'zh' ? 'English' : '中文'}</span>
+                    <span>{currentLocale === 'zh' ? 'English' : '中文'}</span>
                   </a>
                 </motion.div>
               </nav>

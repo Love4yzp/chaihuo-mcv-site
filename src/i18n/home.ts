@@ -11,6 +11,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.watchVideo': '基地车视频',
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
+    'hero.aboutAction': '了解我们',
 
     'status.current': '当前状态：在路上 · {city}',
     'status.departure': '已于 4 月 22 日从深圳启程',
@@ -37,6 +38,7 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.upcoming': '即将抵达',
     'journal.upcomingDesc': '此城正在计划中，更多细节将在抵达前公开',
     'journal.readLocal': '阅读深度纪实',
+    'journal.localConnections': '在地共创',
 
     'timeline.eyebrow': '在路上的人',
     'timeline.title': '一棒接一棒，200 天',
@@ -72,6 +74,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.watchVideo': 'MCV Video',
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
+    'hero.aboutAction': 'About Us',
 
     'status.current': 'Status: On the road · {city}',
     'status.departure': 'Departed Shenzhen on April 22',
@@ -98,6 +101,7 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.upcoming': 'Upcoming',
     'journal.upcomingDesc': 'This stop is still being planned. Details will appear closer to arrival.',
     'journal.readLocal': 'Read local story',
+    'journal.localConnections': 'Local Connections',
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
