@@ -5,6 +5,7 @@ import '@/styles/index.css';
 import type { Locale } from '@/i18n/index';
 import ui from '@/i18n/ui';
 import { localePath, getAlternateUrl } from '@/i18n/index';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -74,6 +75,7 @@ const alternateURL = new URL(alternate.path, Astro.site ?? 'https://mcv.chaihuo.
       gtag('js', new Date());
       gtag('config', 'G-27XRD69LSR');
     </script>
+    <ClientRouter />
   </head>
   <body class="min-h-screen bg-surface text-neutral-900">
     <Navigation client:load pathname={pathname} locale={locale} />

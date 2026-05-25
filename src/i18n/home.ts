@@ -35,7 +35,8 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.origin': '出发',
     'journal.latest': '最新',
     'journal.upcoming': '即将抵达',
-    'journal.upcomingDesc': '此城正在计划中，更多细节将在抵达前公开。',
+    'journal.upcomingDesc': '此城正在计划中，更多细节将在抵达前公开',
+    'journal.readLocal': '阅读深度纪实',
 
     'timeline.eyebrow': '在路上的人',
     'timeline.title': '一棒接一棒，200 天',
@@ -96,6 +97,7 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.latest': 'Latest',
     'journal.upcoming': 'Upcoming',
     'journal.upcomingDesc': 'This stop is still being planned. Details will appear closer to arrival.',
+    'journal.readLocal': 'Read local story',
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
