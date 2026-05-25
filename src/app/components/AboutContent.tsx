@@ -227,7 +227,7 @@ function YearSpotlight({ items, locale = 'zh', t }: { items: EnrichedYear[]; loc
             onClick={() => setShowFullHistory(!showFullHistory)}
             className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-neutral-800 font-bold transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
           >
-            <span>{showFullHistory ? (locale === 'en' ? "Hide Complete Chronicle" : "收起常规发展历程") : (locale === 'en' ? "Expand Full 15-Year Chronicle" : "展开 15 年完整发展历程")}</span>
+            <span>{showFullHistory ? (locale === 'en' ? "Hide Complete Chronicle" : "收起完整历程") : (locale === 'en' ? "Expand Full 15-Year Chronicle" : "展开 15 年完整发展历程")}</span>
             <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFullHistory ? 'rotate-180 text-brand' : ''}`} />
           </button>
 
@@ -240,17 +240,26 @@ function YearSpotlight({ items, locale = 'zh', t }: { items: EnrichedYear[]; loc
                 transition={{ duration: 0.45, ease: "easeInOut" }}
                 className="overflow-hidden mt-8 max-w-2xl mx-auto"
               >
-                <div className="relative pl-6 border-l border-neutral-200 space-y-6 text-left py-4">
-                  {minorYears.map((item) => (
+                <div className="relative pl-6 border-l border-neutral-250 space-y-6 text-left py-4">
+                  {items.map((item) => (
                     <div key={item.year} className="relative group">
-                      <span className="absolute left-[-29px] top-1.5 w-2 h-2 rounded-full bg-neutral-300 group-hover:bg-brand transition-colors duration-200" />
+                      {/* Highlighted indicator for milestone years */}
+                      <span className={`absolute left-[-29px] top-1.5 w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
+                        item.isHighlight 
+                          ? 'bg-brand border-brand/50 scale-125 shadow-[0_0_8px_rgba(243,210,48,0.6)] animate-pulse' 
+                          : 'bg-neutral-300 border-white group-hover:bg-brand group-hover:scale-105'
+                      }`} />
                       <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-                        <span className="text-base font-black text-neutral-400 shrink-0 select-none group-hover:text-brand transition-colors duration-200">
+                        <span className={`text-base font-black shrink-0 select-none transition-colors duration-200 ${
+                          item.isHighlight 
+                            ? 'text-brand font-extrabold' 
+                            : 'text-neutral-400 group-hover:text-brand'
+                        }`}>
                           {item.year}
                         </span>
-                        <div className="space-y-1.5">
+                        <div className="space-y-1.5 flex-1">
                           {item.events.map((ev, idx) => (
-                            <p key={idx} className="text-xs text-neutral-600 leading-relaxed font-semibold">
+                            <p key={idx} className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-850 font-bold' : 'text-neutral-600 font-medium'}`}>
                               <span className="text-brand-dark font-mono mr-1.5 uppercase font-bold">{ev.month}</span>
                               {locale === 'en' && ev.en ? ev.en : ev.text}
                             </p>
