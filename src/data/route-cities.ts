@@ -20,7 +20,20 @@ export interface RouteCity {
    *  narrative still has forward-looking anchors (e.g. 下一站). All visited
    *  cities are labeled regardless. */
   anchor?: boolean;
+  relationType?: 'departure' | 'education' | 'community' | 'industry';
+  relationStats?: string[];
+  relationStatsEn?: string[];
   event?: RouteCityEvent;
+  // --- New Geographic & Tech Telemetry Data ---
+  altitude: string;
+  terrain: string;
+  terrainEn: string;
+  terrainStep: string;
+  terrainStepEn: string;
+  climate: string;
+  climateEn: string;
+  challenge: string;
+  challengeEn: string;
 }
 
 // 实际路线：21省 26城，深圳出发→深圳返回
@@ -32,6 +45,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '深圳', label_en: 'Shenzhen',
     lng: 114.057, lat: 22.543, visited: true, isOrigin: true, order: 0,
+    relationType: 'departure',
+    relationStats: ['首发起程点', '柴火创客空间出发', '200天穿越计划'],
+    relationStatsEn: ['Starting Point', 'Depart from Chaihuo', '200-Day Expedition'],
+    altitude: '4',
+    terrain: '珠江口东岸沿海丘陵', terrainEn: 'Estuary Coastal Hills',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '亚热带季风气候', climateEn: 'Subtropical Monsoon',
+    challenge: '首发起程，测试整车离线主控与底盘机械加固',
+    challengeEn: 'Departure. Offline system and structural reinforcement profile',
     event: {
       date: '2026.04.22',
       summary: '「普罗米修斯号」联合「深圳科技馆」首发，从柴火创客空间正式启程，开启 200 天 21 省穿越。',
@@ -46,6 +68,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '广州', label_en: 'Guangzhou',
     lng: 113.264, lat: 23.130, visited: true, order: 1,
+    relationType: 'education',
+    relationStats: ['科技中心联合路展', '1场AI硬件编程工作坊', '创客导师齐聚'],
+    relationStatsEn: ['Science Center Roadshow', '1 AI Programming Workshop', 'Makers Gathering'],
+    altitude: '11',
+    terrain: '珠江三角洲冲积平原', terrainEn: 'Pearl River Delta Plain',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '亚热带季风气候', climateEn: 'Subtropical Monsoon',
+    challenge: '繁华城区大客流科普展示，车载双路边缘算力高负载散热测试',
+    challengeEn: 'High-traffic urban exhibition; edge computing thermal load profiling',
     event: {
       date: '2026.04.24 / 04.25',
       summary: '在广州科技中心举办展览；25 日延伸开展一场 AI 硬件编程工作坊。',
@@ -55,6 +86,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '阳江', label_en: 'Yangjiang',
     lng: 111.983, lat: 21.858, visited: true, order: 2,
+    relationType: 'education',
+    relationStats: ['科技馆巡展落地', '社区青少年AI硬件互动', '科普基地共创'],
+    relationStatsEn: ['Science Museum Expo', 'Teen AI Hardware Interaction', 'Science Base Co-creation'],
+    altitude: '8',
+    terrain: '粤西沿海低山丘陵区', terrainEn: 'West Guangdong Coastal Hills',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '亚热带海洋季风气候', climateEn: 'Subtropical Marine Monsoon',
+    challenge: '高湿度、高盐雾海岸带停靠，车载暴露机械关节防腐蚀检验',
+    challengeEn: 'High humidity & coastal salt-spray exposure; mechanical joints corrosion test',
     event: {
       date: '2026.04.26',
       summary: '在阳江科技馆举办展览。',
@@ -64,6 +104,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '玉林', label_en: 'Yulin',
     lng: 110.181, lat: 22.654, visited: true, order: 3,
+    relationType: 'education',
+    relationStats: ['走进玉东新区第三小学', '科普路展走进乡村校园', 'AI硬件启蒙课'],
+    relationStatsEn: ['Yudong Primary School Visit', 'Rural Campus Science Expo', 'AI Hardware Initiation'],
+    altitude: '80',
+    terrain: '桂东南大容山-六万大山丘陵盆地', terrainEn: 'Southeastern Guangxi Hilly Basin',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '南亚热带季风气候', climateEn: 'South Subtropical Monsoon',
+    challenge: '盆地闷热积温环境，车载电池箱体防潮通风与电力分配验证',
+    challengeEn: 'Stifling hilly basin climate; battery compartment cooling & ventilation check',
     event: {
       date: '2026.04.28',
       summary: '在玉林科技馆开展路展、AI 硬件工作坊，并走进玉东新区第三小学开展科普活动。',
@@ -76,6 +125,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '南宁', label_en: 'Nanning',
     lng: 108.366, lat: 22.817, visited: true, order: 4, anchor: true,
+    relationType: 'education',
+    relationStats: ['广西科技馆教育工作坊', '展示车内AI交互硬件', '1场教师科普培训'],
+    relationStatsEn: ['Science Museum Workshop', 'On-board AI Hardware Demo', '1 Teacher STEM Training'],
+    altitude: '75',
+    terrain: '南宁断陷盆地与郁江河谷', terrainEn: 'Nanning Fault Basin & Valley',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '亚热带季风温和气候', climateEn: 'Subtropical Monsoon',
+    challenge: '跨省山区坡道动力匹配，车载6轴协作机械臂运输防颠簸锁定测试',
+    challengeEn: 'Cross-provincial mountain slopes; 6-axis robotic arm transit lock profiling',
     event: {
       date: '2026.04.29',
       summary: '在广西科技馆向教师展示车内 AI 交互硬件与机械臂，下午举办 AI 硬件工作坊。',
@@ -85,6 +143,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '柳州', label_en: 'Liuzhou',
     lng: 109.412, lat: 24.327, visited: true, order: 5, anchor: true,
+    relationType: 'industry',
+    relationStats: ['深入三都镇养殖种植基地', '与新农人面对面技术对话', 'AI检测场景探讨'],
+    relationStatsEn: ['Sandu Agricultural Base Visit', 'Dialogue with New Farmers', 'AI Detection Scenario Discussion'],
+    altitude: '90',
+    terrain: '桂中溶蚀喀斯特平原盆地', terrainEn: 'Central Guangxi Karst Basin',
+    terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
+    climate: '中亚热带季风气候', climateEn: 'Middle Subtropical Monsoon',
+    challenge: '农业基地起伏泥泞土路行驶，车载边缘 AI 摄像头防尘抖动图像补偿纠偏',
+    challengeEn: 'Bumpy agricultural dirt trails; edge AI camera dustproofing & image de-jitter',
     event: {
       date: '2026.04.30',
       summary: '走进柳州·三都镇的农业养殖种植基地，与新农人面对面，开展技术行业交流。',
@@ -100,6 +167,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '贵阳', label_en: 'Guiyang',
     lng: 106.713, lat: 26.578, visited: true, order: 6, anchor: true,
+    relationType: 'education',
+    relationStats: ['走进贵阳市第八中学', '贵州师范学院科创分享', '贵州大学学术交流'],
+    relationStatsEn: ['Guiyang No.8 School Visit', 'Guizhou Normal College Sharing', 'Guizhou University Exchange'],
+    altitude: '1100',
+    terrain: '黔中喀斯特丘陵山地斜坡', terrainEn: 'Central Guizhou Karst Hills',
+    terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
+    climate: '亚热带高原湿润温和气候', climateEn: 'Highland Humid Climate',
+    challenge: '突越第三到第二级阶梯，海拔陡升 1000m 爬坡负荷及电池系统热失控预警',
+    challengeEn: 'Climbing onto 2nd step; 1000m rapid elevation gain battery system thermal warning',
     event: {
       date: '2026.05.05–07',
       summary: '5日与当地创客面对面，聊科创教育的一线观察；6日下午走进贵阳市第八中学，开展展示与工作坊；7日赴贵州师范学院与贵州大学展示与工作坊。',
@@ -109,6 +185,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '毕节', label_en: 'Bijie',
     lng: 105.285, lat: 27.302, visited: true, order: 7, anchor: true,
+    relationType: 'community',
+    relationStats: ['对话青年在地创客默', '1场深度人物纪实录制', '探讨偏远山区科创土壤'],
+    relationStatsEn: ['Dialogue with Mo', '1 In-depth Creator Documentary', 'STEM Education Soil Discussion'],
+    altitude: '1510',
+    terrain: '乌蒙山脉腹地高原岩溶斜坡', terrainEn: 'Wumeng Mountains Karst Plateau',
+    terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
+    climate: '北亚热带高原山地温和气候', climateEn: 'Highland Mountain Climate',
+    challenge: '深居乌蒙山区峡谷，复杂低阻抗山区无电网场景的车载离线微电网能源调度',
+    challengeEn: 'Off-grid mountain valleys; Prometheus off-grid micro-grid solar energy dispatch',
     event: {
       date: '2026.05.08',
       summary: '走近创客默，与他近距离交流学习，深入访谈，记录一位在地创客的实践路径与生长故事。',
@@ -118,6 +203,15 @@ export const routeCities: RouteCity[] = [
   {
     label: '成都', label_en: 'Chengdu',
     lng: 104.066, lat: 30.572, visited: true, order: 8, anchor: true,
+    relationType: 'community',
+    relationStats: ['当地科技馆路展对接', '创客社区合伙人碰头', '下一站前向路线探索'],
+    relationStatsEn: ['Science Museum Matchmaking', 'Maker Community Partners Meetup', 'Next Stops Path Planning'],
+    altitude: '500',
+    terrain: '四川盆地西部岷江冲积平原', terrainEn: 'Sichuan Basin West Plain',
+    terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
+    climate: '亚热带温润温湿季风气候', climateEn: 'Subtropical Moist Monsoon',
+    challenge: '蜀道穿越阶段性系统校准，边缘传感器高湿防潮密封与高原挺进前置校正',
+    challengeEn: 'Shu road system calibration; sensor moisture sealing & high-altitude offset tuning',
     event: {
       date: '2026.05.10',
       summary: '计划停靠成都；现场行程随当地科技馆与社区合作伙伴最终确认后更新。',
