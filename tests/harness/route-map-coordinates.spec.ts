@@ -9,6 +9,7 @@ import {
   MAP_WIDTH,
 } from '../../src/features/route-map/constants';
 import type { ProjectedCity } from '../../src/features/route-map/types';
+import { centerOn, IDENTITY } from '../../src/features/route-map/useMapZoom';
 import { gotoRoute } from './helpers';
 
 const projection = geoMercator()
@@ -175,6 +176,17 @@ test('placeLabels shows all labels once dots are spread far apart', () => {
   expect(placements.get('a')).not.toBeNull();
   expect(placements.get('b')).not.toBeNull();
   expect(placements.get('c')).not.toBeNull();
+});
+
+test('centerOn places the target point at the canvas center', () => {
+  const t = centerOn([200, 150], 3, 900, 600);
+  expect(t.k).toBe(3);
+  expect(t.x + t.k * 200).toBeCloseTo(450, 5);
+  expect(t.y + t.k * 150).toBeCloseTo(300, 5);
+});
+
+test('IDENTITY is the no-op transform', () => {
+  expect(IDENTITY).toEqual({ x: 0, y: 0, k: 1 });
 });
 
 test('route page city hit areas sit on elevation projection endpoints', async ({ page }) => {
