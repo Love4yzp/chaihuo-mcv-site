@@ -198,7 +198,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
       {projected
         .filter((city) => city.showLabel)
         .map((city) => {
-          const offset = labelOffsets.get(city.label);
+          const offset = labelOffsets.get(city.id);
           if (!offset) return null; // Collided or filtered
 
           const x = round(city.cx + offset[0]);
@@ -208,6 +208,8 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
           return (
             <text
               key={`label-${city.label}`}
+              data-route-city-label="true"
+              data-city-id={city.id}
               x={x}
               y={y}
               fill={isCurrent ? "#1f1b13" : city.visited ? "#534c3c" : "#8c8370"}

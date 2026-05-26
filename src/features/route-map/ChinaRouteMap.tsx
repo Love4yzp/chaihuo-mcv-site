@@ -36,7 +36,11 @@ export default function ChinaRouteMap({
   const [hoveredCity, setHoveredCity] = useState<ProjectedCity | null>(null);
 
   const projected = useMemo(() => projectCities(cities), [cities]);
-  const labelPositions = useMemo(() => placeLabels(projected), [projected]);
+  const routeProjected = useMemo(
+    () => projected.map((city) => ({ ...city, cy: city.cy - city.elevationOffset })),
+    [projected],
+  );
+  const labelPositions = useMemo(() => placeLabels(routeProjected, 'above'), [routeProjected]);
   const segments = useMemo(() => buildCityLines(projected), [projected]);
 
   // ─── 普罗米修斯号车载指针滑行与切向转向 (Skeleton & Muscles: Vehicle Dynamic Path Tracker) ───
@@ -61,7 +65,7 @@ export default function ChinaRouteMap({
     const prevOrder = prevOrderRef.current;
     prevOrderRef.current = currentOrder;
 
-    const targetPt: [number, number] = [activeCity.cx, activeCity.cy];
+    const targetPt: [number, number] = [activeCity.cx, activeCity.cy - activeCity.elevationOffset];
 
     if (prevOrder === null || prevOrder === currentOrder) {
       setVehiclePos(targetPt);
@@ -76,7 +80,7 @@ export default function ChinaRouteMap({
       return;
     }
 
-    const fromPt: [number, number] = [prevCity.cx, prevCity.cy];
+    const fromPt: [number, number] = [prevCity.cx, prevCity.cy - prevCity.elevationOffset];
 
     const midX = (fromPt[0] + targetPt[0]) / 2;
     const midY = (fromPt[1] + targetPt[1]) / 2;
@@ -258,8 +262,8 @@ export default function ChinaRouteMap({
 
           {/* 层二：城市间连线 — 已访问优先动 */}
           {segments.map((seg, i) => {
-            const fromPt: [number, number] = [seg.from.cx, seg.from.cy];
-            const toPt: [number, number] = [seg.to.cx, seg.to.cy];
+            const fromPt: [number, number] = [seg.from.cx, seg.from.cy - seg.from.elevationOffset];
+            const toPt: [number, number] = [seg.to.cx, seg.to.cy - seg.to.elevationOffset];
 
             const midX = (fromPt[0] + toPt[0]) / 2;
             const midY = (fromPt[1] + toPt[1]) / 2;
@@ -359,21 +363,62 @@ export default function ChinaRouteMap({
 
           {/* 城市节点 + 标签 */}
           {projected.map((city) => {
-            const { cx, cy, isLatest, fontSize: labelFontSize } = city;
+            const { cx, cy, elevationOffset, isLatest, fontSize: labelFontSize } = city;
             const delay = cityDelay(city.order, city.visited);
             const isSelected = selectedKey === city.label;
             const r = isLatest ? 6.0 : city.isOrigin ? 5.5 : city.visited ? 4.5 : 3.5;
-            const placement = labelPositions.get(city.label);
+            const placement = labelPositions.get(city.id);
             const showLabel = city.showLabel && placement != null;
             const [labelDx, labelDy] = placement ?? [0, 0];
+            const projectionY = cy - elevationOffset;
+            const markerX = cx;
+            const markerY = projectionY;
 
             return (
               <g key={city.label}>
+                {/* 视觉投影层：展示海拔感，但不改变真实地理锚点 */}
+                {elevationOffset > 0 && (
+                  <>
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={Math.max(r + 3, 7)}
+                      fill="#a16207"
+                      opacity={0.08}
+                      style={{ pointerEvents: 'none' }}
+                    />
+                    <motion.line
+                      data-route-elevation-line="true"
+                      data-city-id={city.id}
+                      x1={cx}
+                      y1={cy}
+                      x2={cx}
+                      y2={projectionY}
+                      stroke="#a16207"
+                      strokeWidth="0.8"
+                      strokeDasharray="1.5 2"
+                      opacity={city.visited ? 0.3 : 0.12}
+                      initial={{ pathLength: 0 }}
+                      animate={isInView ? { pathLength: 1 } : {}}
+                      transition={{ duration: 0.8, delay }}
+                      style={{ pointerEvents: 'none' }}
+                    />
+                    <circle
+                      cx={cx}
+                      cy={projectionY}
+                      r={1.4}
+                      fill="#a16207"
+                      opacity={0.28}
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  </>
+                )}
+
                 {/* 当前所在城市的呼吸圈 */}
                 {isLatest && (
                   <motion.circle
-                    cx={cx}
-                    cy={cy}
+                    cx={markerX}
+                    cy={markerY}
                     r={12}
                     fill="#f3d230"
                     opacity={0}
@@ -385,15 +430,15 @@ export default function ChinaRouteMap({
                       repeat: Infinity,
                       repeatDelay: 0.4,
                     }}
-                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
                   />
                 )}
 
                 {/* 选中外圈 */}
                 {isSelected && !isLatest && (
                   <motion.circle
-                    cx={cx}
-                    cy={cy}
+                    cx={markerX}
+                    cy={markerY}
                     r={12}
                     fill="none"
                     stroke="#3a3328"
@@ -402,15 +447,15 @@ export default function ChinaRouteMap({
                     animate={{ opacity: 0.85, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.6 }}
                     transition={{ type: "spring", damping: 18, stiffness: 260 }}
-                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
                   />
                 )}
 
                 {/* 出发点外圈 */}
                 {city.isOrigin && (
                   <motion.circle
-                    cx={cx}
-                    cy={cy}
+                    cx={markerX}
+                    cy={markerY}
                     r={13}
                     fill="none"
                     stroke="#f3d230"
@@ -418,14 +463,14 @@ export default function ChinaRouteMap({
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={isInView ? { opacity: 0.55, scale: 1 } : {}}
                     transition={{ type: "spring", damping: 15, delay }}
-                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
                   />
                 )}
 
                 {/* 城市圆点 */}
                 <motion.circle
-                  cx={cx}
-                  cy={cy}
+                  cx={markerX}
+                  cy={markerY}
                   r={r}
                   fill={city.visited ? '#f3d230' : 'white'}
                   stroke={city.visited ? 'white' : '#9c8c66'}
@@ -439,14 +484,14 @@ export default function ChinaRouteMap({
                     delay,
                   }}
                   whileHover={{ scale: 1.35 }}
-                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                  style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
                 />
 
                 {/* 当前位置内核 — 靶心 pin */}
                 {isLatest && (
                   <motion.circle
-                    cx={cx}
-                    cy={cy}
+                    cx={markerX}
+                    cy={markerY}
                     r={2.2}
                     fill="#3a2f0e"
                     initial={{ scale: 0 }}
@@ -457,15 +502,17 @@ export default function ChinaRouteMap({
                       stiffness: 260,
                       delay: delay + 0.12,
                     }}
-                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
                   />
                 )}
 
                 {/* 城市名称 — 白色描边防糊 */}
                 {showLabel && (
                   <motion.text
-                    x={cx + labelDx}
-                    y={cy + labelDy}
+                    data-route-city-label="true"
+                    data-city-id={city.id}
+                    x={markerX + labelDx}
+                    y={markerY + labelDy}
                     fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
                     fontSize={labelFontSize}
                     fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
@@ -485,34 +532,10 @@ export default function ChinaRouteMap({
                   </motion.text>
                 )}
 
-                {/* 出发标签 */}
-                {city.isOrigin && (
-                  <motion.text
-                    x={cx + labelDx}
-                    y={cy + labelDy + 14}
-                    fill="#9b7f10"
-                    fontSize="9"
-                    fontWeight={700}
-                    initial={{ opacity: 0 }}
-                    animate={isInView ? { opacity: 1 } : {}}
-                    transition={{ duration: 0.3, delay: delay + 0.3 }}
-                    style={{
-                      paintOrder: 'stroke',
-                      stroke: '#f2ede4',
-                      strokeWidth: 3,
-                      strokeLinejoin: 'round',
-                      pointerEvents: 'none',
-                      userSelect: 'none',
-                    }}
-                  >
-                    {t['map.origin'] ?? '出发点'}
-                  </motion.text>
-                )}
-
                 {/* 精密事件触发区 */}
                 <circle
-                  cx={cx}
-                  cy={cy}
+                  cx={markerX}
+                  cy={markerY}
                   r={city.visited ? 18 : 12}
                   fill="transparent"
                   className={city.visited ? 'cursor-pointer' : 'cursor-help'}
@@ -553,7 +576,7 @@ export default function ChinaRouteMap({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 3 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                transform={`translate(${hoveredCity.cx}, ${hoveredCity.cy - 10})`}
+                transform={`translate(${hoveredCity.cx}, ${hoveredCity.cy - hoveredCity.elevationOffset - 10})`}
                 style={{ pointerEvents: 'none' }}
               >
                 <rect x={-55} y={-24} width={110} height={18} rx={4} fill="#1a1a1a" stroke="#eab308" strokeWidth={0.6} />
