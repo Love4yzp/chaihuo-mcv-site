@@ -1400,7 +1400,11 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
             >
               {t['hero.body']}
             </motion.p>
-            <motion.div variants={fadeLeft} transition={springTransition} className="flex flex-wrap gap-4">
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
+              transition={{ y: springTransition, opacity: { duration: 0.12, ease: 'easeOut' } }}
+              className="flex flex-wrap gap-4"
+            >
               {/* 了解我们 (About Us) */}
               <motion.a
                 href={localePath('/about', locale)}
