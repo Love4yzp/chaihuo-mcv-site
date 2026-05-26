@@ -137,6 +137,46 @@ test('label placement is indexed by stable city id', () => {
   expect(placements.has('同名')).toBe(false);
 });
 
+test('placeLabels hides a low-priority label that cannot sit near its dot', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'a', label: '甲', cx: 100, cy: 100, order: 0, visited: true }),
+    makeProjectedCity({ id: 'b', label: '乙', cx: 108, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'c', label: '丙', cx: 116, cy: 100, order: 2, visited: true }),
+  ]);
+  const culled = ['a', 'b', 'c'].filter((id) => placements.get(id) === null);
+  expect(culled.length).toBeGreaterThan(0);
+});
+
+test('placeLabels always keeps the origin label even when crowded', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'origin', label: '深圳', cx: 100, cy: 100, order: 0, isOrigin: true, visited: true }),
+    makeProjectedCity({ id: 'x', label: '甲', cx: 106, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'y', label: '乙', cx: 112, cy: 100, order: 2, visited: true }),
+  ]);
+  expect(placements.get('origin')).not.toBeNull();
+});
+
+test('placeLabels keeps a placed label within MAX_LABEL_DISTANCE of its dot', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'solo', label: '成都', cx: 300, cy: 300, order: 0, visited: true }),
+  ]);
+  const offset = placements.get('solo');
+  expect(offset).not.toBeNull();
+  const [dx, dy] = offset as [number, number];
+  expect(Math.hypot(dx, dy)).toBeLessThan(40);
+});
+
+test('placeLabels shows all labels once dots are spread far apart', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'a', label: '甲', cx: 100, cy: 100, order: 0, visited: true }),
+    makeProjectedCity({ id: 'b', label: '乙', cx: 300, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'c', label: '丙', cx: 500, cy: 100, order: 2, visited: true }),
+  ]);
+  expect(placements.get('a')).not.toBeNull();
+  expect(placements.get('b')).not.toBeNull();
+  expect(placements.get('c')).not.toBeNull();
+});
+
 test('route page city hit areas sit on elevation projection endpoints', async ({ page }) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
