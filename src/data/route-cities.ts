@@ -26,6 +26,13 @@ export interface RouteCity {
   relationStats?: string[];
   relationStatsEn?: string[];
   event?: RouteCityEvent;
+  // --- Phase 2 content hub (all optional; rendered when present) ---
+  /** Photo paths under /public (string paths avoid the Astro image-import object gotcha). */
+  photos?: { src: string; alt?: string; caption?: string; caption_en?: string }[];
+  /** Representative people met at this stop. */
+  people?: { name: string; name_en?: string; role?: string; avatar?: string; bio?: string; bio_en?: string }[];
+  /** Representative places/venues at this stop. */
+  places?: { name: string; name_en?: string; image?: string; desc?: string; desc_en?: string }[];
   // --- New Geographic & Tech Telemetry Data ---
   altitude: string;
   terrain: string;
