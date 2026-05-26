@@ -529,7 +529,7 @@ export default function ChinaRouteMap({
         type="button"
         onClick={() => reset()}
         aria-label={t['map.recenter'] ?? '回到全图'}
-        className="absolute bottom-4 right-4 bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-neutral-600 hover:text-brand shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-white/60 cursor-pointer transition-colors duration-200"
+        className="absolute bottom-4 right-4 z-10 bg-white/80 backdrop-blur-md p-2.5 rounded-xl text-neutral-600 hover:text-brand shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-white/60 cursor-pointer transition-colors duration-200"
       >
         <Maximize2 className="w-4 h-4" />
       </button>

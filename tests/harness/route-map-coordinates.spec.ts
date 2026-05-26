@@ -164,7 +164,8 @@ test('placeLabels keeps a placed label within MAX_LABEL_DISTANCE of its dot', ()
   const offset = placements.get('solo');
   expect(offset).not.toBeNull();
   const [dx, dy] = offset as [number, number];
-  expect(Math.hypot(dx, dy)).toBeLessThan(40);
+  // A near placement keeps the raw offset small (centered above/below the dot).
+  expect(Math.hypot(dx, dy)).toBeLessThan(23);
 });
 
 test('placeLabels shows all labels once dots are spread far apart', () => {
@@ -366,19 +367,26 @@ test('route page exposes a recenter control and zooms in on city click', async (
   const recenter = page.getByRole('button', { name: /回到|recenter|full/i });
   await expect(recenter).toBeVisible();
 
-  const labelsAtOverview = (await getVisibleLabelIds(page)).length;
+  // The route map SVG has touch-none + cursor-grab classes; the first <g> child
+  // of that specific SVG is the scaled (zoomable) group.
+  const scaledGroup = page.locator('main svg.touch-none > g').first();
+  const scaleOf = async () => {
+    const t = (await scaledGroup.getAttribute('transform')) ?? '';
+    const m = t.match(/scale\(([\d.]+)\)/);
+    return m ? Number(m[1]) : 1;
+  };
 
   // Click a crowded southern city's hit area to zoom in (nth(1) = 广州, order 1).
-  // Use JS dispatch to bypass SVG viewBox visibility issues on mobile viewport.
+  // JS dispatch avoids SVG viewBox / mobile pointer-interception flakiness.
   await page.locator('main svg circle[fill="transparent"]').nth(1).dispatchEvent('click');
+  await expect.poll(scaleOf, { timeout: 4000 }).toBeGreaterThan(1.2);
 
-  // After zoom-in, dots spread apart → at least as many labels are visible.
-  await expect
-    .poll(async () => (await getVisibleLabelIds(page)).length)
-    .toBeGreaterThanOrEqual(labelsAtOverview);
-
-  // Recenter returns to overview without error.
-  // Use dispatchEvent to bypass mobile nav drawer that may intercept pointer events.
-  await recenter.dispatchEvent('click');
-  await expect(recenter).toBeVisible();
+  // Recenter returns to the full overview (scale ~1).
+  // page.evaluate with querySelector + composed:true is the only method that reliably
+  // reaches React 19's delegated event handler on mobile viewports.
+  await page.evaluate(() => {
+    const btn = document.querySelector('button[aria-label="回到全图"]') as HTMLElement | null;
+    btn?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+  });
+  await expect.poll(scaleOf, { timeout: 4000 }).toBeLessThan(1.05);
 });

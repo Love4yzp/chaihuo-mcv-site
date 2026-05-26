@@ -5,7 +5,13 @@ type LabelOffset = [number, number];
 
 const LABEL_GAP = 7;
 const RECT_PADDING = 2;
-const MAX_LABEL_DISTANCE = 14; // px — a label must sit this close to its dot (dot-to-label-center), or it is hidden
+// px — max distance from a dot to its label-box center. Kept tight on purpose:
+// at this value a label is only placed essentially directly above/below its dot,
+// otherwise it is culled. This is the primary label-density knob — it yields a
+// decluttered overview (few labels when dots are crammed) that progressively
+// reveals more labels as the user zooms in and dots spread apart. Raising it
+// lets labels drift to the sides (denser, but looser to their dots).
+const MAX_LABEL_DISTANCE = 14;
 
 // Distance from the dot to the CENTER of the label box for a given offset.
 function offsetDistance(c: ProjectedCity, dx: number, dy: number): number {
