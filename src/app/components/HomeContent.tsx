@@ -1362,8 +1362,8 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
       {/* Hero Banner */}
       <section className="relative h-screen min-h-[600px] bg-black text-white">
         <Slider {...sliderSettings} className="h-full">
-          {heroImages.map((image, index) => (
-            <div key={index} className="h-screen min-h-[600px] relative">
+          {heroImages.map((image) => (
+            <div key={image.image} className="h-screen min-h-[600px] relative">
               <div
                 className="h-screen min-h-[600px] bg-cover bg-center"
                 style={{ backgroundImage: `url(${image.image})` }}

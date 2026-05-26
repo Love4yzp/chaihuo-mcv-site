@@ -145,9 +145,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             whileInView="visible"
             viewport={defaultViewport}
           >
-            {notes.map((note, index) => (
+            {notes.map((note) => (
               <motion.div
-                key={index}
+                key={note.title}
                 className="bg-white rounded-xl overflow-hidden shadow-sm"
                 variants={fadeUp}
                 transition={springTransition}
