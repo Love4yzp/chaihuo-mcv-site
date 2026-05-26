@@ -1,0 +1,67 @@
+import type { Locale } from './index';
+
+const route: Record<Locale, Record<string, string>> = {
+  zh: {
+    // Page metadata
+    'route.pageTitle': '行程路线',
+    'route.pageDesc': '跟随柴火基地车，穿越中国 21 省 26 城。',
+    // Status and labels
+    'route.status.visited': '已抵达',
+    'route.status.planned': '计划中',
+    'route.status.origin': '出发点',
+    'route.status.latest': '最新',
+    'route.status.upcoming': '即将抵达',
+    'route.status.upcomingDesc': '此城正在计划中，更多细节将在抵达前公开',
+    // Telemetry labels
+    'route.telemetry.hud': '极境测控台',
+    'route.telemetry.sensorsOnline': '传感器在线',
+    'route.telemetry.altitude': '海拔高度',
+    'route.telemetry.terrain': '极境地貌',
+    'route.telemetry.terrainStep': '地形阶梯',
+    'route.telemetry.climate': '局部气候',
+    'route.telemetry.coCreation': '在地共创与科普实绩',
+    'route.telemetry.challenge': '车载测控与极境行车挑战',
+    'route.telemetry.elevationProfile': '海拔高度纵断面',
+    'route.telemetry.currentElevation': '当前海拔',
+    // Action / CTA
+    'route.action.readLocal': '阅读深度纪实',
+    'route.action.readFieldLog': '查看现场连线',
+    'route.action.backHome': '返回首页',
+    // Journals panel
+    'route.journals.title': '关联日记',
+    'route.journals.empty': '暂无关联日记',
+    'route.journals.organizing': '整理中',
+    'route.journals.published': '已发布',
+    'route.journals.tapHint': '点击城市查看',
+  },
+  en: {
+    'route.pageTitle': 'Journey Route',
+    'route.pageDesc': 'Follow Chaihuo MCV across 21 provinces and 26 cities in China.',
+    'route.status.visited': 'Visited',
+    'route.status.planned': 'Planned',
+    'route.status.origin': 'Origin',
+    'route.status.latest': 'Latest',
+    'route.status.upcoming': 'Upcoming',
+    'route.status.upcomingDesc': 'This city is planned. Details will be released upon arrival.',
+    'route.telemetry.hud': 'Telemetry HUD',
+    'route.telemetry.sensorsOnline': 'SENSORS ONLINE',
+    'route.telemetry.altitude': 'ALTITUDE',
+    'route.telemetry.terrain': 'TERRAIN',
+    'route.telemetry.terrainStep': 'TERRAIN STEP',
+    'route.telemetry.climate': 'MICROCLIMATE',
+    'route.telemetry.coCreation': 'LOCAL CO-CREATION',
+    'route.telemetry.challenge': 'CHALLENGE',
+    'route.telemetry.elevationProfile': 'EXPEDITION ELEVATION PROFILE',
+    'route.telemetry.currentElevation': 'Elev',
+    'route.action.readLocal': 'Read full story',
+    'route.action.readFieldLog': 'Read field log',
+    'route.action.backHome': 'Back to Home',
+    'route.journals.title': 'RELATED JOURNALS',
+    'route.journals.empty': 'No related journals',
+    'route.journals.organizing': 'ORGANIZING',
+    'route.journals.published': 'PUBLISHED',
+    'route.journals.tapHint': 'Tap a city to open',
+  }
+};
+
+export default route;

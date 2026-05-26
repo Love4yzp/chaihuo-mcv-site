@@ -1,0 +1,29 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import RouteContent from '@/app/components/RouteContent';
+import { getAllJournals, localizeJournal } from '@/lib/journals';
+import type { Locale } from '@/i18n/index';
+import routeDict from '@/i18n/route';
+
+const locale = (Astro.currentLocale ?? 'en') as Locale;
+const t = routeDict[locale];
+
+// Fetch and serialize journals to plain objects for safe client-side consumption
+const rawJournals = await getAllJournals();
+const journals = rawJournals.map(j => {
+  const localized = localizeJournal(j, locale);
+  return {
+    slug: localized.slug,
+    title: localized.title,
+    date: localized.date,
+    status: localized.status,
+    city: localized.city,
+  };
+});
+---
+
+<BaseLayout title={t['route.pageTitle']} description={t['route.pageDesc']}>
+  <RouteContent client:load journals={journals} locale={locale} t={t} />
+</BaseLayout>

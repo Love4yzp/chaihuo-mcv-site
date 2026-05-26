@@ -41,8 +41,9 @@ const d = ui[locale];
         <h4 class="text-xs uppercase tracking-wider mb-4 text-neutral-700 font-semibold">{d['footer.projectLinks']}</h4>
         <div class="space-y-2 text-sm">
           <a href={localePath('/', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.home']}</a>
+          <a href={localePath('/journals', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.journals']}</a>
+          <a href={localePath('/route', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.route']}</a>
           <a href={localePath('/deconstruct', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.deconstruct']}</a>
-          <a href={localePath('/documentation', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.documentation']}</a>
           <a href={localePath('/guide', locale)} class="block text-neutral-500 hover:text-neutral-900 transition-colors duration-200">{d['nav.guide']}</a>
         </div>
       </div>

@@ -57,8 +57,9 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
   const dict = ui[currentLocale];
   const NAV_LINKS = [
     { to: localePath('/', currentLocale), label: dict['nav.home'], match: '/' },
+    { to: localePath('/journals', currentLocale), label: dict['nav.journals'], match: '/journals' },
+    { to: localePath('/route', currentLocale), label: dict['nav.route'], match: '/route' },
     { to: localePath('/deconstruct', currentLocale), label: dict['nav.deconstruct'], match: '/deconstruct' },
-    { to: localePath('/documentation', currentLocale), label: dict['nav.documentation'], match: '/documentation' },
     { to: localePath('/guide', currentLocale), label: dict['nav.guide'], match: '/guide' },
     { to: localePath('/about', currentLocale), label: dict['nav.about'], match: '/about' },
   ];
