@@ -78,7 +78,9 @@ export default function CityPanel({
   const points = useMemo(() => {
     if (elevationCities.length === 0) return [];
     return elevationCities.map((c, i) => {
-      const x = paddingLeft + (i * plotW) / (elevationCities.length - 1);
+      const x = elevationCities.length > 1
+        ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
+        : paddingLeft + plotW / 2;
       const alt = parseFloat(c.altitude) || 0;
       const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
       return {

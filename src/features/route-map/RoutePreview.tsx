@@ -25,7 +25,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
     () => projected.filter((city) => city.visited).sort((a, b) => a.order - b.order),
     [projected],
   );
-  const current = visited.at(-1);
+  const current = visited.length > 0 ? visited[visited.length - 1] : undefined;
   const origin = visited.find((city) => city.isOrigin);
   const middleAnchor = visited.find(
     (city) => city.anchor && city.label !== origin?.label && city.label !== current?.label,
