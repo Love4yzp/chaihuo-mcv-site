@@ -121,7 +121,7 @@ export default function RoleTimeline({
   }, [segments, roles]);
 
   return (
-    <section className="bg-white py-20 md:py-28 px-6 border-t border-neutral-200">
+    <section className="relative bg-gradient-to-b from-neutral-50 via-white to-white py-24 md:py-36 px-6 border-t border-neutral-100/50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div

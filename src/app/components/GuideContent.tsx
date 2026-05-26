@@ -22,7 +22,7 @@ interface GuideContentProps {
   t: Record<string, string>;
 }
 
-export default function GuideContent({ faqGroups, locale = 'zh', t }: GuideContentProps) {
+export default function GuideContent({ faqGroups, t }: GuideContentProps) {
   const [openFAQs, setOpenFAQs] = useState<Set<string>>(new Set());
 
   return (

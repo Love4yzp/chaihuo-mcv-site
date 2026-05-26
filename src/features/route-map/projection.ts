@@ -13,24 +13,55 @@ export const horseRouteD = 'M 508,453 L 446,450 L 438.39,424.40 L 433.76,409.20 
 export const MAP_WIDTH = 900;
 export const MAP_HEIGHT = 600;
 
-// 过滤掉"南海诸岛/九段线"feature（adcode = 100000_JD），顶部腾出更多空间
-const rawGeo = chinaGeoJson as unknown as FeatureCollection<MultiPolygon | Polygon>;
-export const geoData: FeatureCollection<MultiPolygon | Polygon> = {
+interface ProvinceProperties {
+  adcode?: string | number;
+  name?: string;
+  [key: string]: unknown;
+}
+
+type ProvinceGeometry = MultiPolygon | Polygon;
+type ChinaMapData = FeatureCollection<ProvinceGeometry, ProvinceProperties>;
+
+function rewindGeometry(geom: ProvinceGeometry): ProvinceGeometry {
+  if (geom.type === 'Polygon') {
+    return {
+      type: 'Polygon',
+      coordinates: geom.coordinates.map((ring) => [...ring].reverse()),
+    };
+  } else if (geom.type === 'MultiPolygon') {
+    return {
+      type: 'MultiPolygon',
+      coordinates: geom.coordinates.map((polygon) =>
+        polygon.map((ring) => [...ring].reverse()),
+      ),
+    };
+  }
+  return geom;
+}
+
+// 过滤掉"南海诸岛/九段线"feature（adcode = 100000_JD）并修正多边形绕向以防止 D3 渲染为全幅背景
+const rawGeo = chinaGeoJson as unknown as ChinaMapData;
+export const geoData: ChinaMapData = {
   ...rawGeo,
-  features: rawGeo.features.filter((f) => {
-    const ad = (f.properties as any)?.adcode;
-    const name = (f.properties as any)?.name;
-    if (typeof ad === 'string' && ad.includes('_JD')) return false;
-    if (!name) return false;
-    return true;
-  }),
+  features: rawGeo.features
+    .filter((f) => {
+      const ad = f.properties?.adcode;
+      const name = f.properties?.name;
+      if (typeof ad === 'string' && ad.includes('_JD')) return false;
+      if (!name) return false;
+      return true;
+    })
+    .map((f) => ({
+      ...f,
+      geometry: rewindGeometry(f.geometry)
+    })),
 };
 
-// 手动投影参数 — 居中中国大陆，translate Y 下沉 50px 给顶部留白
+// 居中中国版图，略微缩小 scale，移除下沉 translate，使其在 3:2 容器中完美完整地呈现
 export const projection = geoMercator()
-  .center([104, 35])
-  .scale(MAP_WIDTH / 1.3)
-  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2 + 50]);
+  .center([105, 36])
+  .scale(MAP_WIDTH / 1.48)
+  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2 + 10]);
 
 export const pathGenerator = geoPath().projection(projection);
 

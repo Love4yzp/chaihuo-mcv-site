@@ -76,11 +76,11 @@ const localized = localizeJournal(entry, locale);
       {/* Meta details bar */}
       <div class="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-neutral-500 font-semibold border-b border-neutral-200 pb-6 mb-6">
         <div class="flex items-center gap-2">
-          <Calendar class="w-4 h-4 text-neutral-400" />
+          <Calendar className="w-4 h-4 text-neutral-400" />
           <span>{t['meta.date']}：{localized.date}</span>
         </div>
         <div class="flex items-center gap-2">
-          <MapPin class="w-4 h-4 text-neutral-400" />
+          <MapPin className="w-4 h-4 text-neutral-400" />
           <span>{t['meta.city']}：{localized.cityLabel}</span>
         </div>
       </div>
@@ -89,7 +89,7 @@ const localized = localizeJournal(entry, locale);
       {localized.activities.length > 0 && (
         <div class="mb-4">
           <p class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Activity class="w-3.5 h-3.5" />
+            <Activity className="w-3.5 h-3.5" />
             {t['meta.activities']}
           </p>
           <div class="flex flex-wrap gap-2">
@@ -151,7 +151,7 @@ const localized = localizeJournal(entry, locale);
             class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
           >
             <span>{t['card.yuque']}</span>
-            <ExternalLink class="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
       )}

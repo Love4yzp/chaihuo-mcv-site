@@ -13,11 +13,6 @@ import home from '@/i18n/home';
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = home[locale];
 
-const DAY_MS = 86_400_000;
-const totalDays = Math.round(
-  (new Date(`${PROJECT_END}T00:00:00Z`).getTime() - new Date(`${PROJECT_START}T00:00:00Z`).getTime()) / DAY_MS
-);
-
 const memberById = new Map(teamData.map(m => [m.id, m] as const));
 const memberDisplayName = (id: string | undefined) => {
   if (!id) return null;

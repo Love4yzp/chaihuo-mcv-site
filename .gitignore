@@ -26,6 +26,13 @@ __pycache__/
 
 # Testing
 .playwright*
+playwright-report/
+test-results/
+harness-artifacts/
+
+# Local diagnostics
+scratch/
+.pnpm-store/
 
 # AI agent skill files
 .agent/

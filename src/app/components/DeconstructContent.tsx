@@ -43,6 +43,10 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   BatteryCharging,
 };
 
+const VehicleExplodedView = React.lazy(() =>
+  import('./VehicleExplodedView').then((module) => ({ default: module.VehicleExplodedView })),
+);
+
 // ─── Component ───
 
 export default function DeconstructContent({ notes, equipment, companion, locale = 'zh', t }: Props) {
@@ -109,7 +113,25 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             ))}
           </motion.div>
 
-
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={defaultViewport}
+            transition={springTransition}
+          >
+            <React.Suspense
+              fallback={
+                <div
+                  className="h-[520px] md:h-[620px] rounded-2xl border border-neutral-300/40 bg-neutral-100"
+                  aria-busy="true"
+                  aria-label={t['3d.loading'] || 'Loading vehicle view'}
+                />
+              }
+            >
+              <VehicleExplodedView t={t} />
+            </React.Suspense>
+          </motion.div>
 
         </div>
       </section>

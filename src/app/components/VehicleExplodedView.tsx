@@ -179,7 +179,7 @@ interface VehicleExplodedViewProps {
   t: Record<string, string>;
 }
 
-export function VehicleExplodedView({ locale = 'zh', t }: VehicleExplodedViewProps) {
+export function VehicleExplodedView({ t }: VehicleExplodedViewProps) {
   const [exploded, setExploded] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
@@ -263,7 +263,10 @@ export function VehicleExplodedView({ locale = 'zh', t }: VehicleExplodedViewPro
   const hoveredPart = localizedParts.find((p) => p.id === hovered);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-neutral-300/40 bg-gradient-to-b from-neutral-50 to-neutral-100/90 shadow-[0_24px_50px_rgba(0,0,0,0.06)]">
+    <div
+      data-testid="vehicle-exploded-view"
+      className="relative w-full rounded-2xl overflow-hidden border border-neutral-300/40 bg-gradient-to-b from-neutral-50 to-neutral-100/90 shadow-[0_24px_50px_rgba(0,0,0,0.06)]"
+    >
       {/* 3D Canvas rendering window */}
       <div className="w-full h-[520px] md:h-[620px]">
         <Canvas

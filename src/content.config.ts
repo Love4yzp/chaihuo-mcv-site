@@ -13,9 +13,9 @@ const notes = defineCollection({
     date: z.string(),
     description: z.string(),
     description_en: z.string().optional(),
-    image: z.string().url(),
+    image: z.url(),
     tags: z.array(z.string()),
-    yuqueUrl: z.string().url().optional(),
+    yuqueUrl: z.url().optional(),
   }),
 });
 
@@ -46,7 +46,7 @@ const journals = defineCollection({
     activities_en: z.array(z.string()).default([]),
     // Equipment ids referenced in this entry (match equipment.json item ids).
     equipment: z.array(z.string()).default([]),
-    yuqueUrl: z.string().url().optional(),
+    yuqueUrl: z.url().optional(),
     tags: z.array(z.string()).default([]),
   }),
 });

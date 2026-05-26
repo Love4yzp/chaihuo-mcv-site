@@ -1,0 +1,305 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import ts from 'typescript';
+
+const root = process.cwd();
+const failures = [];
+let checks = 0;
+
+function check(condition, message) {
+  checks += 1;
+  if (!condition) failures.push(message);
+}
+
+function readJson(relativePath) {
+  return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
+}
+
+function stripQuotes(value) {
+  const trimmed = value.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+function parseFrontmatter(filePath) {
+  const source = fs.readFileSync(filePath, 'utf8');
+  const match = source.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  check(Boolean(match), `${filePath}: missing frontmatter block`);
+  if (!match) return { data: {}, body: '' };
+
+  const data = {};
+  let currentArrayKey = null;
+  for (const rawLine of match[1].split('\n')) {
+    const line = rawLine.trimEnd();
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+
+    const arrayItem = line.match(/^\s*-\s*(.*)$/);
+    if (arrayItem && currentArrayKey) {
+      data[currentArrayKey].push(stripQuotes(arrayItem[1]));
+      continue;
+    }
+
+    const keyValue = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+    if (!keyValue) continue;
+
+    const [, key, rawValue] = keyValue;
+    if (rawValue === '') {
+      data[key] = [];
+      currentArrayKey = key;
+    } else if (rawValue === '[]') {
+      data[key] = [];
+      currentArrayKey = null;
+    } else {
+      data[key] = stripQuotes(rawValue);
+      currentArrayKey = null;
+    }
+  }
+
+  return { data, body: match[2] };
+}
+
+function loadTsModule(relativePath) {
+  const filePath = path.join(root, relativePath);
+  const source = fs.readFileSync(filePath, 'utf8');
+  const compiled = ts.transpileModule(source, {
+    compilerOptions: {
+      esModuleInterop: true,
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2022,
+    },
+    fileName: filePath,
+  }).outputText;
+  const module = { exports: {} };
+  vm.runInNewContext(
+    compiled,
+    {
+      exports: module.exports,
+      module,
+      require: (specifier) => {
+        throw new Error(`${relativePath}: unexpected runtime import ${specifier}`);
+      },
+    },
+    { filename: filePath },
+  );
+  return module.exports;
+}
+
+function walkFiles(dir, predicate, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkFiles(fullPath, predicate, out);
+    } else if (predicate(fullPath)) {
+      out.push(fullPath);
+    }
+  }
+  return out;
+}
+
+function hasUniqueIds(items, label) {
+  const seen = new Set();
+  for (const item of items) {
+    check(Boolean(item.id), `${label}: item is missing id`);
+    if (!item.id) continue;
+    check(!seen.has(item.id), `${label}: duplicate id "${item.id}"`);
+    seen.add(item.id);
+  }
+  return seen;
+}
+
+function isDateString(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+}
+
+function isHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function publicAssetExists(assetPath) {
+  if (!assetPath || isHttpUrl(assetPath)) return true;
+  if (!assetPath.startsWith('/')) return false;
+  return fs.existsSync(path.join(root, 'public', assetPath.slice(1)));
+}
+
+function compareLocaleDictionaries() {
+  const dir = path.join(root, 'src/i18n');
+  const files = fs
+    .readdirSync(dir)
+    .filter((name) => name.endsWith('.ts') && name !== 'index.ts');
+
+  for (const file of files) {
+    const mod = loadTsModule(`src/i18n/${file}`);
+    const dict = mod.default;
+    check(Boolean(dict?.zh), `${file}: missing zh dictionary`);
+    check(Boolean(dict?.en), `${file}: missing en dictionary`);
+    if (!dict?.zh || !dict?.en) continue;
+
+    const zhKeys = new Set(Object.keys(dict.zh));
+    const enKeys = new Set(Object.keys(dict.en));
+    for (const key of zhKeys) check(enKeys.has(key), `${file}: en missing key "${key}"`);
+    for (const key of enKeys) check(zhKeys.has(key), `${file}: zh missing key "${key}"`);
+  }
+}
+
+function validateRouteMirrors() {
+  const pagesDir = path.join(root, 'src/pages');
+  const zhPages = walkFiles(
+    pagesDir,
+    (file) => file.endsWith('.astro') && !file.includes(`${path.sep}en${path.sep}`),
+  );
+
+  for (const page of zhPages) {
+    const rel = path.relative(pagesDir, page);
+    const enMirror = path.join(pagesDir, 'en', rel);
+    check(fs.existsSync(enMirror), `src/pages/${rel}: missing English mirror at src/pages/en/${rel}`);
+  }
+}
+
+function validateStructuredData() {
+  const team = readJson('src/data/team.json');
+  const boardings = readJson('src/data/boardings.json');
+  const equipment = readJson('src/data/equipment.json');
+  const heroes = readJson('src/data/heroes.json');
+  const faq = readJson('src/data/faq.json');
+  const partners = readJson('src/data/partners.json');
+  const { routeCities } = loadTsModule('src/data/route-cities.ts');
+
+  const teamIds = hasUniqueIds(team, 'team.json');
+  const equipmentIds = hasUniqueIds(equipment, 'equipment.json');
+  hasUniqueIds(heroes, 'heroes.json');
+  hasUniqueIds(faq, 'faq.json');
+  hasUniqueIds(partners, 'partners.json');
+  const routeCityIds = hasUniqueIds(routeCities, 'route-cities.ts');
+
+  for (const member of team) {
+    check(publicAssetExists(member.image), `team.json:${member.id}: missing public image ${member.image}`);
+  }
+
+  for (const hero of heroes) {
+    check(Boolean(hero.alt), `heroes.json:${hero.id}: missing zh alt text`);
+    check(Boolean(hero.alt_en), `heroes.json:${hero.id}: missing en alt text`);
+    check(publicAssetExists(hero.image), `heroes.json:${hero.id}: missing public image ${hero.image}`);
+  }
+
+  const boardingIds = hasUniqueIds(boardings, 'boardings.json');
+  for (const boarding of boardings) {
+    check(teamIds.has(boarding.crewId), `boardings.json:${boarding.id}: unknown crewId "${boarding.crewId}"`);
+    check(isDateString(boarding.boardedAt?.date), `boardings.json:${boarding.id}: invalid boardedAt.date`);
+    check(Boolean(boarding.boardedAt?.location_en), `boardings.json:${boarding.id}: missing boardedAt.location_en`);
+    if (boarding.disembarkedAt) {
+      check(isDateString(boarding.disembarkedAt.date), `boardings.json:${boarding.id}: invalid disembarkedAt.date`);
+      check(
+        boarding.disembarkedAt.date >= boarding.boardedAt.date,
+        `boardings.json:${boarding.id}: disembarkedAt.date is before boardedAt.date`,
+      );
+      check(Boolean(boarding.disembarkedAt.location_en), `boardings.json:${boarding.id}: missing disembarkedAt.location_en`);
+      if (boarding.disembarkedAt.handoffTo) {
+        check(
+          teamIds.has(boarding.disembarkedAt.handoffTo),
+          `boardings.json:${boarding.id}: unknown handoffTo "${boarding.disembarkedAt.handoffTo}"`,
+        );
+      }
+    }
+  }
+  check(boardingIds.size === boardings.length, 'boardings.json: duplicate ids detected');
+
+  for (const category of equipment) {
+    check(Boolean(category.title_en), `equipment.json:${category.id}: missing title_en`);
+    for (const item of category.items ?? []) {
+      check(Boolean(item.name_en), `equipment.json:${category.id}: item "${item.name}" missing name_en`);
+      check(Boolean(item.spec_en), `equipment.json:${category.id}: item "${item.name}" missing spec_en`);
+    }
+  }
+
+  const orders = new Set();
+  for (const city of routeCities) {
+    check(/^[a-z0-9-]+$/.test(city.id), `route-cities.ts:${city.id}: id must be kebab-case ascii`);
+    check(!orders.has(city.order), `route-cities.ts:${city.id}: duplicate order ${city.order}`);
+    orders.add(city.order);
+    check(Number.isFinite(city.lng) && Number.isFinite(city.lat), `route-cities.ts:${city.id}: invalid coordinates`);
+    check(Boolean(city.label_en), `route-cities.ts:${city.id}: missing label_en`);
+    check(Boolean(city.terrainEn), `route-cities.ts:${city.id}: missing terrainEn`);
+    check(Boolean(city.terrainStepEn), `route-cities.ts:${city.id}: missing terrainStepEn`);
+    check(Boolean(city.climateEn), `route-cities.ts:${city.id}: missing climateEn`);
+    check(Boolean(city.challengeEn), `route-cities.ts:${city.id}: missing challengeEn`);
+    if (city.relationStats) {
+      check(
+        Array.isArray(city.relationStatsEn) && city.relationStatsEn.length === city.relationStats.length,
+        `route-cities.ts:${city.id}: relationStatsEn must match relationStats length`,
+      );
+    }
+    if (city.event) {
+      check(Boolean(city.event.summary_en), `route-cities.ts:${city.id}: event missing summary_en`);
+      if (city.event.link) check(isHttpUrl(city.event.link), `route-cities.ts:${city.id}: event link is not a URL`);
+      if (city.event.linkLabel) {
+        check(Boolean(city.event.linkLabel_en), `route-cities.ts:${city.id}: event missing linkLabel_en`);
+      }
+    }
+  }
+
+  return { routeCityIds, teamIds, equipmentIds };
+}
+
+function validateJournals({ routeCityIds, teamIds, equipmentIds }) {
+  const journalFiles = walkFiles(
+    path.join(root, 'src/content/journals'),
+    (file) => file.endsWith('.md'),
+  );
+
+  for (const file of journalFiles) {
+    const rel = path.relative(root, file);
+    const { data, body } = parseFrontmatter(file);
+    check(isDateString(data.date), `${rel}: invalid date`);
+    check(['published', 'placeholder', 'draft'].includes(data.status), `${rel}: invalid status "${data.status}"`);
+    check(routeCityIds.has(data.city), `${rel}: unknown city "${data.city}"`);
+    check(Boolean(data.title_en), `${rel}: missing title_en`);
+    check(Boolean(data.excerpt_en), `${rel}: missing excerpt_en`);
+
+    for (const personId of data.people ?? []) {
+      check(teamIds.has(personId), `${rel}: unknown person id "${personId}"`);
+    }
+    for (const equipmentId of data.equipment ?? []) {
+      check(equipmentIds.has(equipmentId), `${rel}: unknown equipment id "${equipmentId}"`);
+    }
+
+    if ((data.activities ?? []).length > 0) {
+      check(
+        Array.isArray(data.activities_en) && data.activities_en.length === data.activities.length,
+        `${rel}: activities_en must match activities length`,
+      );
+    }
+    if (data.coverImage) {
+      check(publicAssetExists(data.coverImage), `${rel}: missing coverImage ${data.coverImage}`);
+    }
+    if (data.yuqueUrl) {
+      check(isHttpUrl(data.yuqueUrl), `${rel}: yuqueUrl is not a URL`);
+    }
+    if (data.status === 'published') {
+      check(body.trim().length > 40, `${rel}: published journal body is too short`);
+    }
+  }
+}
+
+compareLocaleDictionaries();
+validateRouteMirrors();
+validateJournals(validateStructuredData());
+
+if (failures.length > 0) {
+  console.error(`Site validation failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`);
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+
+console.log(`Site validation passed (${checks} checks).`);

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
 import gsap from 'gsap';
@@ -72,7 +72,6 @@ const MILESTONE_TITLES: Record<string, { zh: string; en: string }> = {
 function YearSpotlight({ items, locale = 'zh', t }: { items: EnrichedYear[]; locale?: Locale; t: Record<string, string> }) {
   // Separate timeline into curated highlights (Milestones) and minor chronicles
   const milestones = useMemo(() => items.filter(item => item.isHighlight), [items]);
-  const minorYears = useMemo(() => items.filter(item => !item.isHighlight), [items]);
 
   const [activeYear, setActiveYear] = useState(milestones[0]?.year);
   const [showFullHistory, setShowFullHistory] = useState(false);

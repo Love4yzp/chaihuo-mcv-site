@@ -120,7 +120,7 @@ export default function ChinaRouteMap({
     const box = mapRef.current.getBoundingClientRect();
     const x = (e.clientX - box.left - box.width / 2) / (box.width / 2);
     const y = (e.clientY - box.top - box.height / 2) / (box.height / 2);
-    
+
     // Smooth 3D tilt tracking layered on top of baseline
     setRotate({
       x: 20 - y * 8, // tilt pitch range
@@ -148,10 +148,10 @@ export default function ChinaRouteMap({
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full h-full bg-[#f5f2eb] border border-neutral-350/30 overflow-hidden rounded-2xl shadow-[inset_0_4px_30px_rgba(0,0,0,0.02),0_15px_40px_rgba(0,0,0,0.03)] p-6 transition-all duration-300"
+      className="relative w-full h-full bg-[#ebdcb9] border border-neutral-300/40 overflow-hidden rounded-2xl shadow-[inset_0_4px_30px_rgba(0,0,0,0.01),0_15px_40px_rgba(0,0,0,0.03)] p-6 transition-all duration-300"
     >
       {/* Background Holographic Tech Grid Layer */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-[0.02] transition-opacity duration-500"
         style={{
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, transparent 1px)',
@@ -160,7 +160,7 @@ export default function ChinaRouteMap({
       />
 
       {/* Dynamic Hover Glow Backlight */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-700 select-none"
         style={{
           opacity: isHovered ? 1 : 0,
@@ -168,9 +168,18 @@ export default function ChinaRouteMap({
         }}
       />
 
-      {/* Flat Sandbox Map Board */}
+      {/* Interactive 3D Sandbox Map Board */}
       <motion.div
         className="w-full h-full relative"
+        style={{
+          transform: `perspective(1200px) rotateX(${rotate.x}deg) rotateY(${rotate.y}deg)`,
+          transformStyle: "preserve-3d",
+        }}
+        animate={{
+          rotateX: rotate.x,
+          rotateY: rotate.y,
+        }}
+        transition={{ type: "spring", damping: 25, stiffness: 180 }}
       >
         <svg
           viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
@@ -199,7 +208,7 @@ export default function ChinaRouteMap({
             <line x1={0} y1={300} x2={MAP_WIDTH} y2={300} stroke="#a16207" strokeWidth="0.5" />
             <line x1={0} y1={400} x2={MAP_WIDTH} y2={400} stroke="#a16207" strokeWidth="0.5" />
             <line x1={0} y1={500} x2={MAP_WIDTH} y2={500} stroke="#a16207" strokeWidth="0.5" />
-            
+
             <line x1={150} y1={0} x2={150} y2={MAP_HEIGHT} stroke="#a16207" strokeWidth="0.5" />
             <line x1={300} y1={0} x2={300} y2={MAP_HEIGHT} stroke="#a16207" strokeWidth="0.5" />
             <line x1={450} y1={0} x2={450} y2={MAP_HEIGHT} stroke="#a16207" strokeWidth="0.5" />
@@ -212,28 +221,21 @@ export default function ChinaRouteMap({
             <circle cx={508} cy={453} r={240} />
           </g>
 
-          {/* 省份轮廓 */}
+          {/* 省份轮廓 (High-Contrast Floating Silhouette) */}
           <g>
             {geoData.features.map((feature) => {
-              const raw = pathGenerator(feature);
-              if (!raw) return null;
-              const parts = raw.split(/(?=M)/);
-              const d = parts.filter((p) => {
-                const firstCoord = p.match(/^M([-\d.]+),([-\d.]+)/);
-                if (!firstCoord) return false;
-                const x = parseFloat(firstCoord[1]);
-                const y = parseFloat(firstCoord[2]);
-                return x > -100 && x < MAP_WIDTH + 100 && y > -100 && y < MAP_HEIGHT + 100;
-              }).join('');
+              const d = pathGenerator(feature);
               if (!d) return null;
+              const provinceName = feature.properties?.name || '';
+              const isVisited = ['广东', '广西', '贵州', '四川'].some(p => provinceName.includes(p));
               return (
                 <path
                   key={feature.properties?.adcode ?? feature.properties?.name}
                   d={d}
-                  fill="#f2ede4"
-                  stroke="#ded5be"
-                  strokeWidth="0.85"
-                  className="transition-colors duration-300 hover:fill-[#eae4d8]"
+                  fill={isVisited ? "#fdf6d2" : "#ffffff"}
+                  stroke={isVisited ? "#d4b423" : "#e3ded0"}
+                  strokeWidth={isVisited ? "1.2" : "0.75"}
+                  className="transition-colors duration-300 hover:fill-[#f8f6ee]"
                 />
               );
             })}
@@ -264,7 +266,7 @@ export default function ChinaRouteMap({
             const dx = toPt[0] - fromPt[0];
             const dy = toPt[1] - fromPt[1];
             const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
-            
+
             // 镜像对称性
             const side = seg.to.order > seg.from.order ? 1 : -1;
             const cpX = midX + (dy > 0 ? -offset : offset) * 0.5 * side;

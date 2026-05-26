@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { fadeUp, stagger, springTransition, hoverLift } from './motion';
+import { fadeUp, stagger, springTransition } from './motion';
 import { Clock, MapPin, ChevronDown, Mountain, Compass, AlertCircle, ArrowRight } from 'lucide-react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';

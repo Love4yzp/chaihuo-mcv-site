@@ -7,14 +7,13 @@ const Slider = (
 ) as typeof ReactSlick;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Flag, MapPin, Route, type LucideIcon } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { routeCities } from "@/data/route-cities";
 import RoutePreview from "@/features/route-map/RoutePreview";
 import { localizeCity } from "@/features/route-map/projection";
 import {
   fadeUp,
   fadeLeft,
-  fadeIn,
   stagger,
   springTransition,
   defaultViewport,
@@ -72,31 +71,6 @@ function getDepartureDays(now = new Date()) {
   return Math.max(0, Math.floor((today - DEPARTURE_DATE) / MS_PER_DAY));
 }
 
-function TelemetryItem({
-  icon: Icon,
-  value,
-  label,
-}: {
-  icon: LucideIcon;
-  value: string;
-  label: string;
-}) {
-  return (
-    <div className="min-w-0 flex items-center gap-3">
-      <Icon className="h-4 w-4 shrink-0 text-brand" />
-      <div className="min-w-0">
-        <div className="truncate font-mono text-lg font-semibold leading-tight text-neutral-900">
-          {value}
-        </div>
-        <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-neutral-400">
-          {label}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
 export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
   // Localized cities for current locale
   const localizedCities = useMemo(
@@ -116,16 +90,6 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     [],
   );
   const departureDays = getDepartureDays();
-  const telemetryItems = [
-    {
-      icon: Flag,
-      value: `${visitedCount}/${routeCities.length}`,
-      label: t['telemetry.arrivedStops'],
-    },
-    { icon: Route, value: '21', label: t['telemetry.planProvinces'] },
-    { icon: CalendarDays, value: String(departureDays), label: t['telemetry.days'] },
-    { icon: MapPin, value: lastVisited?.label ?? '-', label: t['telemetry.current'] },
-  ];
 
   const SliderPrevArrow = ({ onClick }: { onClick?: () => void }) => (
     <button
@@ -214,12 +178,12 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               <motion.a
                 href={localePath('/about', locale)}
                 className="pointer-events-auto border border-white/20 bg-white/5 backdrop-blur-sm text-white px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer group"
-                whileHover={{ 
-                  y: -4, 
-                  scale: 1.02, 
-                  backgroundColor: "rgba(255, 255, 255, 0.15)", 
+                whileHover={{
+                  y: -4,
+                  scale: 1.02,
+                  backgroundColor: "rgba(255, 255, 255, 0.15)",
                   borderColor: "rgba(255, 255, 255, 0.4)",
-                  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)" 
+                  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)"
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", damping: 20, stiffness: 300 }}
@@ -232,12 +196,12 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               <motion.a
                 href={localePath('/guide', locale)}
                 className="pointer-events-auto border border-brand/35 bg-brand/10 backdrop-blur-md text-brand px-8 py-4 rounded-full flex items-center gap-2 cursor-pointer font-semibold group shadow-[0_4px_20px_rgba(243,210,48,0.08)]"
-                whileHover={{ 
-                  y: -4, 
-                  scale: 1.02, 
-                  backgroundColor: "rgba(243, 210, 48, 0.2)", 
+                whileHover={{
+                  y: -4,
+                  scale: 1.02,
+                  backgroundColor: "rgba(243, 210, 48, 0.2)",
                   borderColor: "rgba(243, 210, 48, 0.55)",
-                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.25)" 
+                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.25)"
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", damping: 20, stiffness: 300 }}
@@ -255,48 +219,190 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
         </div>
       </section>
 
-
-      <motion.section
-        className="bg-neutral-50 text-black py-20 px-6"
-        initial="hidden"
-        whileInView="visible"
-        viewport={defaultViewport}
-        variants={stagger(0.16)}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <motion.div variants={fadeUp}>
-              <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-                {t['route.title1']}
-                <br />
-                <span>{t['route.title2']}</span>
-              </h2>
-              <p className="mt-4 text-neutral-500 leading-relaxed max-w-xl">
-                {t['route.body']}
-              </p>
-              <div className="mt-8 grid grid-cols-2 gap-5 border-y border-neutral-200 py-5 md:grid-cols-4 lg:grid-cols-2">
-                {telemetryItems.map((item) => (
-                  <TelemetryItem key={item.label} {...item} />
-                ))}
-              </div>
-              <motion.a
-                href={localePath('/route', locale)}
-                className="mt-8 inline-flex items-center gap-2 bg-neutral-900 text-white px-6 py-3 rounded-sm hover:bg-brand hover:text-brand-foreground transition-colors duration-200 cursor-pointer text-sm font-medium"
-                {...buttonPress}
-              >
-                {t['routePreview.cta']}
-                <ChevronRight className="w-4 h-4" />
-              </motion.a>
-            </motion.div>
+      <section className="bg-neutral-50 text-black py-16 md:py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
+            {/* 左侧栏: 极境测控指令台 (Col-span 5) */}
             <motion.div
-              className="aspect-[3/2] overflow-hidden rounded-lg border border-neutral-200 bg-[#f7f4ed] shadow-sm"
-              variants={fadeIn}
+              initial="hidden"
+              whileInView="visible"
+              viewport={defaultViewport}
+              variants={stagger(0.12)}
+              className="lg:col-span-5 flex flex-col justify-between gap-6"
             >
-              <RoutePreview cities={localizedCities} ariaLabel={t['routePreview.aria']} />
+              <div>
+                <motion.span
+                  variants={fadeUp}
+                  className="text-xs font-mono uppercase tracking-[0.25em] text-neutral-400 font-bold mb-3 block"
+                >
+                  EXPEDITION RADAR / 极境测控
+                </motion.span>
+                <motion.h2
+                  variants={fadeUp}
+                  transition={springTransition}
+                  className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-neutral-900 tracking-tight"
+                >
+                  {t['route.title1']}
+                  <span className="text-brand-dark block mt-1">{t['route.title2']}</span>
+                </motion.h2>
+                <motion.p
+                  variants={fadeUp}
+                  transition={springTransition}
+                  className="text-neutral-500 leading-relaxed text-sm md:text-base mt-4"
+                >
+                  {t['route.body']}
+                </motion.p>
+              </div>
+
+              {/* 实时数据看板 (Telemetry Grid) */}
+              <motion.div
+                variants={fadeUp}
+                transition={springTransition}
+                className="grid grid-cols-2 gap-3"
+              >
+                <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.arrivedStops']}</div>
+                  <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-baseline gap-1">
+                    <span>{visitedCount}</span>
+                    <span className="text-xs text-neutral-450 font-normal">/ {routeCities.length} stops</span>
+                  </div>
+                </div>
+
+                <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between relative overflow-hidden group">
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.days']}</div>
+                  <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-center gap-2">
+                    <span>{departureDays}</span>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.current']}</div>
+                  <div className="text-base font-bold text-neutral-900 mt-1 truncate">{lastVisited?.label ?? '-'}</div>
+                </div>
+
+                <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.planProvinces']}</div>
+                  <div className="text-base font-bold text-neutral-900 mt-1">21 省 26 城</div>
+                </div>
+              </motion.div>
+
+              {/* 车载环境信息实时流 (Live Environment Log) */}
+              {lastVisited && (
+                <motion.div
+                  variants={fadeUp}
+                  transition={springTransition}
+                  className="bg-neutral-900/95 text-white p-4.5 rounded-xl border border-white/10 shadow-lg font-mono relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent bg-[length:100%_4px] pointer-events-none" />
+
+                  <div className="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3 text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                      // prometheus active telemetry
+                    </span>
+                    <span>live feed</span>
+                  </div>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-neutral-500">ALT / 海拔</span>
+                      <span className="text-brand font-bold">{lastVisited.altitude} m</span>
+                    </div>
+                    <div className="flex justify-between items-baseline gap-4">
+                      <span className="text-neutral-500 shrink-0">GEO / 地貌</span>
+                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={locale === 'zh' ? lastVisited.terrain : lastVisited.terrainEn}>
+                        {locale === 'zh' ? lastVisited.terrain : lastVisited.terrainEn}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-baseline gap-4">
+                      <span className="text-neutral-500 shrink-0">CLM / 气候</span>
+                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={locale === 'zh' ? lastVisited.climate : lastVisited.climateEn}>
+                        {locale === 'zh' ? lastVisited.climate : lastVisited.climateEn}
+                      </span>
+                    </div>
+                    <div className="border-t border-neutral-800/60 pt-2 mt-2 flex flex-col gap-1">
+                      <span className="text-[10px] text-brand/75 uppercase tracking-wider font-semibold">Current Tech Challenge / 实时技术挑战:</span>
+                      <span className="text-neutral-300 leading-relaxed text-[11px] font-sans mt-0.5">
+                        {locale === 'zh' ? lastVisited.challenge : lastVisited.challengeEn}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* 路线查看 CTA 按钮 */}
+              <motion.div variants={fadeUp} className="pt-2">
+                <motion.a
+                  href={localePath('/route', locale)}
+                  className="inline-flex items-center gap-2 bg-neutral-900 hover:bg-brand text-white hover:text-brand-foreground px-6 py-3.5 rounded-xl transition-all duration-300 cursor-pointer text-sm font-bold shadow-lg hover:shadow-brand/20 group w-full justify-center lg:w-auto"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span>{t['routePreview.cta']}</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                </motion.a>
+              </motion.div>
             </motion.div>
+
+            {/* 右侧栏: 测控地图玻璃卡框 (Col-span 7) */}
+            <div className="lg:col-span-7 flex flex-col justify-center">
+              <motion.div
+                className="relative w-full rounded-2xl overflow-hidden shadow-[0_15px_45px_rgba(0,0,0,0.05)] border border-neutral-300/40 bg-[#ebdcb9]"
+                style={{ aspectRatio: '4/3' }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.1 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="absolute inset-0">
+                  <RoutePreview cities={localizedCities} ariaLabel={t['routePreview.aria']} />
+                </div>
+
+                {/* 当前活动城市标签 */}
+                {lastVisited && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6, duration: 0.4 }}
+                    className="absolute top-4 left-4 bg-neutral-900/90 backdrop-blur-md text-white px-3.5 py-2.5 rounded-xl shadow-lg flex items-center gap-2.5 border border-white/10"
+                  >
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand"></span>
+                    </span>
+                    <div>
+                      <span className="text-[9px] text-neutral-450 uppercase tracking-wider font-semibold block leading-none">
+                        {t['telemetry.current']}
+                      </span>
+                      <span className="text-sm font-bold text-white leading-tight mt-0.5 block">
+                        {lastVisited.label}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* 地图图例标注 */}
+                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                  <div className="bg-white/80 backdrop-blur-md px-3.5 py-2.5 rounded-xl text-xs text-neutral-600 flex items-center gap-3.5 shadow-md border border-white/60">
+                    <span className="flex items-center gap-1.5 font-medium select-none">
+                      <span className="w-2.5 h-2.5 rounded-full bg-brand" />
+                      {t['map.visited'] ?? '已到达'}
+                    </span>
+                    <span className="flex items-center gap-1.5 font-medium select-none">
+                      <span className="w-2.5 h-2.5 rounded-full bg-white border border-neutral-400" />
+                      {t['map.planned'] ?? '计划中'}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* 在路上的人 - 三角色时间轴 */}
       <RoleTimeline

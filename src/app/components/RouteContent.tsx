@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { ChevronLeft, MapPin, ArrowUpRight, Activity } from "lucide-react";
+import { motion } from "motion/react";
+import { ChevronLeft, MapPin } from "lucide-react";
 import { ChinaRouteMap, CityPanel, localizeCity } from "@/features/route-map";
-import { routeCities, type RouteCity } from "@/data/route-cities";
+import { routeCities } from "@/data/route-cities";
 import type { Locale } from "@/i18n/index";
 
 interface SerializedJournal {
@@ -159,7 +159,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
             drag="y"
             dragConstraints={{ top: -500, bottom: 500 }}
             dragElastic={0.15}
-            onDragEnd={(e, info) => {
+            onDragEnd={(_, info) => {
               // Expand if dragged upwards significantly, collapse if dragged down
               if (info.offset.y < -50) {
                 setIsDrawerExpanded(true);
