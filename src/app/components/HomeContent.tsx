@@ -471,7 +471,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
         </div>
       </section>
 
-      {/* 完整纪实 CTA */}
+      {/* 旅途日记 CTA */}
       <section className="py-16 px-6 border-t border-neutral-200">
         <motion.div
           className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6"
