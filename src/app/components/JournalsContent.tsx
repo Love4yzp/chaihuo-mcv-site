@@ -220,11 +220,11 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
                               loading="lazy"
                             />
                           ) : (
-                            <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-200 p-4">
-                              <span className="text-xs tracking-[0.2em] font-semibold text-neutral-400 uppercase mb-1">
-                                {t['meta.city']}
+                            <div className="w-full h-full flex flex-col justify-between bg-gradient-to-br from-neutral-800 to-neutral-950 p-5 text-white">
+                              <span className="text-[11px] tracking-[0.25em] font-semibold text-neutral-400 uppercase">
+                                {entry.date}
                               </span>
-                              <span className="text-2xl font-bold text-neutral-700 tracking-wide">
+                              <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-none">
                                 {entry.cityLabel}
                               </span>
                             </div>
@@ -266,34 +266,28 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
                       onMouseEnter={() => setHoveredCardId(entry.slug)}
                       onMouseLeave={() => setHoveredCardId(null)}
                     >
-                      <div className="block bg-neutral-950 text-white rounded-xl border border-neutral-800 p-6 shadow-xs h-60 flex flex-col justify-between overflow-hidden relative">
-                        {/* Subtle noise effect overlay */}
-                        <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-
-                        {/* Top Section: City and Status badge */}
+                      <div className="block bg-surface text-neutral-700 rounded-xl border border-dashed border-neutral-300 p-5 shadow-none h-44 flex flex-col justify-between overflow-hidden">
+                        {/* Top: date / city / status chip */}
                         <div>
-                          <div className="flex items-center justify-between mb-4">
-                            <span className="text-2xl font-black tracking-wide text-neutral-100">
-                              {entry.cityLabel}
-                            </span>
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                          <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-neutral-500">
+                            <span>{entry.date}</span>
+                            <span>•</span>
+                            <span className="text-neutral-600">{entry.cityLabel}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <h3 className="text-base font-semibold text-neutral-800 line-clamp-1 leading-snug">
+                              {entry.title}
+                            </h3>
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-neutral-500 bg-neutral-100 border border-neutral-200">
                               <Clock className="w-3 h-3" />
                               {t['card.placeholder.label']}
                             </span>
                           </div>
-
-                          {/* Preview summary of findCity(city).challenge */}
-                          {telemetry && (
-                            <p className="text-xs text-neutral-400 line-clamp-3 leading-relaxed mt-2 italic font-serif">
-                              “{telemetry.challenge}”
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Bottom Label (Indicates non-clickable interactive hover) */}
-                        <div className="text-[10px] font-bold text-neutral-500 tracking-wider uppercase mt-4 flex items-center gap-1 select-none">
-                          <Compass className="w-3 h-3 animate-pulse" />
-                          {locale === 'en' ? 'HOVER TO VIEW TELEMETRY' : '悬停查看地理解析'}
+                          {/* Author-written excerpt is the right preview here.
+                              Telemetry stays in the hover popover only. */}
+                          <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">
+                            {entry.excerpt}
+                          </p>
                         </div>
                       </div>
 
