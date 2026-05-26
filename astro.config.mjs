@@ -12,6 +12,13 @@ export default defineConfig({
     locales: ['zh', 'en'],
     routing: { prefixDefaultLocale: false },
   },
+  // Legacy /documentation collection retired in favor of /journals.
+  // Top-level URLs redirect; deep links to old doc slugs fall through to 404,
+  // which is acceptable since those slugs were placeholder content.
+  redirects: {
+    '/documentation': '/journals',
+    '/en/documentation': '/en/journals',
+  },
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],

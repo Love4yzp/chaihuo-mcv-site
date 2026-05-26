@@ -1,0 +1,24 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import JournalsContent from '@/app/components/JournalsContent';
+import { getAllJournals, localizeJournal } from '@/lib/journals';
+import type { Locale } from '@/i18n/index';
+import journalsDict from '@/i18n/journals';
+
+const locale = (Astro.currentLocale ?? 'en') as Locale;
+const t = journalsDict[locale];
+
+// Fetch all active journals (excluding drafts)
+const journalsCollection = await getAllJournals({ includeDrafts: false });
+
+// Map all journals to localized formats
+const localizedJournals = journalsCollection.map((entry) =>
+  localizeJournal(entry, locale)
+);
+---
+
+<BaseLayout title={t['title']} description={t['description']}>
+  <JournalsContent client:load journals={localizedJournals} locale={locale} t={t} />
+</BaseLayout>

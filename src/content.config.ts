@@ -16,25 +16,31 @@ const notes = defineCollection({
   }),
 });
 
-const docs = defineCollection({
-  loader: glob({ base: './src/content/docs', pattern: '**/*.md' }),
+// 旅途日记 — primary travel content. Linked to cities/people by stable id,
+// not by Chinese display name, so renames don't break references.
+const journals = defineCollection({
+  loader: glob({ base: './src/content/journals', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
     title_en: z.string().optional(),
     date: z.string(),
-    category: z.enum(['人物访谈', '路上VLOG', '公益合作纪录片']),
-    description: z.string(),
-    description_en: z.string().optional(),
-    author: z.string().optional(),
-    author_en: z.string().optional(),
-    readTime: z.string().optional(),
-    readTime_en: z.string().optional(),
-    coverImage: z.string().url().optional(),
-    videoLinks: z.array(z.object({
-      platform: z.string(),
-      url: z.string(),
-    })).default([]),
-    pdfName: z.string().optional(),
+    // Editorial state. Explicit field — never inferred from body length.
+    //  - published:   live entry with real content
+    //  - placeholder: stop is on the map but the write-up isn't ready
+    //  - draft:       work in progress, hidden from public listings
+    status: z.enum(['published', 'placeholder', 'draft']),
+    // Stable city id (e.g. 'guiyang') — must match RouteCity.id.
+    city: z.string(),
+    // Stable people ids (e.g. ['he-laoshi']). Names live in src/data/team.json.
+    people: z.array(z.string()).default([]),
+    excerpt: z.string(),
+    excerpt_en: z.string().optional(),
+    coverImage: z.string().optional(),
+    activities: z.array(z.string()).default([]),
+    activities_en: z.array(z.string()).default([]),
+    // Equipment ids referenced in this entry (match equipment.json item ids).
+    equipment: z.array(z.string()).default([]),
+    yuqueUrl: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
   }),
 });
@@ -104,4 +110,4 @@ const heroes = defineCollection({
   }),
 });
 
-export const collections = { notes, docs, equipment, team, faq, partners, heroes };
+export const collections = { notes, journals, equipment, team, faq, partners, heroes };

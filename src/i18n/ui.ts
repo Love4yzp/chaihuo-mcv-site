@@ -8,8 +8,9 @@ const ui: Record<Locale, Record<string, string>> = {
 
     // Navigation
     'nav.home': '首页',
+    'nav.journals': '旅途日记',
+    'nav.route': '行程路线',
     'nav.deconstruct': '解构基地车',
-    'nav.documentation': '完整纪实',
     'nav.guide': '上车指南',
     'nav.about': '关于柴火',
     'nav.openMenu': '打开菜单',
@@ -35,8 +36,9 @@ const ui: Record<Locale, Record<string, string>> = {
     'site.description': 'Chaihuo MCV — A mobile AI laboratory traversing China, bringing technology to every corner of the land.',
 
     'nav.home': 'Home',
+    'nav.journals': 'Journals',
+    'nav.route': 'Route',
     'nav.deconstruct': 'Deconstruct',
-    'nav.documentation': 'Documentary',
     'nav.guide': 'Get Involved',
     'nav.about': 'About',
     'nav.openMenu': 'Open menu',
