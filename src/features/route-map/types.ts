@@ -3,7 +3,6 @@ import type { RouteCity } from "@/data/route-cities";
 export type ProjectedCity = RouteCity & {
   cx: number;
   cy: number;
-  cz: number;
   isLatest: boolean;
   showLabel: boolean;
   fontSize: number;

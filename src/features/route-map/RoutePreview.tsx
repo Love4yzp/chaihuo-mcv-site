@@ -101,9 +101,9 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
       {/* 🛣️ Route Lines (Solid for visited, Dashed for planned future) */}
       {segments.map((seg, i) => {
         const fromX = round(seg.from.cx);
-        const fromY = round(seg.from.cy - seg.from.cz);
+        const fromY = round(seg.from.cy);
         const toX = round(seg.to.cx);
-        const toY = round(seg.to.cy - seg.to.cz);
+        const toY = round(seg.to.cy);
 
         return (
           <g key={`seg-group-${i}`}>
@@ -161,7 +161,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
       {/* 🔴 City Dots (Glowing for current, subtle for future) */}
       {projected.map((city) => {
         const x = round(city.cx);
-        const y = round(city.cy - city.cz);
+        const y = round(city.cy);
         const isCurrent = current && city.label === current.label;
 
         return (
@@ -202,7 +202,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
           if (!offset) return null; // Collided or filtered
 
           const x = round(city.cx + offset[0]);
-          const y = round(city.cy - city.cz + offset[1]);
+          const y = round(city.cy + offset[1]);
           const isCurrent = current && city.label === current.label;
 
           return (

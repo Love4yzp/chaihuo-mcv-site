@@ -61,7 +61,7 @@ export default function ChinaRouteMap({
     const prevOrder = prevOrderRef.current;
     prevOrderRef.current = currentOrder;
 
-    const targetPt: [number, number] = [activeCity.cx, activeCity.cy - activeCity.cz];
+    const targetPt: [number, number] = [activeCity.cx, activeCity.cy];
 
     if (prevOrder === null || prevOrder === currentOrder) {
       setVehiclePos(targetPt);
@@ -76,7 +76,7 @@ export default function ChinaRouteMap({
       return;
     }
 
-    const fromPt: [number, number] = [prevCity.cx, prevCity.cy - prevCity.cz];
+    const fromPt: [number, number] = [prevCity.cx, prevCity.cy];
 
     const midX = (fromPt[0] + targetPt[0]) / 2;
     const midY = (fromPt[1] + targetPt[1]) / 2;
@@ -258,8 +258,8 @@ export default function ChinaRouteMap({
 
           {/* 层二：城市间连线 — 已访问优先动 */}
           {segments.map((seg, i) => {
-            const fromPt: [number, number] = [seg.from.cx, seg.from.cy - seg.from.cz];
-            const toPt: [number, number] = [seg.to.cx, seg.to.cy - seg.to.cz];
+            const fromPt: [number, number] = [seg.from.cx, seg.from.cy];
+            const toPt: [number, number] = [seg.to.cx, seg.to.cy];
 
             const midX = (fromPt[0] + toPt[0]) / 2;
             const midY = (fromPt[1] + toPt[1]) / 2;
@@ -359,7 +359,7 @@ export default function ChinaRouteMap({
 
           {/* 城市节点 + 标签 */}
           {projected.map((city) => {
-            const { cx, cy, cz, isLatest, fontSize: labelFontSize } = city;
+            const { cx, cy, isLatest, fontSize: labelFontSize } = city;
             const delay = cityDelay(city.order, city.visited);
             const isSelected = selectedKey === city.label;
             const r = isLatest ? 6.0 : city.isOrigin ? 5.5 : city.visited ? 4.5 : 3.5;
@@ -369,41 +369,11 @@ export default function ChinaRouteMap({
 
             return (
               <g key={city.label}>
-                {/* 骨架层：地面投影锚点 */}
-                {cz > 0 && (
-                  <circle
-                    cx={cx}
-                    cy={cy}
-                    r={1.2}
-                    fill="#a16207"
-                    opacity={0.25}
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-
-                {/* 骨架层：垂直海拔激光引线 */}
-                {cz > 0 && (
-                  <motion.line
-                    x1={cx}
-                    y1={cy}
-                    x2={cx}
-                    y2={cy - cz}
-                    stroke="#a16207"
-                    strokeWidth="0.8"
-                    strokeDasharray="1.5 2"
-                    opacity={city.visited ? 0.35 : 0.15}
-                    initial={{ pathLength: 0 }}
-                    animate={isInView ? { pathLength: 1 } : {}}
-                    transition={{ duration: 0.8, delay }}
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-
                 {/* 当前所在城市的呼吸圈 */}
                 {isLatest && (
                   <motion.circle
                     cx={cx}
-                    cy={cy - cz}
+                    cy={cy}
                     r={12}
                     fill="#f3d230"
                     opacity={0}
@@ -415,7 +385,7 @@ export default function ChinaRouteMap({
                       repeat: Infinity,
                       repeatDelay: 0.4,
                     }}
-                    style={{ transformOrigin: `${cx}px ${cy - cz}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                   />
                 )}
 
@@ -423,7 +393,7 @@ export default function ChinaRouteMap({
                 {isSelected && !isLatest && (
                   <motion.circle
                     cx={cx}
-                    cy={cy - cz}
+                    cy={cy}
                     r={12}
                     fill="none"
                     stroke="#3a3328"
@@ -432,7 +402,7 @@ export default function ChinaRouteMap({
                     animate={{ opacity: 0.85, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.6 }}
                     transition={{ type: "spring", damping: 18, stiffness: 260 }}
-                    style={{ transformOrigin: `${cx}px ${cy - cz}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                   />
                 )}
 
@@ -440,7 +410,7 @@ export default function ChinaRouteMap({
                 {city.isOrigin && (
                   <motion.circle
                     cx={cx}
-                    cy={cy - cz}
+                    cy={cy}
                     r={13}
                     fill="none"
                     stroke="#f3d230"
@@ -448,14 +418,14 @@ export default function ChinaRouteMap({
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={isInView ? { opacity: 0.55, scale: 1 } : {}}
                     transition={{ type: "spring", damping: 15, delay }}
-                    style={{ transformOrigin: `${cx}px ${cy - cz}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                   />
                 )}
 
                 {/* 城市圆点 */}
                 <motion.circle
                   cx={cx}
-                  cy={cy - cz}
+                  cy={cy}
                   r={r}
                   fill={city.visited ? '#f3d230' : 'white'}
                   stroke={city.visited ? 'white' : '#9c8c66'}
@@ -469,14 +439,14 @@ export default function ChinaRouteMap({
                     delay,
                   }}
                   whileHover={{ scale: 1.35 }}
-                  style={{ transformOrigin: `${cx}px ${cy - cz}px`, pointerEvents: 'none' }}
+                  style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                 />
 
                 {/* 当前位置内核 — 靶心 pin */}
                 {isLatest && (
                   <motion.circle
                     cx={cx}
-                    cy={cy - cz}
+                    cy={cy}
                     r={2.2}
                     fill="#3a2f0e"
                     initial={{ scale: 0 }}
@@ -487,7 +457,7 @@ export default function ChinaRouteMap({
                       stiffness: 260,
                       delay: delay + 0.12,
                     }}
-                    style={{ transformOrigin: `${cx}px ${cy - cz}px`, pointerEvents: 'none' }}
+                    style={{ transformOrigin: `${cx}px ${cy}px`, pointerEvents: 'none' }}
                   />
                 )}
 
@@ -495,7 +465,7 @@ export default function ChinaRouteMap({
                 {showLabel && (
                   <motion.text
                     x={cx + labelDx}
-                    y={(cy - cz) + labelDy}
+                    y={cy + labelDy}
                     fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
                     fontSize={labelFontSize}
                     fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
@@ -519,7 +489,7 @@ export default function ChinaRouteMap({
                 {city.isOrigin && (
                   <motion.text
                     x={cx + labelDx}
-                    y={(cy - cz) + labelDy + 14}
+                    y={cy + labelDy + 14}
                     fill="#9b7f10"
                     fontSize="9"
                     fontWeight={700}
@@ -542,7 +512,7 @@ export default function ChinaRouteMap({
                 {/* 精密事件触发区 */}
                 <circle
                   cx={cx}
-                  cy={cy - cz}
+                  cy={cy}
                   r={city.visited ? 18 : 12}
                   fill="transparent"
                   className={city.visited ? 'cursor-pointer' : 'cursor-help'}
@@ -583,7 +553,7 @@ export default function ChinaRouteMap({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 3 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                transform={`translate(${hoveredCity.cx}, ${hoveredCity.cy - hoveredCity.cz - 10})`}
+                transform={`translate(${hoveredCity.cx}, ${hoveredCity.cy - 10})`}
                 style={{ pointerEvents: 'none' }}
               >
                 <rect x={-55} y={-24} width={110} height={18} rx={4} fill="#1a1a1a" stroke="#eab308" strokeWidth={0.6} />

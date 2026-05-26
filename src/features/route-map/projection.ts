@@ -73,14 +73,10 @@ export function projectCities(cities: RouteCity[]): ProjectedCity[] {
     const p = projection([c.lng, c.lat]);
     if (!p) return [];
     const isLatest = !!lastVisited && c.label === lastVisited.label;
-    const altitudeVal = parseFloat(c.altitude) || 0;
-    // Elegant square root scaling: 1510m -> ~58.3px, 4m -> ~3px
-    const cz = Math.sqrt(altitudeVal) * 1.5;
     return [{
       ...c,
       cx: p[0],
       cy: p[1],
-      cz,
       isLatest,
       showLabel: c.visited || !!c.isOrigin || !!c.anchor,
       fontSize: isLatest ? 11 : c.visited ? 10.5 : 9,
@@ -101,11 +97,11 @@ export function labelDims(c: ProjectedCity): { w: number; h: number } {
   };
 }
 
-// SVG <text> default anchor is left-baseline. baseline = (cy - cz) + dy.
+// SVG <text> default anchor is left-baseline. baseline = cy + dy.
 export function bboxAt(c: ProjectedCity, dx: number, dy: number): Rect {
   const { w, h } = labelDims(c);
   const x0 = c.cx + dx;
-  const y0 = (c.cy - c.cz) + dy - h * 0.85;
+  const y0 = c.cy + dy - h * 0.85;
   return [x0, y0, x0 + w, y0 + h];
 }
 
@@ -136,7 +132,7 @@ export function placeLabels(cities: ProjectedCity[]): Map<string, [number, numbe
   // dot bboxes for ALL cities — labels must avoid every dot, not just labeled ones
   const dotBoxes: Rect[] = cities.map((c) => {
     const r = c.isLatest || c.isOrigin ? 6 : c.visited ? 5 : 4;
-    return [c.cx - r, (c.cy - c.cz) - r, c.cx + r, (c.cy - c.cz) + r];
+    return [c.cx - r, c.cy - r, c.cx + r, c.cy + r];
   });
 
   const placed: Rect[] = [];
