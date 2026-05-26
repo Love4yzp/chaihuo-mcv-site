@@ -1,6 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { routeCities } from './data/route-cities';
+
+const cityIds = new Set(routeCities.map((c) => c.id));
 
 const notes = defineCollection({
   loader: glob({ base: './src/content/notes', pattern: '**/*.md' }),
@@ -29,8 +32,11 @@ const journals = defineCollection({
     //  - placeholder: stop is on the map but the write-up isn't ready
     //  - draft:       work in progress, hidden from public listings
     status: z.enum(['published', 'placeholder', 'draft']),
-    // Stable city id (e.g. 'guiyang') — must match RouteCity.id.
-    city: z.string(),
+    // Stable city id (e.g. 'guiyang') — must match a RouteCity.id in
+    // src/data/route-cities.ts. Build fails on typos/unknown ids.
+    city: z.string().refine((id) => cityIds.has(id), {
+      message: `Unknown city id. Must be one of: ${[...cityIds].join(', ')}`,
+    }),
     // Stable people ids (e.g. ['he-laoshi']). Names live in src/data/team.json.
     people: z.array(z.string()).default([]),
     excerpt: z.string(),
