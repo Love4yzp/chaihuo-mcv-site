@@ -1,0 +1,183 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import type { Locale } from '@/i18n/index';
+import { localePath } from '@/i18n/index';
+import journalsDict from '@/i18n/journals';
+import { localizeJournal } from '@/lib/journals';
+import { ExternalLink, Calendar, MapPin, Activity } from 'lucide-react';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const journals = await getCollection('journals');
+  // Only render routes for published journals
+  const published = journals.filter((j) => j.data.status === 'published');
+  return published.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const locale = (Astro.currentLocale ?? 'en') as Locale;
+const t = journalsDict[locale];
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const localized = localizeJournal(entry, locale);
+---
+
+<BaseLayout title={localized.title} description={localized.excerpt}>
+  <!-- Scroll Progress Indicator -->
+  <div id="reading-progress" class="fixed top-0 left-0 w-0 h-[3px] bg-brand z-50 transition-all duration-75"></div>
+
+  <script>
+    const updateProgress = () => {
+      const progress = document.getElementById('reading-progress');
+      if (!progress) return;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      progress.style.width = `${pct}%`;
+    };
+
+    const setupListeners = () => {
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress, { passive: true });
+      updateProgress();
+    };
+
+    document.addEventListener('astro:page-load', setupListeners);
+    document.addEventListener('astro:before-preparation', () => {
+      window.removeEventListener('scroll', updateProgress);
+      window.removeEventListener('resize', updateProgress);
+    });
+  </script>
+
+  <article class="bg-surface min-h-screen">
+    <!-- Back Button -->
+    <div class="max-w-3xl mx-auto px-6 pt-6">
+      <a
+        href={localePath('/journals', locale)}
+        class="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-900 transition-colors font-medium"
+      >
+        <span class="text-lg leading-none">&larr;</span>
+        {t['back']}
+      </a>
+    </div>
+
+    <!-- Article Header -->
+    <header class="max-w-3xl mx-auto px-6 pt-8 pb-6">
+      <h1 class="text-2xl md:text-4xl font-bold text-neutral-900 leading-tight mb-6">
+        {localized.title}
+      </h1>
+
+      {/* Meta details bar */}
+      <div class="flex flex-wrap items-center gap-y-3 gap-x-6 text-sm text-neutral-500 font-semibold border-b border-neutral-200 pb-6 mb-6">
+        <div class="flex items-center gap-2">
+          <Calendar class="w-4 h-4 text-neutral-400" />
+          <span>{t['meta.date']}：{localized.date}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <MapPin class="w-4 h-4 text-neutral-400" />
+          <span>{t['meta.city']}：{localized.cityLabel}</span>
+        </div>
+      </div>
+
+      {/* Activities chips */}
+      {localized.activities.length > 0 && (
+        <div class="mb-4">
+          <p class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Activity class="w-3.5 h-3.5" />
+            {t['meta.activities']}
+          </p>
+          <div class="flex flex-wrap gap-2">
+            {localized.activities.map((act) => (
+              <span class="text-xs px-2.5 py-1 rounded-md bg-neutral-200 text-neutral-700 font-semibold border border-neutral-300">
+                {act}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </header>
+
+    <!-- Cover Image (if present) -->
+    {localized.coverImage && (
+      <div class="max-w-4xl mx-auto px-6 mb-10">
+        <div class="rounded-xl overflow-hidden aspect-[2/1] shadow-xs border border-neutral-300">
+          <img
+            src={localized.coverImage}
+            alt={localized.title}
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    )}
+
+    <!-- Markdown Content Body -->
+    <div class="max-w-3xl mx-auto px-6 pb-16">
+      <div class="prose prose-neutral max-w-none
+        prose-headings:text-neutral-900 prose-headings:font-bold
+        prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-neutral-200 prose-h2:pb-2
+        prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
+        prose-p:text-neutral-600 prose-p:leading-[1.8] prose-p:mb-5
+        prose-p:first-of-type:first-letter:text-5xl prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:mr-2.5 prose-p:first-of-type:first-letter:text-brand-dark prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:pt-1
+        prose-blockquote:border-l-4 prose-blockquote:border-brand prose-blockquote:bg-brand-light prose-blockquote:rounded-r-lg prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:not-italic
+        prose-blockquote:text-neutral-700
+        prose-li:text-neutral-600 prose-li:leading-[1.8]
+        prose-strong:text-neutral-900 prose-strong:font-semibold
+        prose-a:text-brand-dark prose-a:underline prose-a:underline-offset-2
+        prose-img:rounded-lg prose-img:shadow-sm
+        prose-hr:border-neutral-200">
+        <Content />
+      </div>
+
+      {/* Yuque Link (if present) */}
+      {localized.yuqueUrl && (
+        <div class="mt-12 p-5 bg-white border border-neutral-300 rounded-xl shadow-xs flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h4 class="text-sm font-bold text-neutral-900">
+              {locale === 'en' ? 'Chaihuo Yuque Original Workspace' : '柴火语雀原稿知识库'}
+            </h4>
+            <p class="text-xs text-neutral-500 mt-1">
+              {locale === 'en' ? 'Access full technical logs and field materials on Yuque' : '到语雀知识库阅读完整的现场实录与完整资料库'}
+            </p>
+          </div>
+          <a
+            href={localized.yuqueUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
+          >
+            <span>{t['card.yuque']}</span>
+            <ExternalLink class="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
+
+      {/* Tags */}
+      {localized.tags.length > 0 && (
+        <div class="mt-12 pt-6 border-t border-neutral-200 flex items-center gap-2 flex-wrap">
+          {localized.tags.map((tag: string) => (
+            <span class="text-xs px-3 py-1.5 bg-neutral-100 text-neutral-500 rounded-full font-semibold border border-neutral-250">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Bottom Back Navigation */}
+      <div class="mt-10 pt-6 border-t border-neutral-200">
+        <a
+          href={localePath('/journals', locale)}
+          class="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-900 transition-colors font-medium"
+        >
+          <span class="text-lg leading-none">&larr;</span>
+          {t['back']}
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

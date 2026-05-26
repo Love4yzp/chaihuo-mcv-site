@@ -5,10 +5,12 @@ export interface RouteCityEvent {
   link?: string;
   linkLabel?: string;
   linkLabel_en?: string;
-  localSlug?: string;
 }
 
 export interface RouteCity {
+  /** Stable identifier for cross-referencing from journals/equipment/people.
+   *  Display labels can be renamed freely; this id must stay constant. */
+  id: string;
   label: string;
   label_en?: string;
   lng: number;
@@ -43,6 +45,7 @@ export interface RouteCity {
 export const routeCities: RouteCity[] = [
   // ── 出发点：深圳（2026.04.22 启程） ──
   {
+    id: 'shenzhen',
     label: '深圳', label_en: 'Shenzhen',
     lng: 114.057, lat: 22.543, visited: true, isOrigin: true, order: 0,
     relationType: 'departure',
@@ -61,11 +64,11 @@ export const routeCities: RouteCity[] = [
       link: 'https://www.yuque.com/chaihuo-mcv/home',
       linkLabel: '查看出发记',
       linkLabel_en: 'Read departure log',
-      localSlug: 'village-teacher-interview',
     },
   },
   // ── 已到达 ──
   {
+    id: 'guangzhou',
     label: '广州', label_en: 'Guangzhou',
     lng: 113.264, lat: 23.130, visited: true, order: 1,
     relationType: 'education',
@@ -84,6 +87,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'yangjiang',
     label: '阳江', label_en: 'Yangjiang',
     lng: 111.983, lat: 21.858, visited: true, order: 2,
     relationType: 'education',
@@ -102,6 +106,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'yulin',
     label: '玉林', label_en: 'Yulin',
     lng: 110.181, lat: 22.654, visited: true, order: 3,
     relationType: 'education',
@@ -123,6 +128,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'nanning',
     label: '南宁', label_en: 'Nanning',
     lng: 108.366, lat: 22.817, visited: true, order: 4, anchor: true,
     relationType: 'education',
@@ -141,6 +147,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'liuzhou',
     label: '柳州', label_en: 'Liuzhou',
     lng: 109.412, lat: 24.327, visited: true, order: 5, anchor: true,
     relationType: 'industry',
@@ -165,6 +172,7 @@ export const routeCities: RouteCity[] = [
   // 仅展示临近确认的下一段行程；anchor: true 让地图保留前向参照点。
   // event.date 让地图 hover tooltip 能显示计划日期。
   {
+    id: 'guiyang',
     label: '贵阳', label_en: 'Guiyang',
     lng: 106.713, lat: 26.578, visited: true, order: 6, anchor: true,
     relationType: 'education',
@@ -183,6 +191,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'bijie',
     label: '毕节', label_en: 'Bijie',
     lng: 105.285, lat: 27.302, visited: true, order: 7, anchor: true,
     relationType: 'community',
@@ -201,6 +210,7 @@ export const routeCities: RouteCity[] = [
     },
   },
   {
+    id: 'chengdu',
     label: '成都', label_en: 'Chengdu',
     lng: 104.066, lat: 30.572, visited: true, order: 8, anchor: true,
     relationType: 'community',
