@@ -19,6 +19,7 @@ const about: Record<Locale, Record<string, string>> = {
     'panorama.subtitle': '2011 — 2026，15 年关键事件一览',
     'panorama.close': '关闭',
     'panorama.button': '全景',
+    'panorama.highlight': '里程碑',
 
     'scroll.hint': '向下滚动浏览历程',
 
@@ -49,6 +50,7 @@ const about: Record<Locale, Record<string, string>> = {
     'panorama.subtitle': '2011 — 2026, 15 years of key milestones',
     'panorama.close': 'Close',
     'panorama.button': 'Panorama',
+    'panorama.highlight': 'Milestone',
 
     'scroll.hint': 'Scroll down to explore the timeline',
 
