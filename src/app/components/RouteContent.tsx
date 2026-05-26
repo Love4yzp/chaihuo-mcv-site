@@ -133,7 +133,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
                   const active = selectedCityKey === c.label;
                   return (
                     <button
-                      key={c.label}
+                      key={`${c.id}-${c.order}`}
                       onClick={() => handleCitySelect(c.label)}
                       className={`text-[11px] px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap ${
                         active
@@ -157,7 +157,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
             variants={drawerVariants}
             animate={isDrawerExpanded ? 'expanded' : 'peek'}
             drag="y"
-            dragConstraints={{ top: 0, bottom: 0 }}
+            dragConstraints={{ top: -500, bottom: 500 }}
             dragElastic={0.15}
             onDragEnd={(e, info) => {
               // Expand if dragged upwards significantly, collapse if dragged down

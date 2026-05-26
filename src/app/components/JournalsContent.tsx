@@ -19,15 +19,23 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
   const [activeStatus, setActiveStatus] = useState<string>('all');
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
+  const syncFiltersFromUrl = () => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    setActiveCity(params.get('city') ?? 'all');
+    setActiveStatus(params.get('status') ?? 'all');
+  };
+
   // Sync state with URL Search Params on mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const cityParam = params.get('city');
-      const statusParam = params.get('status');
-      if (cityParam) setActiveCity(cityParam);
-      if (statusParam) setActiveStatus(statusParam);
-    }
+    syncFiltersFromUrl();
+  }, []);
+
+  // Keep filters in sync with browser history navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.addEventListener('popstate', syncFiltersFromUrl);
+    return () => window.removeEventListener('popstate', syncFiltersFromUrl);
   }, []);
 
   // Update URL Search Params when filters change
@@ -68,10 +76,14 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
   });
 
   // Unique cities referenced in route-cities
-  const citiesList = routeCities.map((city) => ({
-    id: city.id,
-    label: locale === 'en' && city.label_en ? city.label_en : city.label,
-  }));
+  const citiesList = Array.from(
+    new Map(
+      routeCities.map((city) => [
+        city.id,
+        locale === 'en' && city.label_en ? city.label_en : city.label,
+      ]),
+    ),
+  ).map(([id, label]) => ({ id, label }));
 
   // Helper to retrieve RouteCity details for a given city ID
   const getCityTelemetry = (cityId: string) => {
@@ -131,6 +143,7 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
               <select
                 value={activeCity}
                 onChange={(e) => handleCityChange(e.target.value)}
+                aria-label={t['filter.cityAria'] ?? (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')}
                 className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
               >
                 <option value="all">{t['filter.all']}</option>
