@@ -3,8 +3,8 @@ import {
   attachPageScreenshot,
   collectRuntimeErrors,
   expectNoHorizontalOverflow,
+  expectNoVehicleCanvas,
   expectPageSubstance,
-  expectRenderableCanvas,
   gotoRoute,
   installHarnessGuards,
   settleForVisual,
@@ -23,7 +23,7 @@ test.describe('visual smoke', () => {
       await expectPageSubstance(page, route.name);
 
       if (route.path.includes('deconstruct')) {
-        await expectRenderableCanvas(page, route.name);
+        await expectNoVehicleCanvas(page, route.name);
       }
 
       await attachPageScreenshot(page, testInfo, route.name);

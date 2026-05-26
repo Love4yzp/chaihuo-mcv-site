@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ComponentType } from 'react';
 import { motion } from 'motion/react';
 import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
 import type { Locale } from '@/i18n/index';
@@ -37,15 +37,11 @@ interface Props {
 
 // ─── Icon map ───
 
-const ICON_MAP: Record<string, React.ComponentType<any>> = {
+const ICON_MAP: Record<string, ComponentType<any>> = {
   Cpu,
   Factory,
   BatteryCharging,
 };
-
-const VehicleExplodedView = React.lazy(() =>
-  import('./VehicleExplodedView').then((module) => ({ default: module.VehicleExplodedView })),
-);
 
 // ─── Component ───
 
@@ -53,7 +49,7 @@ export default function DeconstructContent({ notes, equipment, companion, locale
   return (
     <div className="min-h-screen bg-surface">
 
-      {/* ═══════ HERO — 车辆标题 + 爆炸图 ═══════ */}
+      {/* ═══════ HERO — 车辆标题 ═══════ */}
       <section className="pt-24 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
           {/* 标题区 */}
@@ -111,26 +107,6 @@ export default function DeconstructContent({ notes, equipment, companion, locale
                 <div className="text-xs text-neutral-500 mt-1">{spec.label}</div>
               </motion.div>
             ))}
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={defaultViewport}
-            transition={springTransition}
-          >
-            <React.Suspense
-              fallback={
-                <div
-                  className="h-[520px] md:h-[620px] rounded-2xl border border-neutral-300/40 bg-neutral-100"
-                  aria-busy="true"
-                  aria-label={t['3d.loading'] || 'Loading vehicle view'}
-                />
-              }
-            >
-              <VehicleExplodedView t={t} />
-            </React.Suspense>
           </motion.div>
 
         </div>

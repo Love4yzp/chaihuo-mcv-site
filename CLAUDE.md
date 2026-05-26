@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-柴火基地车官网 (Chaihuo MCV Site) — a bilingual (zh/en) marketing website for Chaihuo's mobile AI laboratory vehicle "普罗米修斯号". Astro SSR site with five pages, 3D interactive vehicle viewer (React Island), Content Collections for structured data.
+柴火基地车官网 (Chaihuo MCV Site) — a bilingual (zh/en) marketing website for Chaihuo's mobile AI laboratory vehicle "普罗米修斯号". Astro SSR site with five pages and Content Collections for structured data.
 
 ## Commands
 
@@ -20,13 +20,13 @@ No test framework or linter is configured.
 
 ## Architecture
 
-**Stack:** Astro 6 + React 19 (Islands) + TypeScript + Tailwind CSS 4 + shadcn/ui (Radix) + Framer Motion + React Three Fiber 9 + Three.js 0.183
+**Stack:** Astro 6 + React 19 (Islands) + TypeScript + Tailwind CSS 4 + shadcn/ui (Radix) + Framer Motion
 
 **Deployment:** Node.js standalone via `@astrojs/node` adapter. Docker (`Dockerfile` + `docker-compose.yml`). GitHub push triggers deploy.
 
 **Routing:** Astro file-based routing in `src/pages/`. Chinese is default (no prefix), English under `/en/`:
 - `/` `/en/` → Home (hero carousel, video modal, China route map SVG, mobile lab cards)
-- `/deconstruct` `/en/deconstruct` → Deconstruct (R3F 3D exploded vehicle view, modification logs, equipment list)
+- `/deconstruct` `/en/deconstruct` → Deconstruct (modification logs, equipment list)
 - `/documentation` `/en/documentation` → Documentation (timeline, category filters)
 - `/guide` `/en/guide` → Guide (participation guide, FAQ accordion, team)
 - `/about` `/en/about` → About (Chaihuo history timeline, GSAP scroll-driven)
@@ -93,8 +93,6 @@ import logoImport from '@/assets/logo.png';
 const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in logoImport
   ? (logoImport as { src: string }).src : logoImport as string;
 ```
-
-**3D lazy loading:** `VehicleExplodedView` is loaded via `React.lazy()` in `DeconstructContent.tsx`. Three.js chunk is ~950KB — always lazy-load R3F components. `DeconstructContent` uses `client:only="react"` to skip SSR entirely.
 
 **改装手记 "查看全部":** Links to external Yuque page: `https://www.yuque.com/chaihuo-mcv/home`.
 

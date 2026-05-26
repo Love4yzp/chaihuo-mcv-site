@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## Project Overview
 
-柴火基地车官网 (Chaihuo MCV Site) — a bilingual (zh/en) marketing website for Chaihuo's mobile AI laboratory vehicle "普罗米修斯号". Astro SSR site with route map, journals, 3D interactive vehicle viewer (React Island), and Content Collections for structured data.
+柴火基地车官网 (Chaihuo MCV Site) — a bilingual (zh/en) marketing website for Chaihuo's mobile AI laboratory vehicle "普罗米修斯号". Astro SSR site with route map, journals, and Content Collections for structured data.
 
 ## Commands
 
@@ -12,7 +12,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 - `pnpm check` — run content/reference validation and Astro type diagnostics
 - `pnpm smoke` — run browser route smoke tests against production preview
 - `pnpm audit:ui` — run lightweight UI/accessibility semantics audit
-- `pnpm visual` — capture desktop/mobile screenshots and verify visual substance, overflow, and 3D canvas rendering
+- `pnpm visual` — capture desktop/mobile screenshots and verify visual substance, overflow, and runtime errors
 - `pnpm harness` — run `pnpm check` and the full Playwright harness
 - `pnpm build` — run checks, then production build (Node standalone)
 - `pnpm build:astro` — raw Astro build without the pre-build check wrapper
@@ -26,7 +26,7 @@ No unit test framework or linter is configured. Use `pnpm check` as the main non
 
 ## Architecture
 
-**Stack:** Astro 6 + React 19 (Islands) + TypeScript + Tailwind CSS 4 + shadcn/ui (Radix) + Framer Motion + React Three Fiber 9 + Three.js 0.183
+**Stack:** Astro 6 + React 19 (Islands) + TypeScript + Tailwind CSS 4 + shadcn/ui (Radix) + Framer Motion
 
 **Deployment:** Node.js standalone via `@astrojs/node` adapter. Docker (`Dockerfile` + `docker-compose.yml`). GitHub push triggers deploy.
 
@@ -34,7 +34,7 @@ No unit test framework or linter is configured. Use `pnpm check` as the main non
 - `/` `/en/` → Home (hero carousel, video modal, China route map SVG, mobile lab cards)
 - `/journals` `/en/journals` → Journals (city journal list, filters, detail pages)
 - `/route` `/en/route` → Route (interactive China map, city panels, linked journals)
-- `/deconstruct` `/en/deconstruct` → Deconstruct (R3F 3D exploded vehicle view, modification logs, equipment list)
+- `/deconstruct` `/en/deconstruct` → Deconstruct (modification logs, equipment list)
 - `/guide` `/en/guide` → Guide (participation guide, FAQ accordion, team)
 - `/about` `/en/about` → About (Chaihuo history timeline, GSAP scroll-driven)
 
@@ -80,7 +80,7 @@ Schema validation runs at build time — type errors will fail the build.
 `playwright.config.ts` and `tests/harness/` provide AI self-iteration browser checks:
 - `smoke.spec.ts` verifies core zh/en routes, published journal detail routes, and legacy documentation redirects.
 - `ui-audit.spec.ts` verifies document language, landmarks, visible h1, image alt text, interactive accessible names, and link-name consistency.
-- `visual.spec.ts` captures screenshots, checks text/layout substance, mobile/desktop overflow, runtime errors, and nonblank WebGL pixels on the 3D page.
+- `visual.spec.ts` captures screenshots, checks text/layout substance, mobile/desktop overflow, runtime errors, and verifies the deconstruct page does not render the removed vehicle canvas.
 
 See `docs/ai-iteration.md` for the recommended AI change loop.
 
@@ -109,8 +109,6 @@ import logoImport from '@/assets/logo.png';
 const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in logoImport
   ? (logoImport as { src: string }).src : logoImport as string;
 ```
-
-**3D lazy loading:** `VehicleExplodedView` is loaded via `React.lazy()` in `DeconstructContent.tsx`. Three.js chunk is ~950KB — always lazy-load R3F components. `DeconstructContent` uses `client:only="react"` to skip SSR entirely.
 
 **改装手记 "查看全部":** Links to external Yuque page: `https://www.yuque.com/chaihuo-mcv/home`.
 

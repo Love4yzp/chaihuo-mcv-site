@@ -2,7 +2,7 @@
 
 移动 AI 实验室"普罗米修斯号"官方网站 — 用 200 天行走中国，在极限环境里检验技术，与在地居民共创解决方案。
 
-中英双语，支持 3D 车辆交互查看、旅途日记和交互路线地图。
+中英双语，支持旅途日记和交互路线地图。
 
 ## Tech Stack
 
@@ -11,7 +11,6 @@
 | Framework | Astro 6 + React 19 (Islands) |
 | Language | TypeScript |
 | Styling | Tailwind CSS 4 + shadcn/ui (Radix) |
-| 3D | React Three Fiber 9 + Three.js 0.183 |
 | Animation | Framer Motion + GSAP |
 
 ## Getting Started
@@ -36,7 +35,7 @@ pnpm build
 - `pnpm check` runs project content validation plus Astro type diagnostics.
 - `pnpm smoke` runs browser route smoke tests against a production preview.
 - `pnpm audit:ui` runs a lightweight UI/accessibility semantics audit.
-- `pnpm visual` captures desktop/mobile screenshots and checks visual substance, overflow, and the 3D canvas.
+- `pnpm visual` captures desktop/mobile screenshots and checks visual substance, overflow, and runtime errors.
 - `pnpm build` runs `pnpm check` before creating the production build.
 - `pnpm build:astro` runs the raw Astro build when you need to isolate build behavior.
 - `pnpm harness` runs `pnpm check` and the full Playwright harness.
@@ -50,7 +49,7 @@ pnpm build
 | `/` | `/en/` | 首页 | Hero 轮播、视频弹窗、中国路线图、移动 AI 实验室卡片 |
 | `/journals` | `/en/journals` | 旅途日记 | 城市日记列表、筛选、详情页 |
 | `/route` | `/en/route` | 行程路线 | 交互中国地图、城市面板、关联日记 |
-| `/deconstruct` | `/en/deconstruct` | 解构基地车 | 3D 爆炸图交互、改装手记、装备清单 |
+| `/deconstruct` | `/en/deconstruct` | 解构基地车 | 改装手记、装备清单 |
 | `/guide` | `/en/guide` | 上车指南 | 参与指南、FAQ、团队介绍 |
 | `/about` | `/en/about` | 关于柴火 | 柴火历程时间轴（GSAP 滚动驱动） |
 
@@ -66,7 +65,7 @@ src/
 ├── content/         # Markdown 集合（改装手记、旅途日记）
 ├── data/            # JSON 结构化数据（装备、团队、FAQ 等）
 ├── i18n/            # 翻译字典（按页面拆分）
-├── assets/          # 图片、3D 模型
+├── assets/          # 图片
 └── styles/          # Tailwind CSS 主题与全局样式
 ```
 

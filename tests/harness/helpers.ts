@@ -100,39 +100,8 @@ export async function attachPageScreenshot(page: Page, testInfo: TestInfo, route
   });
 }
 
-export async function expectRenderableCanvas(page: Page, routeName: string) {
-  const viewer = page.getByTestId('vehicle-exploded-view');
-  await viewer.waitFor({ state: 'visible', timeout: 20_000 });
-  await viewer.locator('canvas').first().waitFor({ state: 'visible', timeout: 20_000 });
-  const hasPixels = await page.waitForFunction(() => {
-    const viewer = document.querySelector('[data-testid="vehicle-exploded-view"]');
-    const canvases = Array.from((viewer ?? document).querySelectorAll('canvas'));
-    return canvases.some((canvas) => {
-      const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl');
-      if (!gl) return false;
-      const width = gl.drawingBufferWidth;
-      const height = gl.drawingBufferHeight;
-      if (width < 64 || height < 64) return false;
-
-      const pixels = new Uint8Array(4);
-      const xs = [0.25, 0.5, 0.75].map((ratio) => Math.floor(width * ratio));
-      const ys = [0.25, 0.5, 0.75].map((ratio) => Math.floor(height * ratio));
-      let visibleSamples = 0;
-
-      for (const x of xs) {
-        for (const y of ys) {
-          gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-          if (pixels[3] > 0 && pixels[0] + pixels[1] + pixels[2] > 12) {
-            visibleSamples += 1;
-          }
-        }
-      }
-
-      return visibleSamples >= 2;
-    });
-  }, null, { timeout: 20_000 });
-
-  expect(await hasPixels.jsonValue(), `${routeName} should render nonblank WebGL pixels`).toBe(true);
+export async function expectNoVehicleCanvas(page: Page, routeName: string) {
+  await expect(page.locator('main canvas'), `${routeName} should not render model canvases`).toHaveCount(0);
 }
 
 export async function settleForVisual(page: Page) {
