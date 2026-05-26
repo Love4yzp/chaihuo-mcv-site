@@ -58,10 +58,10 @@ const home: Record<Locale, Record<string, string>> = {
     'lab.spaceTitle': '开放实验空间',
     'lab.spaceDesc': '提供协作工作区域，支持当地社区参与，共同探索技术与生活的结合点。',
 
-    'cta.label': '完整纪实',
-    'cta.title': '循迹中国，记录每一个真实瞬间',
-    'cta.body': '人物访谈 · 纪录片 · Vlog — 沿途每一次难忘的瞬间，每一张技术点亮现实的面孔。',
-    'cta.explore': '探索纪实',
+    'cta.label': '旅途日记',
+    'cta.title': '一站一篇，记录路上真实发生的事',
+    'cta.body': '城市、人物、设备 — 从每一站的现场记录长出来。',
+    'cta.explore': '阅读日记',
     'cta.join': '加入行动',
   },
   en: {
@@ -121,10 +121,10 @@ const home: Record<Locale, Record<string, string>> = {
     'lab.spaceTitle': 'Open Lab Space',
     'lab.spaceDesc': 'Providing collaborative workspace that engages local communities in exploring the intersection of technology and life.',
 
-    'cta.label': 'Documentary',
-    'cta.title': 'Tracing China, Capturing Every Real Moment',
-    'cta.body': 'Interviews · Documentaries · Vlogs — every unforgettable moment along the way, every face illuminated by technology.',
-    'cta.explore': 'Explore',
+    'cta.label': 'Journals',
+    'cta.title': 'One entry per stop, documenting what actually happened on the road',
+    'cta.body': 'Cities, people, equipment — grown from the real record of each stop.',
+    'cta.explore': 'Read journals',
     'cta.join': 'Get Involved',
   },
 };
