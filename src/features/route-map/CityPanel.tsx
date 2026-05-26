@@ -125,7 +125,7 @@ export default function CityPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="w-full bg-transparent flex flex-col lg:flex-row gap-8 lg:gap-10 items-stretch"
+            className={`w-full bg-transparent flex flex-col gap-8 items-stretch ${hero ? 'lg:flex-row lg:gap-10' : ''}`}
           >
             {/* 左侧栏：行程日志 + 海拔高度断面图 */}
             <div className="flex-1 flex flex-col justify-between">
@@ -331,7 +331,7 @@ export default function CityPanel({
             </div>
 
             {/* 右侧栏：地质地貌与运行测控 HUD 面板 */}
-            <div className="w-full lg:w-[50%] flex-shrink-0 flex flex-col bg-[#fcfbf9]/60 backdrop-blur-md border border-[#e5dfd3] rounded-2xl p-5 md:p-6 justify-between">
+            <div className={`w-full flex-shrink-0 flex flex-col bg-[#fcfbf9]/60 backdrop-blur-md border border-[#e5dfd3] rounded-2xl p-5 md:p-6 justify-between ${hero ? 'lg:w-[50%]' : ''}`}>
               <div>
                 {/* HUD 头部 */}
                 <div className="flex items-center justify-between pb-3 border-b border-[#e5dfd3]/60 mb-4">
@@ -347,7 +347,7 @@ export default function CityPanel({
                 </div>
 
                 {/* 2x2 Telemetry Grid - 地学与工程核心数据 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div className={`grid grid-cols-1 gap-4 text-left ${hero ? 'md:grid-cols-2' : ''}`}>
                   {/* Grid 1: 海拔高度与三级阶梯 */}
                   <div className="flex gap-3">
                     <div className="w-8 h-8 rounded-xl bg-amber-500/5 border border-amber-500/10 flex items-center justify-center flex-shrink-0 text-brand">
@@ -385,7 +385,7 @@ export default function CityPanel({
                   </div>
 
                   {/* Grid 3: 在地共创实绩 */}
-                  <div className="md:col-span-2 pt-3.5 border-t border-[#e5dfd3]/40">
+                  <div className={`pt-3.5 border-t border-[#e5dfd3]/40 ${hero ? 'md:col-span-2' : ''}`}>
                     <div className="flex items-center gap-1.5 mb-2">
                       <Users className="w-3.5 h-3.5 text-brand" />
                       <h5 className="text-[10px] text-[#796f59] font-bold uppercase tracking-wider">
@@ -393,7 +393,7 @@ export default function CityPanel({
                       </h5>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div className={`grid grid-cols-1 gap-2 ${hero ? 'md:grid-cols-3' : ''}`}>
                       {(locale === 'zh' ? city.relationStats : city.relationStatsEn)?.map((stat, idx) => (
                         <div key={idx} className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left">
                           <span className="block text-[11px] font-semibold text-neutral-700 leading-tight">
