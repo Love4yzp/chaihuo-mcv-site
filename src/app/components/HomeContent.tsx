@@ -1,12 +1,5 @@
-import { Fragment, useState, useCallback, useRef, useEffect, useMemo, type ReactElement } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useInView,
-  useMotionValue,
-  useTransform,
-  animate,
-} from "motion/react";
+import { useMemo } from "react";
+import { motion } from "motion/react";
 import ReactSlick from "react-slick";
 // Vite 8 CJS interop: default export is nested
 const Slider = (
@@ -14,13 +7,13 @@ const Slider = (
 ) as typeof ReactSlick;
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Flag, MapPin, Route, type LucideIcon } from "lucide-react";
 import { routeCities } from "@/data/route-cities";
-import { ChinaRouteMap, CityPanel, localizeCity } from "@/features/route-map";
+import RoutePreview from "@/features/route-map/RoutePreview";
+import { localizeCity } from "@/features/route-map/projection";
 import {
   fadeUp,
   fadeLeft,
-  fadeRight,
   fadeIn,
   stagger,
   springTransition,
@@ -30,7 +23,6 @@ import {
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import RoleTimeline from './RoleTimeline';
-import AntigravityCard from './AntigravityCard';
 
 // ─── Types ───
 
@@ -67,37 +59,42 @@ interface Props {
   t: Record<string, string>;
 }
 
-// ─── CountUp Component ───
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const DEPARTURE_DATE = Date.UTC(2026, 3, 22);
+const labCards = [
+  ['lab.aiTitle', 'lab.aiDesc', 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
+  ['lab.fabTitle', 'lab.fabDesc', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
+  ['lab.spaceTitle', 'lab.spaceDesc', 'https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
+] as const;
 
-function CountUp({ end, label }: { end: string; label: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-  const numericPart = parseFloat(end.replace(/[^0-9.]/g, ""));
-  const motionVal = useMotionValue(0);
-  const display = useTransform(motionVal, (v) => {
-    if (end.includes("W")) return v.toFixed(1) + "W";
-    if (end.includes("+")) return Math.round(v) + "+";
-    return Math.round(v).toString();
-  });
+function getDepartureDays(now = new Date()) {
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(0, Math.floor((today - DEPARTURE_DATE) / MS_PER_DAY));
+}
 
-  useEffect(() => {
-    if (isInView) {
-      animate(motionVal, numericPart, { duration: 1.5, ease: "easeOut" });
-    }
-  }, [isInView]);
-
+function TelemetryItem({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+}) {
   return (
-    <div ref={ref}>
-      <motion.div className="font-bold mb-2 text-[40px] text-brand">
-        {display}
-      </motion.div>
-      <div className="text-sm text-neutral-500">{label}</div>
+    <div className="min-w-0 flex items-center gap-3">
+      <Icon className="h-4 w-4 shrink-0 text-brand" />
+      <div className="min-w-0">
+        <div className="truncate font-mono text-lg font-semibold leading-tight text-neutral-900">
+          {value}
+        </div>
+        <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-neutral-400">
+          {label}
+        </div>
+      </div>
     </div>
   );
 }
-
-
-
 
 
 export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
@@ -114,28 +111,21 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     () => [...sortedCities].reverse().find(c => c.visited) ?? null,
     [sortedCities],
   );
-
-  // Selected city for journal panel — defaults to most recent visited
-  const [selectedCityKey, setSelectedCityKey] = useState<string | null>(
-    lastVisited?.label ?? null,
+  const visitedCount = useMemo(
+    () => routeCities.filter((city) => city.visited).length,
+    [],
   );
-  const selectedCity = useMemo(
-    () => localizedCities.find(c => c.label === selectedCityKey) ?? null,
-    [localizedCities, selectedCityKey],
-  );
-
-  // Journal panel ref — scroll into view on mobile when a city is tapped
-  const journalRef = useRef<HTMLDivElement>(null);
-  const handleCitySelect = useCallback((key: string) => {
-    setSelectedCityKey(key);
-    if (
-      typeof window !== 'undefined' &&
-      window.matchMedia('(max-width: 1023px)').matches &&
-      journalRef.current
-    ) {
-      journalRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, []);
+  const departureDays = getDepartureDays();
+  const telemetryItems = [
+    {
+      icon: Flag,
+      value: `${visitedCount}/${routeCities.length}`,
+      label: t['telemetry.arrivedStops'],
+    },
+    { icon: Route, value: '21', label: t['telemetry.planProvinces'] },
+    { icon: CalendarDays, value: String(departureDays), label: t['telemetry.days'] },
+    { icon: MapPin, value: lastVisited?.label ?? '-', label: t['telemetry.current'] },
+  ];
 
   const SliderPrevArrow = ({ onClick }: { onClick?: () => void }) => (
     <button
@@ -266,108 +256,45 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
       </section>
 
 
-      {/* Hero → Stats 过渡 */}
-
-      {/* 实时状态条 */}
-      <div className="bg-neutral-900 text-white py-3 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-6 text-sm">
-          <span className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
-            {t['status.current'].replace('{city}', lastVisited?.label ?? '')}
-          </span>
-          <span className="text-neutral-500">·</span>
-          <span className="text-neutral-400">{t['status.departure']}</span>
-          <span className="text-neutral-500">·</span>
-          <span className="text-neutral-400">{t['status.route']}</span>
-        </div>
-      </div>
-
-      {/* 项目核心展示 - 路线规划 */}
       <motion.section
         className="bg-neutral-50 text-black py-20 px-6"
         initial="hidden"
         whileInView="visible"
         viewport={defaultViewport}
-        variants={stagger(0.2)}
+        variants={stagger(0.16)}
       >
         <div className="max-w-6xl mx-auto">
-          {/* 标题 + 统计数据 — 移动端在地图上方 */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-8 md:mb-0">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <motion.div variants={fadeUp}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+              <h2 className="text-3xl md:text-4xl font-bold leading-tight">
                 {t['route.title1']}
                 <br />
                 <span>{t['route.title2']}</span>
               </h2>
-              <p className="text-neutral-500 leading-relaxed max-w-xl">
+              <p className="mt-4 text-neutral-500 leading-relaxed max-w-xl">
                 {t['route.body']}
               </p>
+              <div className="mt-8 grid grid-cols-2 gap-5 border-y border-neutral-200 py-5 md:grid-cols-4 lg:grid-cols-2">
+                {telemetryItems.map((item) => (
+                  <TelemetryItem key={item.label} {...item} />
+                ))}
+              </div>
+              <motion.a
+                href={localePath('/route', locale)}
+                className="mt-8 inline-flex items-center gap-2 bg-neutral-900 text-white px-6 py-3 rounded-sm hover:bg-brand hover:text-brand-foreground transition-colors duration-200 cursor-pointer text-sm font-medium"
+                {...buttonPress}
+              >
+                {t['routePreview.cta']}
+                <ChevronRight className="w-4 h-4" />
+              </motion.a>
             </motion.div>
             <motion.div
-              variants={fadeUp}
-              className="grid grid-cols-3 gap-8 md:gap-12"
+              className="aspect-[3/2] overflow-hidden rounded-lg border border-neutral-200 bg-[#f7f4ed] shadow-sm"
+              variants={fadeIn}
             >
-              <CountUp end="21" label={t['route.provinces']} />
-              <CountUp end="1.9W" label={t['route.distance']} />
-              <CountUp end="200+" label={t['route.days']} />
+              <RoutePreview cities={localizedCities} ariaLabel={t['routePreview.aria']} />
             </motion.div>
           </div>
-
-          {/* 地图全宽 — 主视觉。容器比例匹配 viewBox 4:3，避免横向留白裁掉地图 */}
-          <motion.div
-            className="w-full aspect-[4/3] md:aspect-[3/2] lg:aspect-[3/2] mt-10"
-            variants={fadeIn}
-          >
-            <ChinaRouteMap
-              cities={localizedCities}
-              selectedKey={selectedCityKey}
-              onSelect={handleCitySelect}
-              t={t}
-            />
-          </motion.div>
-
-            <CityPanel
-              city={selectedCity}
-              cities={sortedCities}
-              totalLegs={sortedCities.length - 1}
-              isLatest={selectedCity?.label === lastVisited?.label}
-              t={t}
-              locale={locale}
-              hero={true}
-              onSelectCity={handleCitySelect}
-            />
-
-          {/* 已访问城市快速切换 — 缩略 chip 行 */}
-          {sortedCities.filter(c => c.visited).length > 1 && (
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs uppercase tracking-[0.18em] text-neutral-400 mr-1">
-                {t['map.visited']}
-              </span>
-              {sortedCities
-                .filter(c => c.visited)
-                .map(c => {
-                  const active = selectedCityKey === c.label;
-                  return (
-                    <button
-                      key={c.label}
-                      onClick={() => handleCitySelect(c.label)}
-                      className={`text-xs px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer ${
-                        active
-                          ? 'bg-neutral-900 text-white border-neutral-900'
-                          : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900'
-                      }`}
-                    >
-                      {c.label}
-                      {c.event?.date && (
-                        <span className={`ml-1.5 font-mono text-[10px] ${active ? 'text-neutral-400' : 'text-neutral-400'}`}>
-                          {c.event.date.slice(5)}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-            </div>
-          )}
         </div>
       </motion.section>
 
@@ -399,74 +326,26 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
             whileInView="visible"
             viewport={defaultViewport}
           >
-            {/* 边缘算力 */}
-            <motion.div
-              className="bg-white rounded-lg overflow-hidden shadow-sm border border-neutral-300 cursor-pointer hover:shadow-md transition-shadow duration-200"
-              variants={fadeUp}
-              whileHover={{ y: -4 }}
-              transition={springTransition}
-            >
-              <div
-                className="h-64 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(https://images.unsplash.com/photo-1558494949-ef010cbdcc31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80)`,
-                }}
-              ></div>
-              <div className="p-6">
-                <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
-                  {t['lab.aiTitle']}
-                </h3>
-                <p className="text-neutral-500 mb-4">
-                  {t['lab.aiDesc']}
-                </p>
-              </div>
-            </motion.div>
-
-            {/* 结构加工 */}
-            <motion.div
-              className="bg-white rounded-lg overflow-hidden shadow-sm border border-neutral-300 cursor-pointer hover:shadow-md transition-shadow duration-200"
-              variants={fadeUp}
-              whileHover={{ y: -4 }}
-              transition={springTransition}
-            >
-              <div
-                className="h-64 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80)`,
-                }}
-              ></div>
-              <div className="p-6">
-                <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
-                  {t['lab.fabTitle']}
-                </h3>
-                <p className="text-neutral-500 mb-4">
-                  {t['lab.fabDesc']}
-                </p>
-              </div>
-            </motion.div>
-
-            {/* 实验场景 */}
-            <motion.div
-              className="bg-white rounded-lg overflow-hidden shadow-sm border border-neutral-300 cursor-pointer hover:shadow-md transition-shadow duration-200"
-              variants={fadeUp}
-              whileHover={{ y: -4 }}
-              transition={springTransition}
-            >
-              <div
-                className="h-64 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80)`,
-                }}
-              ></div>
-              <div className="p-6">
-                <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
-                  {t['lab.spaceTitle']}
-                </h3>
-                <p className="text-neutral-500 mb-4">
-                  {t['lab.spaceDesc']}
-                </p>
-              </div>
-            </motion.div>
+            {labCards.map(([title, desc, image]) => (
+              <motion.div
+                key={title}
+                className="bg-white rounded-lg overflow-hidden shadow-sm border border-neutral-300 cursor-pointer hover:shadow-md transition-shadow duration-200"
+                variants={fadeUp}
+                whileHover={{ y: -4 }}
+                transition={springTransition}
+              >
+                <div
+                  className="h-64 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${image})` }}
+                />
+                <div className="p-6">
+                  <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
+                    {t[title]}
+                  </h3>
+                  <p className="text-neutral-500 mb-4">{t[desc]}</p>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
       </section>
