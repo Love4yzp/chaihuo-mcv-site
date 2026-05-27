@@ -79,13 +79,8 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
       // 1. Scrolled state threshold
       setScrolled(currentScrollY > 60);
 
-      // 2. Hide/reveal navigation depending on scroll direction (Only on Home page to leave room for full-screen map)
-      const path = window.location.pathname;
-      const localIsHome = path === '/' || path === '/en' || path.startsWith('/en/');
-
-      if (!localIsHome) {
-        setVisible(true);
-      } else if (currentScrollY < 60) {
+      // 2. Hide on scroll down, reveal on scroll up — applies to all pages.
+      if (currentScrollY < 60) {
         setVisible(true);
       } else if (currentScrollY > lastY && currentScrollY > 120) {
         setVisible(false);
