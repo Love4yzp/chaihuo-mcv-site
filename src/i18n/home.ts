@@ -13,7 +13,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.joinAction': '加入行动',
     'hero.aboutAction': '了解我们',
 
-    'status.current': '当前状态：在路上 · {city}',
+    'status.current': '位于 {city}',
     'status.days': '已出发 {days} 天',
     'status.cities': '已抵达 {count} 城',
 
@@ -78,7 +78,7 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.joinAction': 'Get Involved',
     'hero.aboutAction': 'About Us',
 
-    'status.current': 'Status: On the road · {city}',
+    'status.current': 'Now in {city}',
     'status.days': 'On the road · {days} days',
     'status.cities': '{count} cities reached',
 
