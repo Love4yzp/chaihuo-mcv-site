@@ -1,10 +1,13 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Activity, Compass, Cpu, Users, MapPin, ArrowUpRight } from "lucide-react";
+import { Activity, Compass, Cpu, Users, MapPin, ArrowUpRight, Image as ImageIcon } from "lucide-react";
 import type { RouteCity } from "@/data/route-cities";
 import type { Locale } from "@/i18n/index";
 import { localePath } from "@/i18n/index";
 import AntigravityCard from "@/app/components/AntigravityCard";
+import ExpeditionLog from "./ExpeditionLog";
+import PeopleStrip from "./PeopleStrip";
+import PhotoStrip from "./PhotoStrip";
 
 interface SerializedJournal {
   slug: string;
@@ -163,6 +166,39 @@ export default function CityPanel({
                     )}
                   </div>
                 </header>
+
+                {/* 航行日志:越界钩子 + 新世界 + 火种 */}
+                {city.expedition && (
+                  <div className="mb-6">
+                    <ExpeditionLog expedition={city.expedition} locale={locale} />
+                  </div>
+                )}
+
+                {/* 新文明 */}
+                {city.people && city.people.length > 0 && (
+                  <div className="mb-6">
+                    <div className="mb-2 flex items-center gap-1.5">
+                      <Users className="h-3.5 w-3.5 text-brand" />
+                      <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#796f59]">
+                        {locale === "zh" ? "新文明 · 遇见的人" : "NEW CIVILIZATIONS"}
+                      </h5>
+                    </div>
+                    <PeopleStrip people={city.people} locale={locale} />
+                  </div>
+                )}
+
+                {/* 剧照 */}
+                {city.photos && city.photos.length > 0 && (
+                  <div className="mb-6">
+                    <div className="mb-2 flex items-center gap-1.5">
+                      <ImageIcon className="h-3.5 w-3.5 text-brand" />
+                      <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#796f59]">
+                        {locale === "zh" ? "剧照" : "FROM THE FIELD"}
+                      </h5>
+                    </div>
+                    <PhotoStrip photos={city.photos} locale={locale} />
+                  </div>
+                )}
 
                 {/* 1. 行程海拔剖面图（横向高度断面，反映地理阶梯的攀爬过程） */}
                 <div className="mb-6 bg-[#fcfbf9]/60 border border-[#e5dfd3]/60 rounded-xl p-3.5 shadow-sm">

@@ -219,6 +219,20 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
         </div>
       </section>
 
+      {/* 实时任务状态条 — hero 图片之后,独立一条,居中 */}
+      <div className="bg-neutral-900 text-white">
+        <div className="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm">
+          <span className="text-white/70">{(t['status.days'] ?? '已出发 {days} 天').replace('{days}', String(departureDays))}</span>
+          <span className="text-white/25">·</span>
+          <span className="flex items-center gap-2 font-semibold text-white">
+            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+            {(t['status.current'] ?? '位于 {city}').replace('{city}', lastVisited?.label ?? '')}
+          </span>
+          <span className="text-white/25">·</span>
+          <span className="text-white/70">{(t['status.cities'] ?? '已抵达 {count} 城').replace('{count}', String(visitedCount))}</span>
+        </div>
+      </div>
+
       <section className="bg-neutral-50 text-black py-16 md:py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">

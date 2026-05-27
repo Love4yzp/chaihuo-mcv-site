@@ -5,6 +5,33 @@ type LabelOffset = [number, number];
 
 const LABEL_GAP = 7;
 const RECT_PADDING = 2;
+// px — max distance from a dot to its label-box center. Kept tight on purpose:
+// at this value a label is only placed essentially directly above/below its dot,
+// otherwise it is culled. This is the primary label-density knob — it yields a
+// decluttered overview (few labels when dots are crammed) that progressively
+// reveals more labels as the user zooms in and dots spread apart. Raising it
+// lets labels drift to the sides (denser, but looser to their dots).
+const MAX_LABEL_DISTANCE = 14;
+
+// Distance from the dot to the CENTER of the label box for a given offset.
+function offsetDistance(c: ProjectedCity, dx: number, dy: number): number {
+  const { w, h } = labelDims(c);
+  const lcx = dx + w / 2;        // label box center relative to dot
+  const lcy = dy - h * 0.85 + h / 2;
+  return Math.hypot(lcx, lcy);
+}
+
+function overlapsAnyLabel(bb: Rect, placed: Rect[]): boolean {
+  return placed.some((r) => rectsOverlap(r, bb));
+}
+
+function dotOverlapCount(bb: Rect, dotBoxes: Array<{ id: string; rect: Rect }>, cityId: string): number {
+  let n = 0;
+  for (const dot of dotBoxes) {
+    if (dot.id !== cityId && rectsOverlap(dot.rect, bb)) n += 1;
+  }
+  return n;
+}
 
 export function rectsOverlap(a: Rect, b: Rect): boolean {
   return !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]);
@@ -20,8 +47,15 @@ function padded(rect: Rect, padding = RECT_PADDING): Rect {
 }
 
 export function labelDims(c: ProjectedCity): { w: number; h: number } {
+  // Count CJK (full-width) chars as 1 and ASCII (proportional) as ~0.55, so
+  // English labels (label_en, e.g. "Guangzhou") don't get ~2x oversized boxes
+  // and over-cull on the /en map.
+  let visualLength = 0;
+  for (let i = 0; i < c.label.length; i++) {
+    visualLength += c.label.charCodeAt(i) > 127 ? 1 : 0.55;
+  }
   return {
-    w: c.label.length * c.fontSize * 1.05 + 6,
+    w: visualLength * c.fontSize * 1.05 + 6,
     h: c.fontSize * 1.25,
   };
 }
@@ -100,17 +134,6 @@ function candidateOffsets(c: ProjectedCity, mode: LabelMode): LabelOffset[] {
   return mode === 'projection' ? projectionCandidates(c) : mapCandidates(c);
 }
 
-function collisionScore(bb: Rect, placed: Rect[], dotBoxes: Array<{ id: string; rect: Rect }>, cityId: string) {
-  let score = 0;
-  for (const rect of placed) {
-    if (rectsOverlap(rect, bb)) score += 1000;
-  }
-  for (const dot of dotBoxes) {
-    if (dot.id !== cityId && rectsOverlap(dot.rect, bb)) score += 100;
-  }
-  return score;
-}
-
 export function placeLabels(
   cities: ProjectedCity[],
   preferredSide: 'below' | 'above' = 'below',
@@ -125,32 +148,47 @@ export function placeLabels(
 
   for (const city of ordered) {
     const candidates = candidateOffsets(city, mode);
+    const alwaysShow = priority(city) >= 3; // origin or latest are never hidden
+
     let chosen: LabelOffset | null = null;
     let chosenBox: Rect | null = null;
-    let fallback: { offset: LabelOffset; rect: Rect; score: number } | null = null;
+    let chosenCost = Infinity;
+
+    // Best-effort fallback for must-show cities (ignores distance + overlap).
+    let mustShow: { offset: LabelOffset; rect: Rect; cost: number } | null = null;
 
     for (const [dx, dy] of candidates) {
+      const dist = offsetDistance(city, dx, dy);
       const rect = padded(bboxAt(city, dx, dy));
-      const score = collisionScore(rect, placed, dotBoxes, city.id);
-      if (!fallback || score < fallback.score) {
-        fallback = { offset: [dx, dy], rect, score };
+      const labelHit = overlapsAnyLabel(rect, placed);
+
+      if (alwaysShow) {
+        const fb = (labelHit ? 1000 : 0) + dotOverlapCount(rect, dotBoxes, city.id) * 100 + dist;
+        if (!mustShow || fb < mustShow.cost) mustShow = { offset: [dx, dy], rect, cost: fb };
       }
-      if (score === 0) {
+
+      if (dist > MAX_LABEL_DISTANCE) continue; // too far from its dot
+      if (labelHit) continue;                  // would overlap another label
+
+      const cost = dotOverlapCount(rect, dotBoxes, city.id) * 100 + dist;
+      if (cost < chosenCost) {
         chosen = [dx, dy];
         chosenBox = rect;
-        break;
+        chosenCost = cost;
       }
     }
 
-    if (!chosen && fallback) {
-      chosen = fallback.offset;
-      chosenBox = fallback.rect;
+    if (!chosen && alwaysShow && mustShow) {
+      chosen = mustShow.offset;
+      chosenBox = mustShow.rect;
     }
 
     if (chosen && chosenBox) {
       placed.push(chosenBox);
+      result.set(city.id, chosen);
+    } else {
+      result.set(city.id, null); // culled — no readable spot near its dot
     }
-    result.set(city.id, chosen);
   }
 
   return result;

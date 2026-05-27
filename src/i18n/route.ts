@@ -33,6 +33,7 @@ const route: Record<Locale, Record<string, string>> = {
     'route.journals.organizing': '整理中',
     'route.journals.published': '已发布',
     'route.journals.tapHint': '点击城市查看',
+    'map.recenter': '回到全图',
   },
   en: {
     'route.pageTitle': 'Journey Route',
@@ -61,6 +62,7 @@ const route: Record<Locale, Record<string, string>> = {
     'route.journals.organizing': 'ORGANIZING',
     'route.journals.published': 'PUBLISHED',
     'route.journals.tapHint': 'Tap a city to open',
+    'map.recenter': 'Reset view',
   }
 };
 

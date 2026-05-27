@@ -66,7 +66,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-neutral-50 pt-24 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col h-full">
         {/* Premium Header */}
         <div className="w-full flex items-center justify-between border-b border-neutral-350/20 pb-5 mb-6 md:mb-8">

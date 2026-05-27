@@ -9,6 +9,7 @@ import {
   MAP_WIDTH,
 } from '../../src/features/route-map/constants';
 import type { ProjectedCity } from '../../src/features/route-map/types';
+import { centerOn, IDENTITY } from '../../src/features/route-map/useMapZoom';
 import { gotoRoute } from './helpers';
 
 const projection = geoMercator()
@@ -127,6 +128,13 @@ function expectedRouteEndpoint(city: (typeof sortedCities)[number]) {
   return { ...point, y: point.y - elevationOffset };
 }
 
+// Run page tests with reduced motion: the route map honors prefers-reduced-motion
+// and skips its perpetual animations, so context teardown doesn't stall on the
+// never-ending rAF loops under parallel-worker load.
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+});
+
 test('label placement is indexed by stable city id', () => {
   const placements = placeLabels([
     makeProjectedCity({ id: 'same-name-a', label: '同名', cx: 100, cy: 100 }),
@@ -135,6 +143,58 @@ test('label placement is indexed by stable city id', () => {
 
   expect(Array.from(placements.keys()).sort()).toEqual(['same-name-a', 'same-name-b']);
   expect(placements.has('同名')).toBe(false);
+});
+
+test('placeLabels hides a low-priority label that cannot sit near its dot', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'a', label: '甲', cx: 100, cy: 100, order: 0, visited: true }),
+    makeProjectedCity({ id: 'b', label: '乙', cx: 108, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'c', label: '丙', cx: 116, cy: 100, order: 2, visited: true }),
+  ]);
+  const culled = ['a', 'b', 'c'].filter((id) => placements.get(id) === null);
+  expect(culled.length).toBeGreaterThan(0);
+});
+
+test('placeLabels always keeps the origin label even when crowded', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'origin', label: '深圳', cx: 100, cy: 100, order: 0, isOrigin: true, visited: true }),
+    makeProjectedCity({ id: 'x', label: '甲', cx: 106, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'y', label: '乙', cx: 112, cy: 100, order: 2, visited: true }),
+  ]);
+  expect(placements.get('origin')).not.toBeNull();
+});
+
+test('placeLabels keeps a placed label within MAX_LABEL_DISTANCE of its dot', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'solo', label: '成都', cx: 300, cy: 300, order: 0, visited: true }),
+  ]);
+  const offset = placements.get('solo');
+  expect(offset).not.toBeNull();
+  const [dx, dy] = offset as [number, number];
+  // A near placement keeps the raw offset small (centered above/below the dot).
+  expect(Math.hypot(dx, dy)).toBeLessThan(23);
+});
+
+test('placeLabels shows all labels once dots are spread far apart', () => {
+  const placements = placeLabels([
+    makeProjectedCity({ id: 'a', label: '甲', cx: 100, cy: 100, order: 0, visited: true }),
+    makeProjectedCity({ id: 'b', label: '乙', cx: 300, cy: 100, order: 1, visited: true }),
+    makeProjectedCity({ id: 'c', label: '丙', cx: 500, cy: 100, order: 2, visited: true }),
+  ]);
+  expect(placements.get('a')).not.toBeNull();
+  expect(placements.get('b')).not.toBeNull();
+  expect(placements.get('c')).not.toBeNull();
+});
+
+test('centerOn places the target point at the canvas center', () => {
+  const t = centerOn([200, 150], 3, 900, 600);
+  expect(t.k).toBe(3);
+  expect(t.x + t.k * 200).toBeCloseTo(450, 5);
+  expect(t.y + t.k * 150).toBeCloseTo(300, 5);
+});
+
+test('IDENTITY is the no-op transform', () => {
+  expect(IDENTITY).toEqual({ x: 0, y: 0, k: 1 });
 });
 
 test('route page city hit areas sit on elevation projection endpoints', async ({ page }) => {
@@ -194,35 +254,44 @@ test('route page keeps elevation projection as a visual layer only', async ({ pa
   }
 });
 
-test('route page labels sit above projection endpoint markers', async ({ page }) => {
+test('route page visible labels render near a city dot', async ({ page }) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
-  const labels = await page.locator('[data-route-city-label="true"]').evaluateAll((nodes) =>
+  const labelBoxes = await page.locator('[data-route-city-label="true"]').evaluateAll((nodes) =>
     nodes
-      .filter((node) => node.getClientRects().length > 0)
-      .map((node) => ({
-        id: node.getAttribute('data-city-id'),
-        x: Number(node.getAttribute('x')),
-        y: Number(node.getAttribute('y')),
-      })),
+      .filter((n) => n.getClientRects().length > 0)
+      .map((n) => {
+        const r = n.getBoundingClientRect();
+        return { id: n.getAttribute('data-city-id'), cx: r.x + r.width / 2, cy: r.y + r.height / 2 };
+      }),
+  );
+  const dotCenters = await page.locator('main svg circle[fill="transparent"]').evaluateAll((nodes) =>
+    nodes
+      .filter((n) => n.getBoundingClientRect().height > 0)
+      .map((n) => {
+        const r = n.getBoundingClientRect();
+        return { cx: r.x + r.width / 2, cy: r.y + r.height / 2 };
+      }),
   );
 
-  expect(labels.length).toBeGreaterThan(0);
-  for (const label of labels) {
-    const city = sortedCities.find((item) => item.id === label.id);
-    expect(city, `${label.id} city exists`).toBeTruthy();
-    if (!city) continue;
-    const endpoint = expectedRouteEndpoint(city);
-    expect(label.x, `${city.id} label near endpoint x`).toBeGreaterThan(endpoint.x - 80);
-    expect(label.x, `${city.id} label near endpoint x`).toBeLessThan(endpoint.x + 80);
-    expect(label.y, `${city.id} label above endpoint`).toBeLessThan(endpoint.y);
+  expect(labelBoxes.length).toBeGreaterThan(0);
+  for (const label of labelBoxes) {
+    const nearest = Math.min(...dotCenters.map((d) => Math.hypot(d.cx - label.cx, d.cy - label.cy)));
+    expect(nearest, `label ${label.id} should sit near a dot`).toBeLessThan(70);
   }
 });
 
-test('route page keeps dense city labels visible without origin helper text', async ({ page }) => {
+test('route page shows key labels and never the origin helper text', async ({ page }) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
-  await expect.poll(() => getVisibleLabelIds(page)).toEqual(expectedLabelIds);
+  const visible = await getVisibleLabelIds(page);
+  // Origin (shenzhen) + latest (chengdu) are always shown.
+  expect(visible).toContain('shenzhen');
+  expect(visible).toContain('chengdu');
+  // Visible labels are a subset of the eligible set (crowded ones may be culled).
+  for (const id of visible) {
+    expect(expectedLabelIds).toContain(id);
+  }
   await expect(page.locator('main svg text').filter({ hasText: '出发点' })).toHaveCount(0);
 });
 
@@ -277,12 +346,15 @@ test('home preview China outline uses the enlarged map footprint', async ({ page
   expect(box.y1).toBeGreaterThan(35);
 });
 
-test('home preview renders labels from route city data', async ({ page }) => {
+test('home preview shows key labels from route city data', async ({ page }) => {
   await gotoRoute(page, { path: '/', name: 'home-zh', locale: 'zh' });
 
-  await expect.poll(() => getVisibleLabelIds(page, 'svg[role="img"] [data-route-city-label="true"]')).toEqual(
-    expectedLabelIds,
-  );
+  const visible = await getVisibleLabelIds(page, 'svg[role="img"] [data-route-city-label="true"]');
+  expect(visible).toContain('shenzhen');
+  expect(visible.length).toBeGreaterThan(0);
+  for (const id of visible) {
+    expect(expectedLabelIds).toContain(id);
+  }
 });
 
 test('home preview labels do not overlap each other', async ({ page }) => {
@@ -294,4 +366,89 @@ test('home preview labels do not overlap each other', async ({ page }) => {
       expect(boxesOverlap(boxes[i], boxes[j]), `${boxes[i].id} overlaps ${boxes[j].id}`).toBe(false);
     }
   }
+});
+
+test('route page exposes a recenter control and zooms in on city click', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  const recenter = page.getByRole('button', { name: /回到|recenter|full/i });
+  await expect(recenter).toBeVisible();
+
+  // The route map SVG has touch-none + cursor-grab classes; the first <g> child
+  // of that specific SVG is the scaled (zoomable) group.
+  const scaledGroup = page.locator('main svg.touch-none > g').first();
+  const scaleOf = async () => {
+    const t = (await scaledGroup.getAttribute('transform')) ?? '';
+    const m = t.match(/scale\(([\d.]+)\)/);
+    return m ? Number(m[1]) : 1;
+  };
+
+  // Click a crowded southern city's hit area to zoom in (nth(1) = 广州, order 1).
+  // JS dispatch avoids SVG viewBox / mobile pointer-interception flakiness.
+  await page.locator('main svg circle[fill="transparent"]').nth(1).dispatchEvent('click');
+  await expect.poll(scaleOf, { timeout: 4000 }).toBeGreaterThan(1.2);
+
+  // Recenter returns to the full overview (scale ~1).
+  // page.evaluate with querySelector + composed:true is the only method that reliably
+  // reaches React 19's delegated event handler on mobile viewports.
+  await page.evaluate(() => {
+    const btn = document.querySelector('button[aria-label="回到全图"]') as HTMLElement | null;
+    btn?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+  });
+  await expect.poll(scaleOf, { timeout: 4000 }).toBeLessThan(1.05);
+});
+
+// ── Phase 2: Expedition log / people / photo panel tests ──────────────────────
+// RouteContent renders TWO CityPanel instances: one in the desktop split layout
+// (visible on lg+ via `hidden lg:grid`) and one in the mobile bottom drawer
+// (hidden on lg+ via `lg:hidden`). On chromium-desktop only the desktop panel
+// is visible, so :visible filtering resolves each locator to exactly one element.
+
+test('route page renders expedition log + people + photo for a stop with data', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 柳州 (order 5) — has expedition, 1 person, 1 photo.
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 5);
+
+  const expeditionLog = page.locator('[data-expedition-log="true"]:visible').first();
+  await expect(expeditionLog).toBeVisible();
+  // Assert a punctuation-free substring to avoid half/full-width punctuation fragility.
+  await expect(expeditionLog).toContainText('养鱼塘');
+  await expect(page.locator('[data-people-card="true"]:visible').first()).toBeVisible();
+  await expect(page.locator('[data-photo-thumb="true"]:visible').first()).toBeVisible();
+});
+
+test('route page photo thumbnail opens a lightbox dialog', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 柳州 (order 5).
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 5);
+
+  await page.locator('[data-photo-thumb="true"]:visible').first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('dialog').locator('img')).toBeVisible();
+});
+
+test('route page falls back gracefully for a stop without expedition data', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 深圳 (order 0) — no expedition data; shows event.summary instead.
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 0);
+
+  await expect(page.locator('[data-expedition-log="true"]:visible')).toHaveCount(0);
+  // Scope to the CityPanel <article> heading. On mobile the drawer peek bar also
+  // renders an <h4> with the city name (outside the article), so an unscoped
+  // getByRole('heading') would match two elements and trip strict mode.
+  await expect(
+    page.getByRole('article').getByRole('heading', { name: '深圳' }).first(),
+  ).toBeVisible();
 });
