@@ -1,5 +1,5 @@
 import { Fragment, useState, useMemo, useRef, type ReactElement } from "react";
-import { motion, AnimatePresence, useInView } from "motion/react";
+import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import { MapPin, Maximize2 } from "lucide-react";
 import type { RouteCity } from "@/data/route-cities";
 import type { ProjectedCity } from "./types";
@@ -28,6 +28,10 @@ export default function ChinaRouteMap({
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(mapRef, { once: true, amount: 0.3 });
+  // Skip the perpetual (repeat: Infinity) decorative animations for users who
+  // prefer reduced motion — also keeps Playwright context teardown from starving
+  // on the never-ending rAF loops.
+  const prefersReduced = useReducedMotion();
 
   const [isHovered, setIsHovered] = useState(false);
   const [glarePos, setGlarePos] = useState({ x: 0, y: 0 });
@@ -248,8 +252,8 @@ export default function ChinaRouteMap({
                     }}
                   />
 
-                  {/* 骨架与肌肉层：已访问路线的流动电荷脉冲 */}
-                  {seg.visited && (
+                  {/* 骨架与肌肉层：已访问路线的流动电荷脉冲（reduced-motion 时跳过无限动画） */}
+                  {seg.visited && !prefersReduced && (
                     <motion.path
                       d={d}
                       stroke="#ffffff"
@@ -323,8 +327,8 @@ export default function ChinaRouteMap({
                     </>
                   )}
 
-                  {/* 当前所在城市的呼吸圈 */}
-                  {isLatest && (
+                  {/* 当前所在城市的呼吸圈（reduced-motion 时跳过无限动画） */}
+                  {isLatest && !prefersReduced && (
                     <motion.circle
                       cx={markerX}
                       cy={markerY}

@@ -128,6 +128,13 @@ function expectedRouteEndpoint(city: (typeof sortedCities)[number]) {
   return { ...point, y: point.y - elevationOffset };
 }
 
+// Run page tests with reduced motion: the route map honors prefers-reduced-motion
+// and skips its perpetual animations, so context teardown doesn't stall on the
+// never-ending rAF loops under parallel-worker load.
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+});
+
 test('label placement is indexed by stable city id', () => {
   const placements = placeLabels([
     makeProjectedCity({ id: 'same-name-a', label: '同名', cx: 100, cy: 100 }),
