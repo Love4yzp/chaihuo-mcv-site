@@ -397,3 +397,53 @@ test('route page exposes a recenter control and zooms in on city click', async (
   });
   await expect.poll(scaleOf, { timeout: 4000 }).toBeLessThan(1.05);
 });
+
+// ── Phase 2: Expedition log / people / photo panel tests ──────────────────────
+// RouteContent renders TWO CityPanel instances: one in the desktop split layout
+// (visible on lg+ via `hidden lg:grid`) and one in the mobile bottom drawer
+// (hidden on lg+ via `lg:hidden`). On chromium-desktop only the desktop panel
+// is visible, so :visible filtering resolves each locator to exactly one element.
+
+test('route page renders expedition log + people + photo for a stop with data', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 柳州 (order 5) — has expedition, 1 person, 1 photo.
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 5);
+
+  const expeditionLog = page.locator('[data-expedition-log="true"]:visible').first();
+  await expect(expeditionLog).toBeVisible();
+  // Assert a punctuation-free substring to avoid half/full-width punctuation fragility.
+  await expect(expeditionLog).toContainText('养鱼塘');
+  await expect(page.locator('[data-people-card="true"]:visible').first()).toBeVisible();
+  await expect(page.locator('[data-photo-thumb="true"]:visible').first()).toBeVisible();
+});
+
+test('route page photo thumbnail opens a lightbox dialog', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 柳州 (order 5).
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 5);
+
+  await page.locator('[data-photo-thumb="true"]:visible').first().click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByRole('dialog').locator('img')).toBeVisible();
+});
+
+test('route page falls back gracefully for a stop without expedition data', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  // Select 深圳 (order 0) — no expedition data; shows event.summary instead.
+  await page.evaluate((i) =>
+    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
+      new MouseEvent('click', { bubbles: true, composed: true }),
+    ), 0);
+
+  await expect(page.locator('[data-expedition-log="true"]:visible')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '深圳' })).toBeVisible();
+});
