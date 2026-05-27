@@ -214,8 +214,22 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
         </div>
 
         {/* 滚动提示 */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce text-white/60">
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce text-white/60">
           <ChevronDown className="w-5 h-5" />
+        </div>
+
+        {/* 实时任务状态条 — 兼作 hero 到内容的黑色过渡 */}
+        <div className="absolute bottom-0 left-0 right-0 z-10 bg-black/55 backdrop-blur-md border-t border-white/10">
+          <div className="px-6 md:px-[12%] lg:px-[16%] py-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+            <span className="flex items-center gap-2 font-semibold text-white">
+              <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+              {(t['status.current'] ?? '当前状态：在路上 · {city}').replace('{city}', lastVisited?.label ?? '')}
+            </span>
+            <span className="hidden sm:inline text-white/30">·</span>
+            <span className="text-white/70">{t['status.departure'] ?? '已于 4 月 22 日从深圳启程'}</span>
+            <span className="hidden sm:inline text-white/30">·</span>
+            <span className="text-white/70">{t['status.route'] ?? '途经 21 省 26 城'}</span>
+          </div>
         </div>
       </section>
 
