@@ -226,9 +226,9 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
               {(t['status.current'] ?? '当前状态：在路上 · {city}').replace('{city}', lastVisited?.label ?? '')}
             </span>
             <span className="hidden sm:inline text-white/30">·</span>
-            <span className="text-white/70">{t['status.departure'] ?? '已于 4 月 22 日从深圳启程'}</span>
+            <span className="text-white/70">{(t['status.days'] ?? '已出发 {days} 天').replace('{days}', String(departureDays))}</span>
             <span className="hidden sm:inline text-white/30">·</span>
-            <span className="text-white/70">{t['status.route'] ?? '途经 21 省 26 城'}</span>
+            <span className="text-white/70">{(t['status.cities'] ?? '已抵达 {count} 城').replace('{count}', String(visitedCount))}</span>
           </div>
         </div>
       </section>

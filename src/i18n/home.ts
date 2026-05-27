@@ -14,8 +14,8 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.aboutAction': '了解我们',
 
     'status.current': '当前状态：在路上 · {city}',
-    'status.departure': '已于 4 月 22 日从深圳启程',
-    'status.route': '途经 21 省 26 城',
+    'status.days': '已出发 {days} 天',
+    'status.cities': '已抵达 {count} 城',
 
     'route.title1': '连接技术的',
     'route.title2': '每一个经纬度',
@@ -79,8 +79,8 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.aboutAction': 'About Us',
 
     'status.current': 'Status: On the road · {city}',
-    'status.departure': 'Departed Shenzhen on April 22',
-    'status.route': '21 provinces, 26 cities',
+    'status.days': 'On the road · {days} days',
+    'status.cities': '{count} cities reached',
 
     'route.title1': 'Connecting technology',
     'route.title2': 'to every coordinate',
