@@ -27,12 +27,16 @@ export interface RouteCity {
   relationStatsEn?: string[];
   event?: RouteCityEvent;
   // --- Phase 2 content hub (all optional; rendered when present) ---
-  /** Photo paths under /public (string paths avoid the Astro image-import object gotcha). */
+  /** Four-facet expedition log: the hooks/one-liners are human-written (not derived). */
+  expedition?: {
+    world: string; world_en?: string;       // 新世界:闯进的场景/边疆
+    fire: string; fire_en?: string;          // 火种:带去/点燃的能力·工具
+    frontier: string; frontier_en?: string;  // 越界:跨过的那条线(碰撞,做钩子)
+  };
+  /** 新文明 — people met (image is a /public path string). */
+  people?: { name: string; name_en?: string; role?: string; role_en?: string; image?: string; bio?: string; bio_en?: string }[];
+  /** 剧照 — on-site photos (/public path strings). */
   photos?: { src: string; alt?: string; caption?: string; caption_en?: string }[];
-  /** Representative people met at this stop. */
-  people?: { name: string; name_en?: string; role?: string; avatar?: string; bio?: string; bio_en?: string }[];
-  /** Representative places/venues at this stop. */
-  places?: { name: string; name_en?: string; image?: string; desc?: string; desc_en?: string }[];
   // --- New Geographic & Tech Telemetry Data ---
   altitude: string;
   terrain: string;
@@ -174,6 +178,21 @@ export const routeCities: RouteCity[] = [
       linkLabel: '阅读领队日记',
       linkLabel_en: "Read leader's diary",
     },
+    // SAMPLE content — replace people/photos with real material when available.
+    expedition: {
+      world: '桂中喀斯特盆地·三都镇的养殖与种植基地,泥泞起伏的农业一线。',
+      world_en: 'A karst-basin aquaculture & farming base in Sandu Town — the muddy front line of agriculture.',
+      fire: '车载边缘 AI 摄像头与六轴机械臂,把实验室级的检测能力带到鱼塘边。',
+      fire_en: 'On-board edge-AI cameras and a 6-axis arm bring lab-grade detection to the pond\'s edge.',
+      frontier: '把六轴机械臂,开进了养鱼塘。',
+      frontier_en: 'We drove a 6-axis robotic arm into a fish pond.',
+    },
+    people: [
+      { name: '韦师傅', name_en: 'Mr. Wei', role: '三都新农人', role_en: 'New-gen farmer, Sandu', image: '/people/ray-pipi.jpg', bio: '在地养殖户,和团队探讨 AI 检测怎么用在水产养殖里。', bio_en: 'Local fish farmer exploring how AI detection fits aquaculture.' },
+    ],
+    photos: [
+      { src: '/heroes/karst-guangxi.webp', caption: '桂中喀斯特地貌', caption_en: 'Karst landscape, central Guangxi' },
+    ],
   },
   // ── 计划中（临近确认） ──
   // 仅展示临近确认的下一段行程；anchor: true 让地图保留前向参照点。
@@ -215,6 +234,18 @@ export const routeCities: RouteCity[] = [
       summary: '走近创客默，与他近距离交流学习，深入访谈，记录一位在地创客的实践路径与生长故事。',
       summary_en: 'Up-close exchange and in-depth interviews with maker Mo — learning from his practice, documenting his story as a local creator, with on-location filming.',
     },
+    // SAMPLE content — replace with real material when available.
+    expedition: {
+      world: '乌蒙山腹地,无电网的高原峡谷。',
+      world_en: 'Deep in the Wumeng Mountains — an off-grid highland valley.',
+      fire: '普罗米修斯号的离线微电网与太阳能调度,在无电之地点亮创客的工作台。',
+      fire_en: 'Prometheus\' off-grid micro-grid and solar dispatch light up a maker\'s bench where there is no power.',
+      frontier: '在没有电网的山里,我们自己发电做创客。',
+      frontier_en: 'In mountains with no grid, we generate our own power and make.',
+    },
+    people: [
+      { name: '创客 · 默', name_en: 'Maker Mo', role: '在地青年创客', role_en: 'Local young maker', image: '/people/haonan.jpg', bio: '深居乌蒙山区的青年创客,记录他的实践与生长故事。', bio_en: 'A young maker in the Wumeng mountains; documenting his practice and story.' },
+    ],
   },
   {
     id: 'chengdu',
