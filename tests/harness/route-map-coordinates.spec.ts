@@ -445,5 +445,10 @@ test('route page falls back gracefully for a stop without expedition data', asyn
     ), 0);
 
   await expect(page.locator('[data-expedition-log="true"]:visible')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: '深圳' })).toBeVisible();
+  // Scope to the CityPanel <article> heading. On mobile the drawer peek bar also
+  // renders an <h4> with the city name (outside the article), so an unscoped
+  // getByRole('heading') would match two elements and trip strict mode.
+  await expect(
+    page.getByRole('article').getByRole('heading', { name: '深圳' }).first(),
+  ).toBeVisible();
 });
