@@ -67,7 +67,9 @@ export const pathGenerator = geoPath().projection(projection);
 
 export function getElevationOffset(altitude: string): number {
   const altitudeVal = parseFloat(altitude) || 0;
-  return Math.sqrt(altitudeVal) * 1.5;
+  // Guard against below-sea-level altitudes: Math.sqrt(negative) is NaN, which
+  // would poison the SVG coordinates downstream.
+  return Math.sqrt(Math.max(0, altitudeVal)) * 1.5;
 }
 
 // ─── label placement (auto, no manual offsets) ───

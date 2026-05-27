@@ -47,8 +47,15 @@ function padded(rect: Rect, padding = RECT_PADDING): Rect {
 }
 
 export function labelDims(c: ProjectedCity): { w: number; h: number } {
+  // Count CJK (full-width) chars as 1 and ASCII (proportional) as ~0.55, so
+  // English labels (label_en, e.g. "Guangzhou") don't get ~2x oversized boxes
+  // and over-cull on the /en map.
+  let visualLength = 0;
+  for (let i = 0; i < c.label.length; i++) {
+    visualLength += c.label.charCodeAt(i) > 127 ? 1 : 0.55;
+  }
   return {
-    w: c.label.length * c.fontSize * 1.05 + 6,
+    w: visualLength * c.fontSize * 1.05 + 6,
     h: c.fontSize * 1.25,
   };
 }
