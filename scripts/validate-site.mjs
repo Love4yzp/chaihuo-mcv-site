@@ -99,7 +99,7 @@ function loadStopsFromMd() {
   );
   return files.map((file) => {
     const src = fs.readFileSync(path.join(dir, file), 'utf8');
-    const m = src.match(/^---\n([\s\S]*?)\n---/);
+    const m = src.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!m) throw new Error(`${file}: missing frontmatter`);
     const data = parseYaml(m[1]);
     return { file, data };

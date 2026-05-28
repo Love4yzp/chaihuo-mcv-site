@@ -15,7 +15,7 @@ export async function loadStops(): Promise<Stop[]> {
   const stops: Stop[] = [];
   for (const file of files) {
     const src = await readFile(path.join(STOPS_DIR, file), 'utf8');
-    const match = src.match(/^---\n([\s\S]*?)\n---/);
+    const match = src.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!match) throw new Error(`${file}: missing frontmatter`);
     stops.push(parseYaml(match[1]) as Stop);
   }
