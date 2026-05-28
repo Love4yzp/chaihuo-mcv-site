@@ -79,10 +79,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
   // Unique cities referenced in the cities prop
   const citiesList = Array.from(
     new Map(
-      cities.map((city) => [
-        city.id,
-        locale === 'en' && city.label_en ? city.label_en : city.label,
-      ]),
+      cities.map((city) => [city.id, city.label]),
     ),
   ).map(([id, label]) => ({ id, label }));
 
@@ -92,8 +89,8 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
     if (!city) return null;
     return {
       altitude: city.altitude,
-      terrain: locale === 'en' ? city.terrainEn : city.terrain,
-      challenge: locale === 'en' ? city.challengeEn : city.challenge,
+      terrain: city.terrain,
+      challenge: city.challenge,
     };
   };
 

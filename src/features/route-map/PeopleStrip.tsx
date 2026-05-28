@@ -1,5 +1,3 @@
-import type { Locale } from "@/i18n/index";
-
 export interface RoutePerson {
   name: string;
   name_en?: string;
@@ -10,16 +8,15 @@ export interface RoutePerson {
   bio_en?: string;
 }
 
-export default function PeopleStrip({ people, locale }: { people?: RoutePerson[]; locale: Locale }) {
+export default function PeopleStrip({ people }: { people?: RoutePerson[] }) {
   if (!people || people.length === 0) return null;
-  const pick = (zh?: string, en?: string) => (locale === "zh" ? zh : en ?? zh);
 
   return (
     <div data-people-strip="true" className="flex flex-col gap-2.5">
       {people.map((p, i) => {
-        const name = pick(p.name, p.name_en) ?? p.name;
-        const role = pick(p.role, p.role_en);
-        const bio = pick(p.bio, p.bio_en);
+        const name = p.name;
+        const role = p.role;
+        const bio = p.bio;
         return (
           <div
             key={`${p.name}-${i}`}

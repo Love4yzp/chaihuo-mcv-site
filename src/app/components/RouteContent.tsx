@@ -22,9 +22,6 @@ interface Props {
 }
 
 export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
-  // Cities already localized by the page — use directly
-  const localizedCities = cities;
-
   const sortedCities = useMemo(
     () => [...cities].sort((a, b) => a.order - b.order),
     [cities],
@@ -41,11 +38,11 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
   );
 
   const [activeTheme, setActiveTheme] = useState<ThemeType | null>(null);
-  const themeCounts = useMemo(() => countThemes(localizedCities), [localizedCities]);
+  const themeCounts = useMemo(() => countThemes(cities), [cities]);
 
   const selectedCity = useMemo(
-    () => localizedCities.find(c => c.label === selectedCityKey) ?? null,
-    [localizedCities, selectedCityKey],
+    () => cities.find(c => c.label === selectedCityKey) ?? null,
+    [cities, selectedCityKey],
   );
 
   // Mobile Drawer expanded state
@@ -99,7 +96,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
         <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch h-[calc(100vh-200px)]">
           <div className="lg:col-span-8 h-full min-h-[550px]">
             <ChinaRouteMap
-              cities={localizedCities}
+              cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
               activeTheme={activeTheme}
@@ -125,7 +122,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
         <div className="lg:hidden flex flex-col gap-4">
           <div className="w-full h-[45vh] min-h-[300px]">
             <ChinaRouteMap
-              cities={localizedCities}
+              cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
               activeTheme={activeTheme}
