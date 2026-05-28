@@ -106,21 +106,6 @@ export function buildCityLines(cities: ProjectedCity[]) {
   return segments;
 }
 
-// Localize a single city to the active locale (uses _en fields when present)
-export function localizeCity(c: RouteCity, locale: Locale): RouteCity {
-  if (locale === 'zh') return c;
-  const next: RouteCity = { ...c };
-  if (c.label_en) next.label = c.label_en;
-  if (c.event) {
-    next.event = {
-      ...c.event,
-      summary: c.event.summary_en ?? c.event.summary,
-      linkLabel: c.event.linkLabel_en ?? c.event.linkLabel,
-    };
-  }
-  return next;
-}
-
 import type { Stop } from './stops-schema';
 
 /**
