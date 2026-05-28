@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, MapPin } from "lucide-react";
-import { ChinaRouteMap, CityPanel, localizeCity } from "@/features/route-map";
-import { routeCities } from "@/data/route-cities";
+import { ChinaRouteMap, CityPanel, ThemeFilter, localizeCity, countThemes } from "@/features/route-map";
+import { routeCities, type ThemeType } from "@/data/route-cities";
 import type { Locale } from "@/i18n/index";
 
 interface SerializedJournal {
@@ -41,6 +41,9 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
     lastVisited?.label ?? null,
   );
 
+  const [activeTheme, setActiveTheme] = useState<ThemeType | null>(null);
+  const themeCounts = useMemo(() => countThemes(localizedCities), [localizedCities]);
+
   const selectedCity = useMemo(
     () => localizedCities.find(c => c.label === selectedCityKey) ?? null,
     [localizedCities, selectedCityKey],
@@ -69,22 +72,27 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
     <div className="min-h-screen bg-neutral-50 pt-24 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col h-full">
         {/* Premium Header */}
-        <div className="w-full flex items-center justify-between border-b border-neutral-350/20 pb-5 mb-6 md:mb-8">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-neutral-900 tracking-tight">
-              {getT('route.pageTitle', '行程路线')}
-            </h1>
-            <p className="text-sm text-neutral-500 mt-1 font-medium">
-              {getT('route.pageDesc', '跟随柴火基地车，穿越中国 21 省 26 城。')}
-            </p>
+        <div className="w-full border-b border-neutral-350/20 pb-5 mb-6 md:mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-neutral-900 tracking-tight">
+                {getT('route.pageTitle', '行程路线')}
+              </h1>
+              <p className="text-sm text-neutral-500 mt-1 font-medium">
+                {getT('route.pageDesc', '跟随柴火基地车，穿越中国 21 省 26 城。')}
+              </p>
+            </div>
+            <a
+              href={locale === 'zh' ? '/' : '/en'}
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 shadow-sm hover:bg-neutral-50 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>{getT('route.action.backHome', '返回首页')}</span>
+            </a>
           </div>
-          <a
-            href={locale === 'zh' ? '/' : '/en'}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 shadow-sm hover:bg-neutral-50 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>{getT('route.action.backHome', '返回首页')}</span>
-          </a>
+          <div className="mt-4">
+            <ThemeFilter counts={themeCounts} active={activeTheme} onSelect={setActiveTheme} t={t} />
+          </div>
         </div>
 
         {/* Responsive Grid Layout */}
@@ -95,6 +103,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
               cities={localizedCities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
+              activeTheme={activeTheme}
               t={t}
             />
           </div>
@@ -120,6 +129,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
               cities={localizedCities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
+              activeTheme={activeTheme}
               t={t}
             />
           </div>
