@@ -1,24 +1,33 @@
 ---
 export const prerender = true;
 
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import JournalsContent from '@/app/components/JournalsContent';
 import { getAllJournals, localizeJournal } from '@/lib/journals';
+import { localizeStop } from '@/features/route-map/projection';
 import type { Locale } from '@/i18n/index';
 import journalsDict from '@/i18n/journals';
 
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = journalsDict[locale];
 
+// Stops collection — localized once at page level
+const stopEntries = await getCollection('stops');
+const cities = stopEntries
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order)
+  .map((s) => localizeStop(s, locale));
+
 // Fetch all active journals (excluding drafts)
 const journalsCollection = await getAllJournals({ includeDrafts: false });
 
 // Map all journals to localized formats
 const localizedJournals = journalsCollection.map((entry) =>
-  localizeJournal(entry, locale)
+  localizeJournal(entry, cities, locale)
 );
 ---
 
 <BaseLayout title={t['title']} description={t['description']}>
-  <JournalsContent client:load journals={localizedJournals} locale={locale} t={t} />
+  <JournalsContent client:load cities={cities} journals={localizedJournals} locale={locale} t={t} />
 </BaseLayout>

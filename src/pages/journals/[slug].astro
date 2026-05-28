@@ -5,6 +5,7 @@ import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import journalsDict from '@/i18n/journals';
 import { localizeJournal } from '@/lib/journals';
+import { localizeStop } from '@/features/route-map/projection';
 import { ExternalLink, Calendar, MapPin, Activity } from 'lucide-react';
 
 export const prerender = true;
@@ -22,10 +23,16 @@ export async function getStaticPaths() {
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = journalsDict[locale];
 
+const stopEntries = await getCollection('stops');
+const cities = stopEntries
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order)
+  .map((s) => localizeStop(s, locale));
+
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 
-const localized = localizeJournal(entry, locale);
+const localized = localizeJournal(entry, cities, locale);
 ---
 
 <BaseLayout title={localized.title} description={localized.excerpt}>

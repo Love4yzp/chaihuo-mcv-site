@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, MapPin } from "lucide-react";
-import { ChinaRouteMap, CityPanel, ThemeFilter, localizeCity, countThemes } from "@/features/route-map";
-import { routeCities } from "@/data/route-cities";
+import { ChinaRouteMap, CityPanel, ThemeFilter, countThemes } from "@/features/route-map";
+import type { RouteCity } from "@/features/route-map/types";
 import type { ThemeType } from "@/features/route-map/theme";
 import type { Locale } from "@/i18n/index";
 
@@ -15,21 +15,19 @@ interface SerializedJournal {
 }
 
 interface Props {
+  cities: RouteCity[];
   journals: SerializedJournal[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function RouteContent({ journals, locale = 'zh', t }: Props) {
-  // Localize and sort cities
-  const localizedCities = useMemo(
-    () => routeCities.map(c => localizeCity(c, locale)),
-    [locale],
-  );
-  
+export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
+  // Cities already localized by the page — use directly
+  const localizedCities = cities;
+
   const sortedCities = useMemo(
-    () => [...localizedCities].sort((a, b) => a.order - b.order),
-    [localizedCities],
+    () => [...cities].sort((a, b) => a.order - b.order),
+    [cities],
   );
 
   // Default to the latest visited city (visited === true and largest order)

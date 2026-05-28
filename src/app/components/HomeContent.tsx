@@ -8,9 +8,8 @@ const Slider = (
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { routeCities } from "@/data/route-cities";
+import type { Stop as RouteCity } from "@/features/route-map/stops-schema";
 import RoutePreview from "@/features/route-map/RoutePreview";
-import { localizeCity } from "@/features/route-map/projection";
 import {
   fadeUp,
   fadeLeft,
@@ -52,6 +51,7 @@ interface TimelineData {
 }
 
 interface Props {
+  cities: RouteCity[];
   heroImages: HeroImage[];
   timeline: TimelineData;
   locale?: Locale;
@@ -71,12 +71,9 @@ function getDepartureDays(now = new Date()) {
   return Math.max(0, Math.floor((today - DEPARTURE_DATE) / MS_PER_DAY));
 }
 
-export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
-  // Localized cities for current locale
-  const localizedCities = useMemo(
-    () => routeCities.map(c => localizeCity(c, locale)),
-    [locale],
-  );
+export default function HomeContent({ cities, heroImages, timeline, locale = 'zh', t }: Props) {
+  // Cities already localized by the page — use directly
+  const localizedCities = cities;
   const sortedCities = useMemo(
     () => [...localizedCities].sort((a, b) => a.order - b.order),
     [localizedCities],
@@ -86,8 +83,8 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
     [sortedCities],
   );
   const visitedCount = useMemo(
-    () => routeCities.filter((city) => city.visited).length,
-    [],
+    () => cities.filter((city) => city.visited).length,
+    [cities],
   );
   const departureDays = getDepartureDays();
 
@@ -278,7 +275,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
                   <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.arrivedStops']}</div>
                   <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-baseline gap-1">
                     <span>{visitedCount}</span>
-                    <span className="text-xs text-neutral-450 font-normal">/ {routeCities.length} stops</span>
+                    <span className="text-xs text-neutral-450 font-normal">/ {cities.length} stops</span>
                   </div>
                 </div>
 
