@@ -8,9 +8,8 @@ const Slider = (
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import { routeCities } from "@/data/route-cities";
+import type { Stop as RouteCity } from "@/features/route-map/stops-schema";
 import RoutePreview from "@/features/route-map/RoutePreview";
-import { localizeCity } from "@/features/route-map/projection";
 import {
   fadeUp,
   fadeLeft,
@@ -52,6 +51,7 @@ interface TimelineData {
 }
 
 interface Props {
+  cities: RouteCity[];
   heroImages: HeroImage[];
   timeline: TimelineData;
   locale?: Locale;
@@ -71,23 +71,18 @@ function getDepartureDays(now = new Date()) {
   return Math.max(0, Math.floor((today - DEPARTURE_DATE) / MS_PER_DAY));
 }
 
-export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: Props) {
-  // Localized cities for current locale
-  const localizedCities = useMemo(
-    () => routeCities.map(c => localizeCity(c, locale)),
-    [locale],
-  );
+export default function HomeContent({ cities, heroImages, timeline, locale = 'zh', t }: Props) {
   const sortedCities = useMemo(
-    () => [...localizedCities].sort((a, b) => a.order - b.order),
-    [localizedCities],
+    () => [...cities].sort((a, b) => a.order - b.order),
+    [cities],
   );
   const lastVisited = useMemo(
     () => [...sortedCities].reverse().find(c => c.visited) ?? null,
     [sortedCities],
   );
   const visitedCount = useMemo(
-    () => routeCities.filter((city) => city.visited).length,
-    [],
+    () => cities.filter((city) => city.visited).length,
+    [cities],
   );
   const departureDays = getDepartureDays();
 
@@ -278,7 +273,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
                   <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.arrivedStops']}</div>
                   <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-baseline gap-1">
                     <span>{visitedCount}</span>
-                    <span className="text-xs text-neutral-450 font-normal">/ {routeCities.length} stops</span>
+                    <span className="text-xs text-neutral-450 font-normal">/ {cities.length} stops</span>
                   </div>
                 </div>
 
@@ -327,20 +322,20 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
                     </div>
                     <div className="flex justify-between items-baseline gap-4">
                       <span className="text-neutral-500 shrink-0">GEO / 地貌</span>
-                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={locale === 'zh' ? lastVisited.terrain : lastVisited.terrainEn}>
-                        {locale === 'zh' ? lastVisited.terrain : lastVisited.terrainEn}
+                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={lastVisited.terrain}>
+                        {lastVisited.terrain}
                       </span>
                     </div>
                     <div className="flex justify-between items-baseline gap-4">
                       <span className="text-neutral-500 shrink-0">CLM / 气候</span>
-                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={locale === 'zh' ? lastVisited.climate : lastVisited.climateEn}>
-                        {locale === 'zh' ? lastVisited.climate : lastVisited.climateEn}
+                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={lastVisited.climate}>
+                        {lastVisited.climate}
                       </span>
                     </div>
                     <div className="border-t border-neutral-800/60 pt-2 mt-2 flex flex-col gap-1">
                       <span className="text-[10px] text-brand/75 uppercase tracking-wider font-semibold">Current Tech Challenge / 实时技术挑战:</span>
                       <span className="text-neutral-300 leading-relaxed text-[11px] font-sans mt-0.5">
-                        {locale === 'zh' ? lastVisited.challenge : lastVisited.challengeEn}
+                        {lastVisited.challenge}
                       </span>
                     </div>
                   </div>
@@ -372,7 +367,7 @@ export default function HomeContent({ heroImages, timeline, locale = 'zh', t }: 
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               >
                 <div className="absolute inset-0">
-                  <RoutePreview cities={localizedCities} ariaLabel={t['routePreview.aria']} />
+                  <RoutePreview cities={cities} ariaLabel={t['routePreview.aria']} />
                 </div>
 
                 {/* 当前活动城市标签 */}

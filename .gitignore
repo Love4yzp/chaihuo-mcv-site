@@ -34,6 +34,9 @@ harness-artifacts/
 scratch/
 .pnpm-store/
 
+# Editor metadata (per editor; not per-repo)
+.obsidian/
+
 # AI agent skill files
 .agent/
 .agents/

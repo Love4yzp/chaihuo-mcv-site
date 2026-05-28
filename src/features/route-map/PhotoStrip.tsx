@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/app/components/ui/dialog";
-import type { Locale } from "@/i18n/index";
 
 export interface RoutePhoto {
   src: string;
@@ -8,13 +7,13 @@ export interface RoutePhoto {
   caption_en?: string;
 }
 
-export default function PhotoStrip({ photos, locale }: { photos?: RoutePhoto[]; locale: Locale }) {
+export default function PhotoStrip({ photos }: { photos?: RoutePhoto[] }) {
   if (!photos || photos.length === 0) return null;
 
   return (
     <div data-photo-strip="true" className="flex flex-wrap gap-2">
       {photos.map((p, i) => {
-        const caption = locale === "zh" ? p.caption : p.caption_en ?? p.caption;
+        const caption = p.caption;
         const label = p.alt ?? caption ?? "photo";
         return (
           <Dialog key={`${p.src}-${i}`}>

@@ -4,16 +4,17 @@ import { fadeUp, stagger, springTransition } from './motion';
 import { Clock, MapPin, ChevronDown, Mountain, Compass, AlertCircle, ArrowRight } from 'lucide-react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
-import { routeCities } from '@/data/route-cities';
+import type { RouteCity } from '@/features/route-map/types';
 import type { LocalizedJournal } from '@/lib/journals';
 
 interface Props {
+  cities: RouteCity[];
   journals: LocalizedJournal[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
+export default function JournalsContent({ cities, journals, locale = 'zh', t }: Props) {
   // Read search parameters for initial filters
   const [activeCity, setActiveCity] = useState<string>('all');
   const [activeStatus, setActiveStatus] = useState<string>('all');
@@ -75,24 +76,21 @@ export default function JournalsContent({ journals, locale = 'zh', t }: Props) {
     return cityMatch && statusMatch;
   });
 
-  // Unique cities referenced in route-cities
+  // Unique cities referenced in the cities prop
   const citiesList = Array.from(
     new Map(
-      routeCities.map((city) => [
-        city.id,
-        locale === 'en' && city.label_en ? city.label_en : city.label,
-      ]),
+      cities.map((city) => [city.id, city.label]),
     ),
   ).map(([id, label]) => ({ id, label }));
 
-  // Helper to retrieve RouteCity details for a given city ID
+  // Helper to retrieve city details for a given city ID
   const getCityTelemetry = (cityId: string) => {
-    const city = routeCities.find((c) => c.id === cityId);
+    const city = cities.find((c) => c.id === cityId);
     if (!city) return null;
     return {
       altitude: city.altitude,
-      terrain: locale === 'en' ? city.terrainEn : city.terrain,
-      challenge: locale === 'en' ? city.challengeEn : city.challenge,
+      terrain: city.terrain,
+      challenge: city.challenge,
     };
   };
 

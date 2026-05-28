@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { motion } from "motion/react";
-import type { RouteCity } from "@/data/route-cities";
+import type { RouteCity } from "./types";
 import {
   MAP_HEIGHT,
   MAP_WIDTH,

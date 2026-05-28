@@ -1,8 +1,9 @@
 import { useState, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, MapPin } from "lucide-react";
-import { ChinaRouteMap, CityPanel, ThemeFilter, localizeCity, countThemes } from "@/features/route-map";
-import { routeCities, type ThemeType } from "@/data/route-cities";
+import { ChinaRouteMap, CityPanel, ThemeFilter, countThemes } from "@/features/route-map";
+import type { RouteCity } from "@/features/route-map/types";
+import type { ThemeType } from "@/features/route-map/theme";
 import type { Locale } from "@/i18n/index";
 
 interface SerializedJournal {
@@ -14,21 +15,16 @@ interface SerializedJournal {
 }
 
 interface Props {
+  cities: RouteCity[];
   journals: SerializedJournal[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function RouteContent({ journals, locale = 'zh', t }: Props) {
-  // Localize and sort cities
-  const localizedCities = useMemo(
-    () => routeCities.map(c => localizeCity(c, locale)),
-    [locale],
-  );
-  
+export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
   const sortedCities = useMemo(
-    () => [...localizedCities].sort((a, b) => a.order - b.order),
-    [localizedCities],
+    () => [...cities].sort((a, b) => a.order - b.order),
+    [cities],
   );
 
   // Default to the latest visited city (visited === true and largest order)
@@ -42,11 +38,11 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
   );
 
   const [activeTheme, setActiveTheme] = useState<ThemeType | null>(null);
-  const themeCounts = useMemo(() => countThemes(localizedCities), [localizedCities]);
+  const themeCounts = useMemo(() => countThemes(cities), [cities]);
 
   const selectedCity = useMemo(
-    () => localizedCities.find(c => c.label === selectedCityKey) ?? null,
-    [localizedCities, selectedCityKey],
+    () => cities.find(c => c.label === selectedCityKey) ?? null,
+    [cities, selectedCityKey],
   );
 
   // Mobile Drawer expanded state
@@ -100,7 +96,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
         <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch h-[calc(100vh-200px)]">
           <div className="lg:col-span-8 h-full min-h-[550px]">
             <ChinaRouteMap
-              cities={localizedCities}
+              cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
               activeTheme={activeTheme}
@@ -126,7 +122,7 @@ export default function RouteContent({ journals, locale = 'zh', t }: Props) {
         <div className="lg:hidden flex flex-col gap-4">
           <div className="w-full h-[45vh] min-h-[300px]">
             <ChinaRouteMap
-              cities={localizedCities}
+              cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
               activeTheme={activeTheme}

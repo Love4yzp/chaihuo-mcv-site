@@ -1,4 +1,6 @@
-import type { RouteCity, ThemeType } from '@/data/route-cities';
+import type { RouteCity } from './types';
+
+export type ThemeType = 'science' | 'maker' | 'industry';
 
 /** Display order of theme chips. */
 export const THEME_ORDER: ThemeType[] = ['science', 'maker', 'industry'];

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Activity, Compass, Cpu, Users, MapPin, ArrowUpRight, Image as ImageIcon } from "lucide-react";
-import type { RouteCity } from "@/data/route-cities";
+import type { RouteCity } from "./types";
 import type { Locale } from "@/i18n/index";
 import { localePath } from "@/i18n/index";
 import AntigravityCard from "@/app/components/AntigravityCard";
@@ -183,7 +183,7 @@ export default function CityPanel({
                         {locale === "zh" ? "新文明 · 遇见的人" : "NEW CIVILIZATIONS"}
                       </h5>
                     </div>
-                    <PeopleStrip people={city.people} locale={locale} />
+                    <PeopleStrip people={city.people} />
                   </div>
                 )}
 
@@ -196,7 +196,7 @@ export default function CityPanel({
                         {locale === "zh" ? "剧照" : "FROM THE FIELD"}
                       </h5>
                     </div>
-                    <PhotoStrip photos={city.photos} locale={locale} />
+                    <PhotoStrip photos={city.photos} />
                   </div>
                 )}
 
@@ -303,7 +303,7 @@ export default function CityPanel({
                           />
 
                           <title>{`${p.city.label}: ${p.alt}m`}</title>
-                          
+
                           {/* 底部城市标签 */}
                           <text
                             x={p.x}
@@ -313,7 +313,7 @@ export default function CityPanel({
                             fill={isActive ? '#1a1408' : '#78716c'}
                             fontWeight={isActive ? 800 : 500}
                           >
-                            {locale === 'zh' ? p.city.label : p.city.label_en || p.city.label}
+                            {p.city.label}
                           </text>
                         </g>
                       );
@@ -332,7 +332,7 @@ export default function CityPanel({
                 <div className="mt-2 text-left">
                   {city.event ? (
                     <p className="text-neutral-700 leading-relaxed text-sm md:text-[14.5px]">
-                      {locale === 'zh' ? city.event.summary : city.event.summary_en || city.event.summary}
+                      {city.event.summary}
                     </p>
                   ) : (
                     <div className="space-y-2">
@@ -360,7 +360,7 @@ export default function CityPanel({
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 text-xs font-semibold border-b border-neutral-900 pb-0.5 text-neutral-900 hover:text-brand hover:border-brand transition-colors duration-200 cursor-pointer"
                     >
-                      {locale === 'zh' ? (city.event.linkLabel ?? '查看现场连线') : (city.event.linkLabel_en ?? 'Read field log')}
+                      {city.event.linkLabel ?? '查看现场连线'}
                       <ArrowUpRight className="w-3 h-3" />
                     </a>
                   )}
@@ -399,7 +399,7 @@ export default function CityPanel({
                         {city.altitude} <span className="text-[10px] font-sans font-semibold text-neutral-500">m</span>
                       </p>
                       <p className="text-[11px] text-neutral-600 font-semibold mt-1">
-                        {locale === 'zh' ? city.terrainStep : city.terrainStepEn}
+                        {city.terrainStep}
                       </p>
                     </div>
                   </div>
@@ -413,11 +413,11 @@ export default function CityPanel({
                       <h5 className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
                         {getT('route.telemetry.climate', 'MICROCLIMATE')} / {getT('route.telemetry.terrain', 'TERRAIN')}
                       </h5>
-                      <p className="text-xs font-bold text-neutral-800 leading-tight mt-1 truncate max-w-[170px]" title={locale === 'zh' ? city.climate : city.climateEn}>
-                        {locale === 'zh' ? city.climate : city.climateEn}
+                      <p className="text-xs font-bold text-neutral-800 leading-tight mt-1 truncate max-w-[170px]" title={city.climate}>
+                        {city.climate}
                       </p>
-                      <p className="text-[10.5px] text-neutral-500 font-medium mt-1 leading-snug line-clamp-2" title={locale === 'zh' ? city.terrain : city.terrainEn}>
-                        {locale === 'zh' ? city.terrain : city.terrainEn}
+                      <p className="text-[10.5px] text-neutral-500 font-medium mt-1 leading-snug line-clamp-2" title={city.terrain}>
+                        {city.terrain}
                       </p>
                     </div>
                   </div>
@@ -432,7 +432,7 @@ export default function CityPanel({
                     </div>
                     
                     <div className={`grid grid-cols-1 gap-2 ${hero ? 'md:grid-cols-3' : ''}`}>
-                      {(locale === 'zh' ? city.relationStats : city.relationStatsEn)?.map((stat, idx) => (
+                      {city.relationStats?.map((stat, idx) => (
                         <div key={idx} className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left">
                           <span className="block text-[11px] font-semibold text-neutral-700 leading-tight">
                             {stat}
@@ -451,7 +451,7 @@ export default function CityPanel({
                   <span>{getT('route.telemetry.challenge', locale === 'zh' ? '车载测控与极境行车挑战' : 'CHALLENGE')}</span>
                 </div>
                 <p className="text-[11.5px] font-medium text-neutral-600 leading-relaxed">
-                  {locale === 'zh' ? city.challenge : city.challengeEn}
+                  {city.challenge}
                 </p>
               </div>
 

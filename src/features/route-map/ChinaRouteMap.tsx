@@ -1,7 +1,8 @@
 import { Fragment, useState, useMemo, useRef, type ReactElement } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import { MapPin, Maximize2 } from "lucide-react";
-import type { RouteCity, ThemeType } from "@/data/route-cities";
+import type { RouteCity } from "./types";
+import type { ThemeType } from "./theme";
 import type { ProjectedCity } from "./types";
 import {
   MAP_WIDTH,

@@ -1,4 +1,7 @@
-import type { RouteCity } from "@/data/route-cities";
+import type { Stop, StopEvent } from './stops-schema';
+
+export type RouteCity = Stop;
+export type RouteCityEvent = StopEvent;
 
 export type ProjectedCity = RouteCity & {
   cx: number;

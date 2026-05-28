@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeContent from '@/app/components/HomeContent';
 import heroesData from '@/data/heroes.json';
@@ -10,9 +11,16 @@ import { PROJECT_START, PROJECT_END } from '@/config/project';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
 import home from '@/i18n/home';
+import { localizeStop } from '@/features/route-map/projection';
 
 const locale = (Astro.currentLocale ?? 'en') as Locale;
 const t = home[locale];
+
+const stopEntries = await getCollection('stops');
+const cities = stopEntries
+  .map((e) => e.data)
+  .sort((a, b) => a.order - b.order)
+  .map((s) => localizeStop(s, locale));
 
 const heroImages = heroesData.map(h => localize(h, ['alt'], locale));
 
@@ -83,5 +91,5 @@ const timeline = {
 ---
 
 <BaseLayout title={t['title']} description={t['description']}>
-  <HomeContent client:load heroImages={heroImages} timeline={timeline} locale={locale} t={t} />
+  <HomeContent client:load cities={cities} heroImages={heroImages} timeline={timeline} locale={locale} t={t} />
 </BaseLayout>
