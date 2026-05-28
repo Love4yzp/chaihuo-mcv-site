@@ -1,7 +1,7 @@
 import { Fragment, useState, useMemo, useRef, type ReactElement } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import { MapPin, Maximize2 } from "lucide-react";
-import type { RouteCity } from "@/data/route-cities";
+import type { RouteCity, ThemeType } from "@/data/route-cities";
 import type { ProjectedCity } from "./types";
 import {
   MAP_WIDTH,
@@ -20,11 +20,13 @@ export default function ChinaRouteMap({
   selectedKey,
   onSelect,
   t,
+  activeTheme = null,
 }: {
   cities: RouteCity[];
   selectedKey: string | null;
   onSelect: (key: string) => void;
   t: Record<string, string>;
+  activeTheme?: ThemeType | null;
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(mapRef, { once: true, amount: 0.3 });
@@ -75,6 +77,13 @@ export default function ChinaRouteMap({
   // Animation budget: cities first (0–1.2s), horse outline fades in after (1.0–2.5s)
   const cityDelay = (order: number, visited: boolean) =>
     visited ? 0.05 + order * 0.06 : 0.6 + order * 0.03;
+
+  // Theme lens: matched cities pop, non-matched non-origin cities dim. Origin exempt.
+  const cityThemeState = (city: ProjectedCity) => {
+    if (!activeTheme || city.isOrigin) return { dimmed: false, matched: false };
+    const matched = city.themes.includes(activeTheme);
+    return { dimmed: !matched, matched };
+  };
 
   return (
     <div
@@ -176,119 +185,132 @@ export default function ChinaRouteMap({
               style={{ pointerEvents: 'none' }}
             />
 
-            {/* 层二：城市间连线 — 已访问优先动 */}
-            {segments.map((seg, i) => {
-              const fromPt: [number, number] = [seg.from.cx, seg.from.cy - seg.from.elevationOffset];
-              const toPt: [number, number] = [seg.to.cx, seg.to.cy - seg.to.elevationOffset];
+            {/* 层二：城市间连线 — 已访问优先动（镜头激活时整体淡出，保住马形） */}
+            <g
+              data-route-segments="true"
+              style={{ opacity: activeTheme ? 0.2 : 1, transition: 'opacity 0.3s ease' }}
+            >
+              {segments.map((seg, i) => {
+                const fromPt: [number, number] = [seg.from.cx, seg.from.cy - seg.from.elevationOffset];
+                const toPt: [number, number] = [seg.to.cx, seg.to.cy - seg.to.elevationOffset];
 
-              const midX = (fromPt[0] + toPt[0]) / 2;
-              const midY = (fromPt[1] + toPt[1]) / 2;
-              const dx = toPt[0] - fromPt[0];
-              const dy = toPt[1] - fromPt[1];
-              const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
+                const midX = (fromPt[0] + toPt[0]) / 2;
+                const midY = (fromPt[1] + toPt[1]) / 2;
+                const dx = toPt[0] - fromPt[0];
+                const dy = toPt[1] - fromPt[1];
+                const offset = Math.min(Math.sqrt(dx * dx + dy * dy) * 0.15, 20);
 
-              // 镜像对称性
-              const side = seg.to.order > seg.from.order ? 1 : -1;
-              const cpX = midX + (dy > 0 ? -offset : offset) * 0.5 * side;
-              const cpY = midY + (dx > 0 ? offset : -offset) * 0.5 * side;
+                // 镜像对称性
+                const side = seg.to.order > seg.from.order ? 1 : -1;
+                const cpX = midX + (dy > 0 ? -offset : offset) * 0.5 * side;
+                const cpY = midY + (dx > 0 ? offset : -offset) * 0.5 * side;
 
-              const d = `M ${fromPt[0]} ${fromPt[1]} Q ${cpX} ${cpY} ${toPt[0]} ${toPt[1]}`;
-              // Visited segments draw immediately; planned segments after
-              const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
+                const d = `M ${fromPt[0]} ${fromPt[1]} Q ${cpX} ${cpY} ${toPt[0]} ${toPt[1]}`;
+                // Visited segments draw immediately; planned segments after
+                const segDelay = seg.visited ? 0.1 + i * 0.08 : 0.6 + i * 0.04;
 
-              // Direction arrow on visited segments
-              let arrow: ReactElement | null = null;
-              const segLen = Math.hypot(dx, dy);
-              if (seg.visited && segLen > 26) {
-                const ax = 0.25 * fromPt[0] + 0.5 * cpX + 0.25 * toPt[0];
-                const ay = 0.25 * fromPt[1] + 0.5 * cpY + 0.25 * toPt[1];
-                const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
-                const s = 3.2;
-                arrow = (
-                  <motion.path
-                    key={`arrow-${i}`}
-                    d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
-                    transform={`translate(${ax} ${ay}) rotate(${angle})`}
-                    fill="#a16207"
-                    stroke="#ece8df"
-                    strokeWidth={1}
-                    strokeLinejoin="round"
-                    initial={{ opacity: 0, scale: 0.3 }}
-                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ duration: 0.3, delay: segDelay + 0.45, ease: 'easeOut' }}
-                  />
-                );
-              }
-
-              return (
-                <Fragment key={`seg-${i}`}>
-                  {/* 皮肤层：半透明黄色霓虹微光轨迹背景 */}
-                  {seg.visited && (
-                    <path
-                      d={d}
-                      stroke="#eab308"
-                      strokeWidth={5.5}
-                      strokeLinecap="round"
-                      fill="none"
-                      opacity={0.16}
-                      style={{ filter: 'url(#neon-glow)', pointerEvents: 'none' }}
+                // Direction arrow on visited segments
+                let arrow: ReactElement | null = null;
+                const segLen = Math.hypot(dx, dy);
+                if (seg.visited && segLen > 26) {
+                  const ax = 0.25 * fromPt[0] + 0.5 * cpX + 0.25 * toPt[0];
+                  const ay = 0.25 * fromPt[1] + 0.5 * cpY + 0.25 * toPt[1];
+                  const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+                  const s = 3.2;
+                  arrow = (
+                    <motion.path
+                      key={`arrow-${i}`}
+                      d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
+                      transform={`translate(${ax} ${ay}) rotate(${angle})`}
+                      fill="#a16207"
+                      stroke="#ece8df"
+                      strokeWidth={1}
+                      strokeLinejoin="round"
+                      initial={{ opacity: 0, scale: 0.3 }}
+                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                      transition={{ duration: 0.3, delay: segDelay + 0.45, ease: 'easeOut' }}
                     />
-                  )}
+                  );
+                }
 
-                  {/* 轨迹核心主线 */}
-                  <motion.path
-                    d={d}
-                    stroke={seg.visited ? '#f3d230' : '#b8a87f'}
-                    strokeWidth={seg.visited ? 3.0 : 1.4}
-                    strokeLinecap="round"
-                    strokeDasharray={seg.visited ? 'none' : '4 5'}
-                    fill="none"
-                    opacity={seg.visited ? 1 : 0.45}
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
-                    transition={{
-                      pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
-                      opacity: { duration: 0.2, delay: segDelay },
-                    }}
-                  />
+                return (
+                  <Fragment key={`seg-${i}`}>
+                    {/* 皮肤层：半透明黄色霓虹微光轨迹背景 */}
+                    {seg.visited && (
+                      <path
+                        d={d}
+                        stroke="#eab308"
+                        strokeWidth={5.5}
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity={0.16}
+                        style={{ filter: 'url(#neon-glow)', pointerEvents: 'none' }}
+                      />
+                    )}
 
-                  {/* 骨架与肌肉层：已访问路线的流动电荷脉冲（reduced-motion 时跳过无限动画） */}
-                  {seg.visited && !prefersReduced && (
+                    {/* 轨迹核心主线 */}
                     <motion.path
                       d={d}
-                      stroke="#ffffff"
-                      strokeWidth={2.0}
+                      stroke={seg.visited ? '#f3d230' : '#b8a87f'}
+                      strokeWidth={seg.visited ? 3.0 : 1.4}
                       strokeLinecap="round"
+                      strokeDasharray={seg.visited ? 'none' : '4 5'}
                       fill="none"
-                      opacity={0.8}
-                      strokeDasharray="8 36"
-                      initial={{ strokeDashoffset: 0 }}
-                      animate={{ strokeDashoffset: -44 }}
+                      opacity={seg.visited ? 1 : 0.45}
+                      initial={{ pathLength: 0, opacity: 0 }}
+                      animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
                       transition={{
-                        duration: 1.2,
-                        repeat: Infinity,
-                        ease: "linear"
+                        pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
+                        opacity: { duration: 0.2, delay: segDelay },
                       }}
-                      style={{ pointerEvents: 'none' }}
                     />
-                  )}
-                  {arrow}
-                </Fragment>
-              );
-            })}
+
+                    {/* 骨架与肌肉层：已访问路线的流动电荷脉冲（reduced-motion 时跳过无限动画） */}
+                    {seg.visited && !prefersReduced && (
+                      <motion.path
+                        d={d}
+                        stroke="#ffffff"
+                        strokeWidth={2.0}
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity={0.8}
+                        strokeDasharray="8 36"
+                        initial={{ strokeDashoffset: 0 }}
+                        animate={{ strokeDashoffset: -44 }}
+                        transition={{
+                          duration: 1.2,
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                        style={{ pointerEvents: 'none' }}
+                      />
+                    )}
+                    {arrow}
+                  </Fragment>
+                );
+              })}
+            </g>
 
             {/* 城市节点 */}
             {projected.map((city) => {
               const { cx, cy, elevationOffset, isLatest } = city;
               const delay = cityDelay(city.order, city.visited);
               const isSelected = selectedKey === city.label;
+              const { dimmed, matched } = cityThemeState(city);
               const r = isLatest ? 6.0 : city.isOrigin ? 5.5 : city.visited ? 4.5 : 3.5;
               const projectionY = cy - elevationOffset;
               const markerX = cx;
               const markerY = projectionY;
 
               return (
-                <g key={city.label}>
+                <g
+                  key={city.label}
+                  data-route-city="true"
+                  data-city-id={city.id}
+                  data-dimmed={dimmed ? 'true' : undefined}
+                  data-theme-match={matched ? 'true' : undefined}
+                  style={{ opacity: dimmed ? 0.25 : 1, transition: 'opacity 0.3s ease' }}
+                >
                   {/* 视觉投影层：展示海拔感，但不改变真实地理锚点 */}
                   {elevationOffset > 0 && (
                     <>
@@ -449,30 +471,32 @@ export default function ChinaRouteMap({
             const sx = transform.x + transform.k * city.cx;
             const sy = transform.y + transform.k * (city.cy - city.elevationOffset);
             const isLatest = city.isLatest;
+            const labelDimmed = cityThemeState(city).dimmed; // reuse the same lens logic
             return (
-              <motion.text
-                key={`label-${city.id}`}
-                data-route-city-label="true"
-                data-city-id={city.id}
-                x={sx + offset[0]}
-                y={sy + offset[1]}
-                fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
-                fontSize={city.fontSize}
-                fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
-                initial={{ opacity: 0 }}
-                animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                style={{
-                  paintOrder: 'stroke',
-                  stroke: '#f2ede4',
-                  strokeWidth: 3.5,
-                  strokeLinejoin: 'round',
-                  pointerEvents: 'none',
-                  userSelect: 'none',
-                }}
-              >
-                {city.label}
-              </motion.text>
+              <g key={`label-${city.id}`} style={{ opacity: labelDimmed ? 0.25 : 1, transition: 'opacity 0.3s ease' }}>
+                <motion.text
+                  data-route-city-label="true"
+                  data-city-id={city.id}
+                  x={sx + offset[0]}
+                  y={sy + offset[1]}
+                  fill={isLatest ? '#1a1408' : city.visited ? '#3a3328' : '#6b6149'}
+                  fontSize={city.fontSize}
+                  fontWeight={isLatest ? 700 : city.visited ? 600 : 400}
+                  initial={{ opacity: 0 }}
+                  animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{
+                    paintOrder: 'stroke',
+                    stroke: '#f2ede4',
+                    strokeWidth: 3.5,
+                    strokeLinejoin: 'round',
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
+                >
+                  {city.label}
+                </motion.text>
+              </g>
             );
           })}
 
