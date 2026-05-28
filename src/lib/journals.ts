@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { Locale } from '@/i18n/index';
-import { routeCities, type RouteCity } from '@/data/route-cities';
+import { routeCities } from '@/data/route-cities';
+import type { RouteCity } from '@/features/route-map/types';
 
 export type JournalEntry = CollectionEntry<'journals'>;
 export type JournalStatus = JournalEntry['data']['status'];

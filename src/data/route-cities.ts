@@ -1,57 +1,8 @@
-export interface RouteCityEvent {
-  date: string;
-  summary: string;
-  summary_en?: string;
-  link?: string;
-  linkLabel?: string;
-  linkLabel_en?: string;
-}
-
-export type ThemeType = 'science' | 'maker' | 'industry';
-
-export interface RouteCity {
-  /** Stable identifier for cross-referencing from journals/equipment/people.
-   *  Display labels can be renamed freely; this id must stay constant. */
-  id: string;
-  label: string;
-  label_en?: string;
-  lng: number;
-  lat: number;
-  visited: boolean;
-  isOrigin?: boolean;
-  order: number;
-  /** Show label by default. Set true on key planned cities so the map
-   *  narrative still has forward-looking anchors (e.g. 下一站). All visited
-   *  cities are labeled regardless. */
-  anchor?: boolean;
-  relationType?: 'departure' | 'education' | 'community' | 'industry';
-  relationStats?: string[];
-  relationStatsEn?: string[];
-  /** Activity themes this stop belongs to (multi-valued). Origin = []. */
-  themes: ThemeType[];
-  event?: RouteCityEvent;
-  // --- Phase 2 content hub (all optional; rendered when present) ---
-  /** Four-facet expedition log: the hooks/one-liners are human-written (not derived). */
-  expedition?: {
-    world: string; world_en?: string;       // 新世界:闯进的场景/边疆
-    fire: string; fire_en?: string;          // 火种:带去/点燃的能力·工具
-    frontier: string; frontier_en?: string;  // 越界:跨过的那条线(碰撞,做钩子)
-  };
-  /** 新文明 — people met (image is a /public path string). */
-  people?: { name: string; name_en?: string; role?: string; role_en?: string; image?: string; bio?: string; bio_en?: string }[];
-  /** 剧照 — on-site photos (/public path strings). */
-  photos?: { src: string; alt?: string; caption?: string; caption_en?: string }[];
-  // --- New Geographic & Tech Telemetry Data ---
-  altitude: string;
-  terrain: string;
-  terrainEn: string;
-  terrainStep: string;
-  terrainStepEn: string;
-  climate: string;
-  climateEn: string;
-  challenge: string;
-  challengeEn: string;
-}
+// Type identities live in src/features/route-map/. This file keeps re-exports
+// for back-compat until T11 deletes it.
+import type { RouteCity } from '@/features/route-map/types';
+export type { RouteCity, RouteCityEvent } from '@/features/route-map/types';
+export type { ThemeType } from '@/features/route-map/theme';
 
 // 实际路线：21省 26城，深圳出发→深圳返回
 // 行程随科技馆/在地社区动态调整；当前仅展示已抵达城市 + 下一站，
@@ -198,7 +149,7 @@ export const routeCities: RouteCity[] = [
       frontier_en: 'We drove a 6-axis robotic arm into a fish pond.',
     },
     people: [
-      { name: '韦师傅', name_en: 'Mr. Wei', role: '三都新农人', role_en: 'New-gen farmer, Sandu', image: '/people/ray-pipi.jpg', bio: '在地养殖户,和团队探讨 AI 检测怎么用在水产养殖里。', bio_en: 'Local fish farmer exploring how AI detection fits aquaculture.' },
+      { id: 'wei-liuzhou', name: '韦师傅', name_en: 'Mr. Wei', role: '三都新农人', role_en: 'New-gen farmer, Sandu', image: '/people/ray-pipi.jpg', bio: '在地养殖户,和团队探讨 AI 检测怎么用在水产养殖里。', bio_en: 'Local fish farmer exploring how AI detection fits aquaculture.' },
     ],
     photos: [
       { src: '/heroes/karst-guangxi.webp', caption: '桂中喀斯特地貌', caption_en: 'Karst landscape, central Guangxi' },
@@ -256,7 +207,7 @@ export const routeCities: RouteCity[] = [
       frontier_en: 'In mountains with no grid, we generate our own power and make.',
     },
     people: [
-      { name: '创客 · 默', name_en: 'Maker Mo', role: '在地青年创客', role_en: 'Local young maker', image: '/people/haonan.jpg', bio: '深居乌蒙山区的青年创客,记录他的实践与生长故事。', bio_en: 'A young maker in the Wumeng mountains; documenting his practice and story.' },
+      { id: 'mo-bijie', name: '创客 · 默', name_en: 'Maker Mo', role: '在地青年创客', role_en: 'Local young maker', image: '/people/haonan.jpg', bio: '深居乌蒙山区的青年创客,记录他的实践与生长故事。', bio_en: 'A young maker in the Wumeng mountains; documenting his practice and story.' },
     ],
   },
   {

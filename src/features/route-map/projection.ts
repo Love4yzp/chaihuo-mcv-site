@@ -1,7 +1,7 @@
 import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import chinaGeoJson from "@/data/china-provinces.json";
-import type { RouteCity } from "@/data/route-cities";
+import type { RouteCity } from "./types";
 import type { Locale } from "@/i18n/index";
 import { MAP_HEIGHT, MAP_SCALE_DENOMINATOR, MAP_TRANSLATE_Y_OFFSET, MAP_WIDTH } from "./constants";
 import type { ProjectedCity } from "./types";

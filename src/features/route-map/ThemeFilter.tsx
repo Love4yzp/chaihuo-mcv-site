@@ -1,5 +1,5 @@
 import { GraduationCap, Wrench, Factory, type LucideIcon } from 'lucide-react';
-import type { ThemeType } from '@/data/route-cities';
+import type { ThemeType } from './theme';
 import { THEME_ORDER } from './theme';
 
 const THEME_ICON: Record<ThemeType, LucideIcon> = {

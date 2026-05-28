@@ -2,7 +2,8 @@ import { useState, useMemo, useCallback } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, MapPin } from "lucide-react";
 import { ChinaRouteMap, CityPanel, ThemeFilter, localizeCity, countThemes } from "@/features/route-map";
-import { routeCities, type ThemeType } from "@/data/route-cities";
+import { routeCities } from "@/data/route-cities";
+import type { ThemeType } from "@/features/route-map/theme";
 import type { Locale } from "@/i18n/index";
 
 interface SerializedJournal {

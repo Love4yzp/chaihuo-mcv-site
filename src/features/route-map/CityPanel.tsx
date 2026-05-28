@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Activity, Compass, Cpu, Users, MapPin, ArrowUpRight, Image as ImageIcon } from "lucide-react";
-import type { RouteCity } from "@/data/route-cities";
+import type { RouteCity } from "./types";
 import type { Locale } from "@/i18n/index";
 import { localePath } from "@/i18n/index";
 import AntigravityCard from "@/app/components/AntigravityCard";
