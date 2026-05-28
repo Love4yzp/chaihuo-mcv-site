@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { parse as parseYaml } from 'yaml';
 
 const root = process.cwd();
 const failures = [];
@@ -91,6 +92,20 @@ function loadTsModule(relativePath) {
   return module.exports;
 }
 
+function loadStopsFromMd() {
+  const dir = path.join(root, 'src/content/stops');
+  const files = fs.readdirSync(dir).filter(
+    (f) => f.endsWith('.md') && !f.startsWith('_'),
+  );
+  return files.map((file) => {
+    const src = fs.readFileSync(path.join(dir, file), 'utf8');
+    const m = src.match(/^---\n([\s\S]*?)\n---/);
+    if (!m) throw new Error(`${file}: missing frontmatter`);
+    const data = parseYaml(m[1]);
+    return { file, data };
+  });
+}
+
 function walkFiles(dir, predicate, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -174,14 +189,16 @@ function validateStructuredData() {
   const heroes = readJson('src/data/heroes.json');
   const faq = readJson('src/data/faq.json');
   const partners = readJson('src/data/partners.json');
-  const { routeCities } = loadTsModule('src/data/route-cities.ts');
+  const stopFiles = loadStopsFromMd();
+  const routeCities = stopFiles.map((s) => s.data);
+  const stopFileById = new Map(stopFiles.map((s) => [s.data.id, s.file]));
 
   const teamIds = hasUniqueIds(team, 'team.json');
   const equipmentIds = hasUniqueIds(equipment, 'equipment.json');
   hasUniqueIds(heroes, 'heroes.json');
   hasUniqueIds(faq, 'faq.json');
   hasUniqueIds(partners, 'partners.json');
-  const routeCityIds = hasUniqueIds(routeCities, 'route-cities.ts');
+  const routeCityIds = hasUniqueIds(routeCities, 'stops');
 
   for (const member of team) {
     check(publicAssetExists(member.image), `team.json:${member.id}: missing public image ${member.image}`);
@@ -225,27 +242,65 @@ function validateStructuredData() {
 
   const orders = new Set();
   for (const city of routeCities) {
-    check(/^[a-z0-9-]+$/.test(city.id), `route-cities.ts:${city.id}: id must be kebab-case ascii`);
-    check(!orders.has(city.order), `route-cities.ts:${city.id}: duplicate order ${city.order}`);
+    const ctx = stopFileById.get(city.id) ?? city.id;
+    check(/^[a-z0-9-]+$/.test(city.id), `${ctx}: id must be kebab-case ascii`);
+    check(!orders.has(city.order), `${ctx}: duplicate order ${city.order}`);
     orders.add(city.order);
-    check(Number.isFinite(city.lng) && Number.isFinite(city.lat), `route-cities.ts:${city.id}: invalid coordinates`);
-    check(Boolean(city.label_en), `route-cities.ts:${city.id}: missing label_en`);
-    check(Boolean(city.terrainEn), `route-cities.ts:${city.id}: missing terrainEn`);
-    check(Boolean(city.terrainStepEn), `route-cities.ts:${city.id}: missing terrainStepEn`);
-    check(Boolean(city.climateEn), `route-cities.ts:${city.id}: missing climateEn`);
-    check(Boolean(city.challengeEn), `route-cities.ts:${city.id}: missing challengeEn`);
+    check(Number.isFinite(city.lng) && Number.isFinite(city.lat), `${ctx}: invalid coordinates`);
+    check(Boolean(city.label_en), `${ctx}: missing label_en`);
+    check(Boolean(city.terrainEn), `${ctx}: missing terrainEn`);
+    check(Boolean(city.terrainStepEn), `${ctx}: missing terrainStepEn`);
+    check(Boolean(city.climateEn), `${ctx}: missing climateEn`);
+    check(Boolean(city.challengeEn), `${ctx}: missing challengeEn`);
     if (city.relationStats) {
       check(
         Array.isArray(city.relationStatsEn) && city.relationStatsEn.length === city.relationStats.length,
-        `route-cities.ts:${city.id}: relationStatsEn must match relationStats length`,
+        `${ctx}: relationStatsEn must match relationStats length`,
       );
     }
     if (city.event) {
-      check(Boolean(city.event.summary_en), `route-cities.ts:${city.id}: event missing summary_en`);
-      if (city.event.link) check(isHttpUrl(city.event.link), `route-cities.ts:${city.id}: event link is not a URL`);
+      check(Boolean(city.event.summary_en), `${ctx}: event missing summary_en`);
+      if (city.event.link) check(isHttpUrl(city.event.link), `${ctx}: event link is not a URL`);
       if (city.event.linkLabel) {
-        check(Boolean(city.event.linkLabel_en), `route-cities.ts:${city.id}: event missing linkLabel_en`);
+        check(Boolean(city.event.linkLabel_en), `${ctx}: event missing linkLabel_en`);
       }
+    }
+  }
+
+  // Contiguous order 0..N-1
+  const orderedOrders = routeCities.map((c) => c.order).sort((a, b) => a - b);
+  for (let i = 0; i < orderedOrders.length; i++) {
+    check(orderedOrders[i] === i, `stops: order must be contiguous 0..N-1; missing ${i} (got ${orderedOrders[i]})`);
+  }
+
+  // Filename matches <padded-order>-<id>.md
+  for (const { file, data } of stopFiles) {
+    const expected = `${String(data.order).padStart(2, '0')}-${data.id}.md`;
+    check(file === expected, `${file}: filename must be ${expected}`);
+  }
+
+  // Exactly one isOrigin: true
+  const origins = routeCities.filter((c) => c.isOrigin === true);
+  check(origins.length === 1, `stops: expected exactly one isOrigin (got ${origins.length})`);
+
+  // people[].id uniqueness within each stop
+  for (const c of routeCities) {
+    if (!c.people) continue;
+    const seen = new Set();
+    for (const p of c.people) {
+      check(p.id && /^[a-z0-9-]+$/.test(p.id), `${c.id}: people[].id must be kebab-case ascii`);
+      check(!seen.has(p.id), `${c.id}: duplicate person id ${p.id}`);
+      seen.add(p.id);
+    }
+  }
+
+  // photos[].src and people[].image must exist under /public
+  for (const c of routeCities) {
+    for (const ph of c.photos ?? []) {
+      if (ph.src) check(publicAssetExists(ph.src), `${c.id}: photo src not found in /public: ${ph.src}`);
+    }
+    for (const p of c.people ?? []) {
+      if (p.image) check(publicAssetExists(p.image), `${c.id}: person image not found in /public: ${p.image}`);
     }
   }
 
