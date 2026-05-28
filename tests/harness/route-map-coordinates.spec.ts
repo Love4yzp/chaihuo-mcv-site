@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { geoMercator } from 'd3-geo';
-import { routeCities } from '../../src/data/route-cities';
+import { loadStops } from './lib/load-stops';
+import type { Stop as RouteCity } from '../../src/features/route-map/stops-schema';
 import { placeLabels } from '../../src/features/route-map/label-layout';
 import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import {
@@ -18,11 +19,18 @@ const projection = geoMercator()
   .scale(MAP_WIDTH / MAP_SCALE_DENOMINATOR)
   .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2 + MAP_TRANSLATE_Y_OFFSET]);
 
-const sortedCities = [...routeCities].sort((a, b) => a.order - b.order);
-const expectedLabelIds = sortedCities
-  .filter((city) => city.visited || city.isOrigin || city.anchor)
-  .map((city) => city.id)
-  .sort();
+let routeCities: RouteCity[] = [];
+let sortedCities: RouteCity[] = [];
+let expectedLabelIds: string[] = [];
+
+test.beforeAll(async () => {
+  routeCities = await loadStops();
+  sortedCities = [...routeCities].sort((a, b) => a.order - b.order);
+  expectedLabelIds = sortedCities
+    .filter((city) => city.visited || city.isOrigin || city.anchor)
+    .map((city) => city.id)
+    .sort();
+});
 
 function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCity, 'id' | 'label' | 'cx' | 'cy'>): ProjectedCity {
   return {
