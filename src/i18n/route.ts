@@ -33,6 +33,12 @@ const route: Record<Locale, Record<string, string>> = {
     'route.journals.organizing': '整理中',
     'route.journals.published': '已发布',
     'route.journals.tapHint': '点击城市查看',
+    // Theme filter
+    'theme.all': '全部',
+    'theme.science': '科普',
+    'theme.maker': '创客',
+    'theme.industry': '产业',
+    'theme.ariaGroup': '按主题筛选地图',
     'map.recenter': '回到全图',
   },
   en: {
@@ -62,6 +68,12 @@ const route: Record<Locale, Record<string, string>> = {
     'route.journals.organizing': 'ORGANIZING',
     'route.journals.published': 'PUBLISHED',
     'route.journals.tapHint': 'Tap a city to open',
+    // Theme filter
+    'theme.all': 'All',
+    'theme.science': 'STEM',
+    'theme.maker': 'Makers',
+    'theme.industry': 'Industry',
+    'theme.ariaGroup': 'Filter the map by theme',
     'map.recenter': 'Reset view',
   }
 };
