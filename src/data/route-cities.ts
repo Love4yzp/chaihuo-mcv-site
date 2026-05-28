@@ -149,7 +149,7 @@ export const routeCities: RouteCity[] = [
       frontier_en: 'We drove a 6-axis robotic arm into a fish pond.',
     },
     people: [
-      { id: 'wei-liuzhou', name: '韦师傅', name_en: 'Mr. Wei', role: '三都新农人', role_en: 'New-gen farmer, Sandu', image: '/people/ray-pipi.jpg', bio: '在地养殖户,和团队探讨 AI 检测怎么用在水产养殖里。', bio_en: 'Local fish farmer exploring how AI detection fits aquaculture.' },
+      { id: 'wei-shifu', name: '韦师傅', name_en: 'Mr. Wei', role: '三都新农人', role_en: 'New-gen farmer, Sandu', image: '/people/ray-pipi.jpg', bio: '在地养殖户,和团队探讨 AI 检测怎么用在水产养殖里。', bio_en: 'Local fish farmer exploring how AI detection fits aquaculture.' },
     ],
     photos: [
       { src: '/heroes/karst-guangxi.webp', caption: '桂中喀斯特地貌', caption_en: 'Karst landscape, central Guangxi' },
@@ -207,7 +207,7 @@ export const routeCities: RouteCity[] = [
       frontier_en: 'In mountains with no grid, we generate our own power and make.',
     },
     people: [
-      { id: 'mo-bijie', name: '创客 · 默', name_en: 'Maker Mo', role: '在地青年创客', role_en: 'Local young maker', image: '/people/haonan.jpg', bio: '深居乌蒙山区的青年创客,记录他的实践与生长故事。', bio_en: 'A young maker in the Wumeng mountains; documenting his practice and story.' },
+      { id: 'maker-mo', name: '创客 · 默', name_en: 'Maker Mo', role: '在地青年创客', role_en: 'Local young maker', image: '/people/haonan.jpg', bio: '深居乌蒙山区的青年创客,记录他的实践与生长故事。', bio_en: 'A young maker in the Wumeng mountains; documenting his practice and story.' },
     ],
   },
   {
