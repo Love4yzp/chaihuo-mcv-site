@@ -252,3 +252,13 @@
   to { transform: translateY(0); }
 }
 
+/* ─── Utility: hide scrollbar but keep scrollability (cross-browser) ─── */
+/* Used by the route-map ThemeFilter chip row and the existing visited-city
+   chip row in RouteContent on narrow viewports. */
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
+

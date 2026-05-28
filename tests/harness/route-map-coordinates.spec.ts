@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { geoMercator } from 'd3-geo';
 import { routeCities } from '../../src/data/route-cities';
 import { placeLabels } from '../../src/features/route-map/label-layout';
+import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import {
   MAP_HEIGHT,
   MAP_SCALE_DENOMINATOR,
@@ -47,6 +48,7 @@ function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCit
     climateEn: overrides.climateEn ?? '',
     challenge: overrides.challenge ?? '',
     challengeEn: overrides.challengeEn ?? '',
+    themes: overrides.themes ?? [],
     cx: overrides.cx,
     cy: overrides.cy,
     elevationOffset: overrides.elevationOffset ?? 0,
@@ -143,6 +145,34 @@ test('label placement is indexed by stable city id', () => {
 
   expect(Array.from(placements.keys()).sort()).toEqual(['same-name-a', 'same-name-b']);
   expect(placements.has('同名')).toBe(false);
+});
+
+test('route city theme tags cover the expected stops', () => {
+  const idsWith = (theme: string) =>
+    routeCities.filter((c) => c.themes.includes(theme as never)).map((c) => c.id).sort();
+
+  expect(idsWith('science')).toEqual(
+    ['guangzhou', 'guiyang', 'nanning', 'yangjiang', 'yulin'].sort(),
+  );
+  expect(idsWith('maker')).toEqual(['bijie', 'chengdu', 'guiyang'].sort());
+  expect(idsWith('industry')).toEqual(['liuzhou']);
+  // Origin carries no activity theme.
+  expect(routeCities.find((c) => c.id === 'shenzhen')!.themes).toEqual([]);
+});
+
+test('THEME_ORDER lists the three themes in display order', () => {
+  expect(THEME_ORDER).toEqual(['science', 'maker', 'industry']);
+});
+
+test('cityMatchesTheme checks membership; guiyang matches science and maker', () => {
+  const guiyang = routeCities.find((c) => c.id === 'guiyang')!;
+  expect(cityMatchesTheme(guiyang, 'science')).toBe(true);
+  expect(cityMatchesTheme(guiyang, 'maker')).toBe(true);
+  expect(cityMatchesTheme(guiyang, 'industry')).toBe(false);
+});
+
+test('countThemes tallies all cities (science 5, maker 3, industry 1)', () => {
+  expect(countThemes(routeCities)).toEqual({ science: 5, maker: 3, industry: 1 });
 });
 
 test('placeLabels hides a low-priority label that cannot sit near its dot', () => {
@@ -451,4 +481,74 @@ test('route page falls back gracefully for a stop without expedition data', asyn
   await expect(
     page.getByRole('article').getByRole('heading', { name: '深圳' }).first(),
   ).toBeVisible();
+});
+
+// ── Phase 3: Theme filter chips ───────────────────────────────────────────────
+// ThemeFilter is a SINGLE instance in the page header. The map renders twice
+// (desktop grid + mobile drawer); SVG <g> visibility is determined via
+// getClientRects() — same pattern as getVisibleLabelIds above.
+
+async function countVisibleCityGroups(page: Page, attrFilter: string): Promise<number> {
+  return page.locator(`[data-route-city="true"]${attrFilter}`).evaluateAll((nodes) =>
+    nodes.filter((n) => (n as Element).getClientRects().length > 0).length,
+  );
+}
+
+async function visibleSegmentLayerOpacity(page: Page): Promise<string | null> {
+  return page.locator('[data-route-segments="true"]').evaluateAll((nodes) => {
+    const v = nodes.find((n) => (n as Element).getClientRects().length > 0);
+    return v ? window.getComputedStyle(v as Element).opacity : null;
+  });
+}
+
+test('route page renders theme chips with counts', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  await expect(page.locator('[data-theme-filter="true"]')).toHaveCount(1);
+  await expect(page.locator('[data-theme-chip="all"]')).toHaveText('全部');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText('科普');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText('5');
+  await expect(page.locator('[data-theme-chip="maker"]')).toContainText('3');
+  await expect(page.locator('[data-theme-chip="industry"]')).toContainText('1');
+});
+
+test('en route page renders theme chips with English labels', async ({ page }) => {
+  await gotoRoute(page, { path: '/en/route', name: 'route-en', locale: 'en' });
+
+  await expect(page.locator('[data-theme-filter="true"]')).toHaveCount(1);
+  await expect(page.locator('[data-theme-chip="all"]')).toHaveText('All');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText('STEM');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText('5');
+  await expect(page.locator('[data-theme-chip="maker"]')).toContainText('Makers');
+  await expect(page.locator('[data-theme-chip="industry"]')).toContainText('Industry');
+});
+
+test('selecting a theme highlights matches and dims the rest; origin stays lit; segments fade', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  await page.locator('[data-theme-chip="science"]').click();
+
+  // 5 science stops matched on the visible map, 3 non-origin non-matching dimmed.
+  await expect.poll(() => countVisibleCityGroups(page, '[data-theme-match="true"]')).toBe(5);
+  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(3);
+  // Origin (深圳) is exempt — never dimmed (across both rendered maps).
+  await expect(
+    page.locator('[data-route-city="true"][data-city-id="shenzhen"][data-dimmed="true"]'),
+  ).toHaveCount(0);
+  // Segment layer actually fades — wait for the 0.3s CSS transition to settle.
+  await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('0.2');
+});
+
+test('clicking the active theme again clears the lens and restores segment opacity', async ({ page }) => {
+  await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
+
+  const chip = page.locator('[data-theme-chip="science"]');
+  await chip.click();
+  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(3);
+  await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('0.2');
+
+  await chip.click(); // toggle off
+  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(0);
+  await expect(chip).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('1');
 });
