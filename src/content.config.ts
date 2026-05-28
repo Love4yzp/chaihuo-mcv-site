@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { routeCities } from './data/route-cities';
+import { stopSchema } from './features/route-map/stops-schema';
 
 const cityIds = new Set(routeCities.map((c) => c.id));
 
@@ -116,4 +117,13 @@ const heroes = defineCollection({
   }),
 });
 
-export const collections = { notes, journals, equipment, team, faq, partners, heroes };
+const stops = defineCollection({
+  loader: glob({
+    base: './src/content/stops',
+    // exclude underscore-prefixed files like _template.md
+    pattern: '!(_*).md',
+  }),
+  schema: stopSchema,
+});
+
+export const collections = { notes, journals, equipment, team, faq, partners, heroes, stops };
