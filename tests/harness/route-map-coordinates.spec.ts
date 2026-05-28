@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { geoMercator } from 'd3-geo';
 import { routeCities } from '../../src/data/route-cities';
 import { placeLabels } from '../../src/features/route-map/label-layout';
+import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import {
   MAP_HEIGHT,
   MAP_SCALE_DENOMINATOR,
@@ -157,6 +158,21 @@ test('route city theme tags cover the expected stops', () => {
   expect(idsWith('industry')).toEqual(['liuzhou']);
   // Origin carries no activity theme.
   expect(routeCities.find((c) => c.id === 'shenzhen')!.themes).toEqual([]);
+});
+
+test('THEME_ORDER lists the three themes in display order', () => {
+  expect(THEME_ORDER).toEqual(['science', 'maker', 'industry']);
+});
+
+test('cityMatchesTheme checks membership; guiyang matches science and maker', () => {
+  const guiyang = routeCities.find((c) => c.id === 'guiyang')!;
+  expect(cityMatchesTheme(guiyang, 'science')).toBe(true);
+  expect(cityMatchesTheme(guiyang, 'maker')).toBe(true);
+  expect(cityMatchesTheme(guiyang, 'industry')).toBe(false);
+});
+
+test('countThemes tallies all cities (science 5, maker 3, industry 1)', () => {
+  expect(countThemes(routeCities)).toEqual({ science: 5, maker: 3, industry: 1 });
 });
 
 test('placeLabels hides a low-priority label that cannot sit near its dot', () => {
