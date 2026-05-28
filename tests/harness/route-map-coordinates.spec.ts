@@ -47,6 +47,7 @@ function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCit
     climateEn: overrides.climateEn ?? '',
     challenge: overrides.challenge ?? '',
     challengeEn: overrides.challengeEn ?? '',
+    themes: overrides.themes ?? [],
     cx: overrides.cx,
     cy: overrides.cy,
     elevationOffset: overrides.elevationOffset ?? 0,
@@ -143,6 +144,19 @@ test('label placement is indexed by stable city id', () => {
 
   expect(Array.from(placements.keys()).sort()).toEqual(['same-name-a', 'same-name-b']);
   expect(placements.has('同名')).toBe(false);
+});
+
+test('route city theme tags cover the expected stops', () => {
+  const idsWith = (theme: string) =>
+    routeCities.filter((c) => c.themes.includes(theme as never)).map((c) => c.id).sort();
+
+  expect(idsWith('science')).toEqual(
+    ['guangzhou', 'guiyang', 'nanning', 'yangjiang', 'yulin'].sort(),
+  );
+  expect(idsWith('maker')).toEqual(['bijie', 'chengdu', 'guiyang'].sort());
+  expect(idsWith('industry')).toEqual(['liuzhou']);
+  // Origin carries no activity theme.
+  expect(routeCities.find((c) => c.id === 'shenzhen')!.themes).toEqual([]);
 });
 
 test('placeLabels hides a low-priority label that cannot sit near its dot', () => {

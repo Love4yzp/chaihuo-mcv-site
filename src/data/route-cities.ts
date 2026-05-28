@@ -7,6 +7,8 @@ export interface RouteCityEvent {
   linkLabel_en?: string;
 }
 
+export type ThemeType = 'science' | 'maker' | 'industry';
+
 export interface RouteCity {
   /** Stable identifier for cross-referencing from journals/equipment/people.
    *  Display labels can be renamed freely; this id must stay constant. */
@@ -25,6 +27,8 @@ export interface RouteCity {
   relationType?: 'departure' | 'education' | 'community' | 'industry';
   relationStats?: string[];
   relationStatsEn?: string[];
+  /** Activity themes this stop belongs to (multi-valued). Origin = []. */
+  themes: ThemeType[];
   event?: RouteCityEvent;
   // --- Phase 2 content hub (all optional; rendered when present) ---
   /** Four-facet expedition log: the hooks/one-liners are human-written (not derived). */
@@ -62,6 +66,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'departure',
     relationStats: ['首发起程点', '柴火创客空间出发', '200天穿越计划'],
     relationStatsEn: ['Starting Point', 'Depart from Chaihuo', '200-Day Expedition'],
+    themes: [],
     altitude: '4',
     terrain: '珠江口东岸沿海丘陵', terrainEn: 'Estuary Coastal Hills',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -85,6 +90,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'education',
     relationStats: ['科技中心联合路展', '1场AI硬件编程工作坊', '创客导师齐聚'],
     relationStatsEn: ['Science Center Roadshow', '1 AI Programming Workshop', 'Makers Gathering'],
+    themes: ['science'],
     altitude: '11',
     terrain: '珠江三角洲冲积平原', terrainEn: 'Pearl River Delta Plain',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -104,6 +110,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'education',
     relationStats: ['科技馆巡展落地', '社区青少年AI硬件互动', '科普基地共创'],
     relationStatsEn: ['Science Museum Expo', 'Teen AI Hardware Interaction', 'Science Base Co-creation'],
+    themes: ['science'],
     altitude: '8',
     terrain: '粤西沿海低山丘陵区', terrainEn: 'West Guangdong Coastal Hills',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -123,6 +130,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'education',
     relationStats: ['走进玉东新区第三小学', '科普路展走进乡村校园', 'AI硬件启蒙课'],
     relationStatsEn: ['Yudong Primary School Visit', 'Rural Campus Science Expo', 'AI Hardware Initiation'],
+    themes: ['science'],
     altitude: '80',
     terrain: '桂东南大容山-六万大山丘陵盆地', terrainEn: 'Southeastern Guangxi Hilly Basin',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -145,6 +153,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'education',
     relationStats: ['广西科技馆教育工作坊', '展示车内AI交互硬件', '1场教师科普培训'],
     relationStatsEn: ['Science Museum Workshop', 'On-board AI Hardware Demo', '1 Teacher STEM Training'],
+    themes: ['science'],
     altitude: '75',
     terrain: '南宁断陷盆地与郁江河谷', terrainEn: 'Nanning Fault Basin & Valley',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -164,6 +173,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'industry',
     relationStats: ['深入三都镇养殖种植基地', '与新农人面对面技术对话', 'AI检测场景探讨'],
     relationStatsEn: ['Sandu Agricultural Base Visit', 'Dialogue with New Farmers', 'AI Detection Scenario Discussion'],
+    themes: ['industry'],
     altitude: '90',
     terrain: '桂中溶蚀喀斯特平原盆地', terrainEn: 'Central Guangxi Karst Basin',
     terrainStep: '第三级阶梯', terrainStepEn: 'Third Terrain Step',
@@ -204,6 +214,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'education',
     relationStats: ['走进贵阳市第八中学', '贵州师范学院科创分享', '贵州大学学术交流'],
     relationStatsEn: ['Guiyang No.8 School Visit', 'Guizhou Normal College Sharing', 'Guizhou University Exchange'],
+    themes: ['science', 'maker'],
     altitude: '1100',
     terrain: '黔中喀斯特丘陵山地斜坡', terrainEn: 'Central Guizhou Karst Hills',
     terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
@@ -223,6 +234,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'community',
     relationStats: ['对话青年在地创客默', '1场深度人物纪实录制', '探讨偏远山区科创土壤'],
     relationStatsEn: ['Dialogue with Mo', '1 In-depth Creator Documentary', 'STEM Education Soil Discussion'],
+    themes: ['maker'],
     altitude: '1510',
     terrain: '乌蒙山脉腹地高原岩溶斜坡', terrainEn: 'Wumeng Mountains Karst Plateau',
     terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
@@ -254,6 +266,7 @@ export const routeCities: RouteCity[] = [
     relationType: 'community',
     relationStats: ['当地科技馆路展对接', '创客社区合伙人碰头', '下一站前向路线探索'],
     relationStatsEn: ['Science Museum Matchmaking', 'Maker Community Partners Meetup', 'Next Stops Path Planning'],
+    themes: ['maker'],
     altitude: '500',
     terrain: '四川盆地西部岷江冲积平原', terrainEn: 'Sichuan Basin West Plain',
     terrainStep: '第二级阶梯', terrainStepEn: 'Second Terrain Step',
