@@ -554,3 +554,37 @@ test('clicking the active theme again clears the lens and restores segment opaci
   await expect(chip).toHaveAttribute('aria-pressed', 'false');
   await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('1');
 });
+
+// ── Phase 5: Loader-level tests ──────────────────────────────────────────────
+
+test('loadStops(zh) returns 9 stops in order with parsed body fields', async () => {
+  const stops = await loadStops('zh');
+  expect(stops.length).toBe(9);
+  expect(stops.map((s) => s.order)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.terrain).toContain('喀斯特');
+  expect(liuzhou.relationStats.length).toBeGreaterThan(0);
+  expect(liuzhou.expedition?.frontier).toContain('养鱼塘');
+});
+
+test('loadStops(en) localizes label + body via .en.md', async () => {
+  const stops = await loadStops('en');
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.label).toBe('Liuzhou');
+  expect(liuzhou.terrain).toMatch(/Karst/i);
+  expect(liuzhou.event?.linkLabel).toBeTruthy();
+});
+
+test('loadStops resolves people refs into ResolvedPerson', async () => {
+  const stops = await loadStops('zh');
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.people?.[0]?.id).toBe('wei-shifu');
+  expect(liuzhou.people?.[0]?.name).toBe('韦师傅');
+  expect(liuzhou.people?.[0]?.bio).toBeTruthy();
+});
+
+test('loadStops sets photo alt = caption (a11y compat)', async () => {
+  const stops = await loadStops('zh');
+  const withPhotos = stops.find((s) => (s.photos?.length ?? 0) > 0)!;
+  expect(withPhotos.photos![0].alt).toBe(withPhotos.photos![0].caption);
+});
