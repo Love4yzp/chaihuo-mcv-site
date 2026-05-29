@@ -10,6 +10,14 @@ import {
 } from './helpers';
 
 test.describe('route smoke', () => {
+  // Emulate prefers-reduced-motion so the route map's repeat:Infinity animations
+  // don't starve Playwright's context teardown under parallel load. Safe only
+  // because ChinaRouteMap's reduced-motion path is SSR-hydration-safe (mounted
+  // gate) — otherwise this surfaces a React #418 hydration mismatch.
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  });
+
   for (const route of [...coreRoutes, ...detailRoutes]) {
     test(`${route.name} renders`, async ({ page }) => {
       await installHarnessGuards(page);

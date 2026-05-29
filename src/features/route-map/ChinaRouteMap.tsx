@@ -1,4 +1,4 @@
-import { Fragment, useState, useMemo, useRef, type ReactElement } from "react";
+import { Fragment, useState, useMemo, useRef, useEffect, type ReactElement } from "react";
 import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
 import { MapPin, Maximize2 } from "lucide-react";
 import type { RouteCity } from "./types";
@@ -34,7 +34,24 @@ export default function ChinaRouteMap({
   // Skip the perpetual (repeat: Infinity) decorative animations for users who
   // prefer reduced motion — also keeps Playwright context teardown from starving
   // on the never-ending rAF loops.
+  //
+  // SSR-safe gate: useReducedMotion() reads the media query synchronously on the
+  // client, but the server prerender has no media query (returns false). Gating
+  // the conditional render directly on prefersReduced would make the client's
+  // first render drop these <motion> elements while the server's HTML includes
+  // them → DOM mismatch → React #418 hydration error. So we only skip AFTER mount:
+  // first render (server + client hydration) always includes the elements (match),
+  // then reduced-motion users drop them via a normal post-mount update.
   const prefersReduced = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // Only flip after mount FOR reduced-motion users — that's the only case that
+    // drops the elements. Non-reduced users (the majority) skip the extra render
+    // entirely. First render is still mounted=false on both server and client, so
+    // hydration matches regardless of the media query.
+    if (prefersReduced) setMounted(true);
+  }, [prefersReduced]);
+  const skipPerpetual = mounted && prefersReduced;
 
   const [isHovered, setIsHovered] = useState(false);
   const [glarePos, setGlarePos] = useState({ x: 0, y: 0 });
@@ -267,7 +284,7 @@ export default function ChinaRouteMap({
                     />
 
                     {/* 骨架与肌肉层：已访问路线的流动电荷脉冲（reduced-motion 时跳过无限动画） */}
-                    {seg.visited && !prefersReduced && (
+                    {seg.visited && !skipPerpetual && (
                       <motion.path
                         d={d}
                         stroke="#ffffff"
@@ -351,7 +368,7 @@ export default function ChinaRouteMap({
                   )}
 
                   {/* 当前所在城市的呼吸圈（reduced-motion 时跳过无限动画） */}
-                  {isLatest && !prefersReduced && (
+                  {isLatest && !skipPerpetual && (
                     <motion.circle
                       cx={markerX}
                       cy={markerY}
