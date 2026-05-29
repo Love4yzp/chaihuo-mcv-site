@@ -1,4 +1,4 @@
-import type { Stop, StopEvent } from './stops-schema';
+import type { Stop, StopEvent } from './stops-loader';
 
 export type RouteCity = Stop;
 export type RouteCityEvent = StopEvent;

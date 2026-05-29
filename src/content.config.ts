@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { stopSchema } from './features/route-map/stops-schema';
+import { stopFrontmatterSchema } from './features/route-map/stops-schema';
 import { personFrontmatterSchema } from './features/route-map/people-schema';
 
 const notes = defineCollection({
@@ -116,10 +116,9 @@ const heroes = defineCollection({
 const stops = defineCollection({
   loader: glob({
     base: './src/content/stops',
-    // exclude underscore-prefixed files like _template.md
-    pattern: '!(_*).md',
+    pattern: ['*.md', '!_*.md', '!*.en.md'],
   }),
-  schema: stopSchema,
+  schema: stopFrontmatterSchema,
 });
 
 const peopleMet = defineCollection({

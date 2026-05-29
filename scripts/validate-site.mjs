@@ -95,7 +95,7 @@ function loadTsModule(relativePath) {
 function loadStopsFromMd() {
   const dir = path.join(root, 'src/content/stops');
   const files = fs.readdirSync(dir).filter(
-    (f) => f.endsWith('.md') && !f.startsWith('_'),
+    (f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'),
   );
   return files.map((file) => {
     const src = fs.readFileSync(path.join(dir, file), 'utf8');
@@ -247,23 +247,8 @@ function validateStructuredData() {
     check(!orders.has(city.order), `${ctx}: duplicate order ${city.order}`);
     orders.add(city.order);
     check(Number.isFinite(city.lng) && Number.isFinite(city.lat), `${ctx}: invalid coordinates`);
-    check(Boolean(city.label_en), `${ctx}: missing label_en`);
-    check(Boolean(city.terrainEn), `${ctx}: missing terrainEn`);
-    check(Boolean(city.terrainStepEn), `${ctx}: missing terrainStepEn`);
-    check(Boolean(city.climateEn), `${ctx}: missing climateEn`);
-    check(Boolean(city.challengeEn), `${ctx}: missing challengeEn`);
-    if (city.relationStats) {
-      check(
-        Array.isArray(city.relationStatsEn) && city.relationStatsEn.length === city.relationStats.length,
-        `${ctx}: relationStatsEn must match relationStats length`,
-      );
-    }
     if (city.event) {
-      check(Boolean(city.event.summary_en), `${ctx}: event missing summary_en`);
       if (city.event.link) check(isHttpUrl(city.event.link), `${ctx}: event link is not a URL`);
-      if (city.event.linkLabel) {
-        check(Boolean(city.event.linkLabel_en), `${ctx}: event missing linkLabel_en`);
-      }
     }
   }
 
@@ -283,24 +268,12 @@ function validateStructuredData() {
   const origins = routeCities.filter((c) => c.isOrigin === true);
   check(origins.length === 1, `stops: expected exactly one isOrigin (got ${origins.length})`);
 
-  // people[].id uniqueness within each stop
+  // people[] references (string ids) resolve to people/met files
+  const peopleDir = path.join(root, 'src/content/people/met');
+  const peopleIds = new Set(fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md')).map((f) => f.replace(/\.md$/, '')));
   for (const c of routeCities) {
-    if (!c.people) continue;
-    const seen = new Set();
-    for (const p of c.people) {
-      check(p.id && /^[a-z0-9-]+$/.test(p.id), `${c.id}: people[].id must be kebab-case ascii`);
-      check(!seen.has(p.id), `${c.id}: duplicate person id ${p.id}`);
-      seen.add(p.id);
-    }
-  }
-
-  // photos[].src and people[].image must exist under /public
-  for (const c of routeCities) {
-    for (const ph of c.photos ?? []) {
-      if (ph.src) check(publicAssetExists(ph.src), `${c.id}: photo src not found in /public: ${ph.src}`);
-    }
-    for (const p of c.people ?? []) {
-      if (p.image) check(publicAssetExists(p.image), `${c.id}: person image not found in /public: ${p.image}`);
+    for (const pid of c.people ?? []) {
+      check(peopleIds.has(pid), `${c.id}: people ref "${pid}" has no src/content/people/met/${pid}.md`);
     }
   }
 

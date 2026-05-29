@@ -1,6 +1,6 @@
 import { getCollection } from 'astro:content';
 import type { Locale } from '@/i18n/index';
-import type { StopRelationType, StopThemeType, StopFrontmatter } from './stops-schema';
+import type { StopRelationType, StopThemeType } from './stops-schema';
 // The parser is a pure .mjs file with full JSDoc @returns {BodyParts} types;
 // TypeScript resolves them via allowJs — no @ts-expect-error needed.
 import { parseStopBody } from './stops-body-parser.mjs';
@@ -86,10 +86,7 @@ export async function loadLocalizedStops(requestedLocale: Locale): Promise<Stop[
   };
 
   const stops = stopEntries.map((entry) => {
-    // T4 will swap the collection to stopFrontmatterSchema; until then, cast so
-    // the loader type-checks against the new minimal shape while the old stopSchema
-    // is still active in content.config.ts.
-    const fm = entry.data as unknown as StopFrontmatter;
+    const fm = entry.data;
 
     // Decide bodyLocale + bodyMarkdown
     let bodyLocale: Locale = 'zh';
