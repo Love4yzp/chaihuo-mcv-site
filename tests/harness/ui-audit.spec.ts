@@ -7,6 +7,12 @@ interface AuditFailure {
 }
 
 test.describe('ui accessibility audit', () => {
+  // See smoke.spec.ts — reduced-motion emulation is safe given the SSR-safe
+  // mounted gate in ChinaRouteMap; it also calms teardown under parallel load.
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+  });
+
   for (const route of [...coreRoutes, ...detailRoutes]) {
     test(`${route.name} exposes usable semantics`, async ({ page }) => {
       await installHarnessGuards(page);
