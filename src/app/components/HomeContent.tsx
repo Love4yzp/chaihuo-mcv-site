@@ -8,7 +8,7 @@ const Slider = (
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import type { Stop as RouteCity } from "@/features/route-map/stops-schema";
+import type { Stop as RouteCity } from "@/features/route-map/stops-loader";
 import RoutePreview from "@/features/route-map/RoutePreview";
 import {
   fadeUp,

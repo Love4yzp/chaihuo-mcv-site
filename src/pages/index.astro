@@ -1,7 +1,6 @@
 ---
 export const prerender = true;
 
-import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeContent from '@/app/components/HomeContent';
 import heroesData from '@/data/heroes.json';
@@ -10,16 +9,12 @@ import teamData from '@/data/team.json';
 import { PROJECT_START, PROJECT_END } from '@/config/project';
 import type { Locale } from '@/i18n/index';
 import home from '@/i18n/home';
-import { localizeStop } from '@/features/route-map/projection';
+import { loadLocalizedStops } from '@/features/route-map/stops-loader';
 
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = home[locale];
 
-const stopEntries = await getCollection('stops');
-const cities = stopEntries
-  .map((e) => e.data)
-  .sort((a, b) => a.order - b.order)
-  .map((s) => localizeStop(s, locale));
+const cities = await loadLocalizedStops(locale);
 
 const memberById = new Map(teamData.map(m => [m.id, m] as const));
 const memberDisplayName = (id: string | undefined) => {

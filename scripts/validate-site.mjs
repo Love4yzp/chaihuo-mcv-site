@@ -4,6 +4,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { parse as parseYaml } from 'yaml';
+import { parseStopBody } from '../src/features/route-map/stops-body-parser.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -95,7 +96,7 @@ function loadTsModule(relativePath) {
 function loadStopsFromMd() {
   const dir = path.join(root, 'src/content/stops');
   const files = fs.readdirSync(dir).filter(
-    (f) => f.endsWith('.md') && !f.startsWith('_'),
+    (f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'),
   );
   return files.map((file) => {
     const src = fs.readFileSync(path.join(dir, file), 'utf8');
@@ -189,6 +190,7 @@ function validateStructuredData() {
   const heroes = readJson('src/data/heroes.json');
   const faq = readJson('src/data/faq.json');
   const partners = readJson('src/data/partners.json');
+  const stopsDir = path.join(root, 'src/content/stops');
   const stopFiles = loadStopsFromMd();
   const routeCities = stopFiles.map((s) => s.data);
   const stopFileById = new Map(stopFiles.map((s) => [s.data.id, s.file]));
@@ -247,23 +249,8 @@ function validateStructuredData() {
     check(!orders.has(city.order), `${ctx}: duplicate order ${city.order}`);
     orders.add(city.order);
     check(Number.isFinite(city.lng) && Number.isFinite(city.lat), `${ctx}: invalid coordinates`);
-    check(Boolean(city.label_en), `${ctx}: missing label_en`);
-    check(Boolean(city.terrainEn), `${ctx}: missing terrainEn`);
-    check(Boolean(city.terrainStepEn), `${ctx}: missing terrainStepEn`);
-    check(Boolean(city.climateEn), `${ctx}: missing climateEn`);
-    check(Boolean(city.challengeEn), `${ctx}: missing challengeEn`);
-    if (city.relationStats) {
-      check(
-        Array.isArray(city.relationStatsEn) && city.relationStatsEn.length === city.relationStats.length,
-        `${ctx}: relationStatsEn must match relationStats length`,
-      );
-    }
     if (city.event) {
-      check(Boolean(city.event.summary_en), `${ctx}: event missing summary_en`);
       if (city.event.link) check(isHttpUrl(city.event.link), `${ctx}: event link is not a URL`);
-      if (city.event.linkLabel) {
-        check(Boolean(city.event.linkLabel_en), `${ctx}: event missing linkLabel_en`);
-      }
     }
   }
 
@@ -273,34 +260,83 @@ function validateStructuredData() {
     check(orderedOrders[i] === i, `stops: order must be contiguous 0..N-1; missing ${i} (got ${orderedOrders[i]})`);
   }
 
-  // Filename matches <padded-order>-<id>.md
+  // Filename matches <padded-order>-<id>.md; also validate body shape
   for (const { file, data } of stopFiles) {
     const expected = `${String(data.order).padStart(2, '0')}-${data.id}.md`;
     check(file === expected, `${file}: filename must be ${expected}`);
+
+    const raw = fs.readFileSync(path.join(stopsDir, file), 'utf8');
+    const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+    // H1 == label consistency (spec §6)
+    const h1m = body.match(/^#\s+(.+?)\s*$/m);
+    if (h1m) {
+      check(h1m[1].trim() === data.label, `${file}: H1 "${h1m[1].trim()}" != frontmatter label "${data.label}"`);
+    }
+    try {
+      const parts = parseStopBody(body, 'zh');
+      // frontmatter event present but body has no 现场记 section → content omission
+      if (data.event && !parts.event) {
+        check(false, `${file}: frontmatter has event but body is missing the "## 现场记" section`);
+      }
+      // body event link must agree with frontmatter event.link
+      if (parts.event?.link) {
+        check(
+          parts.event.link === data.event?.link,
+          `${file}: body event link (${parts.event.link}) != frontmatter event.link (${data.event?.link ?? 'missing'})`,
+        );
+      }
+      // photos src must exist under /public
+      for (const p of parts.photos ?? []) {
+        check(publicAssetExists(p.src), `${file}: photo src not in /public: ${p.src}`);
+      }
+    } catch (e) {
+      check(false, `${file}: body parse failed — ${e.message}`);
+    }
+    // en sibling, if present, must parse with en grammar + H1 == label_en
+    const enFile = file.replace(/\.md$/, '.en.md');
+    const enPath = path.join(stopsDir, enFile);
+    if (fs.existsSync(enPath)) {
+      const enRaw = fs.readFileSync(enPath, 'utf8');
+      // .en.md normally has no frontmatter, but strip it if an author added one
+      // (mirrors the loader's stripFrontmatter so the validator agrees with runtime).
+      const enBody = enRaw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+      const enH1 = enBody.match(/^#\s+(.+?)\s*$/m);
+      if (enH1 && data.label_en) {
+        check(enH1[1].trim() === data.label_en, `${enFile}: H1 "${enH1[1].trim()}" != frontmatter label_en "${data.label_en}"`);
+      }
+      try { parseStopBody(enBody, 'en'); }
+      catch (e) { check(false, `${enFile}: en body parse failed — ${e.message}`); }
+    }
   }
 
   // Exactly one isOrigin: true
   const origins = routeCities.filter((c) => c.isOrigin === true);
   check(origins.length === 1, `stops: expected exactly one isOrigin (got ${origins.length})`);
 
-  // people[].id uniqueness within each stop
+  // people[] references (string ids) resolve to people/met files
+  const peopleDir = path.join(root, 'src/content/people/met');
+  const peopleIds = new Set(fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md')).map((f) => f.replace(/\.md$/, '')));
   for (const c of routeCities) {
-    if (!c.people) continue;
-    const seen = new Set();
-    for (const p of c.people) {
-      check(p.id && /^[a-z0-9-]+$/.test(p.id), `${c.id}: people[].id must be kebab-case ascii`);
-      check(!seen.has(p.id), `${c.id}: duplicate person id ${p.id}`);
-      seen.add(p.id);
+    for (const pid of c.people ?? []) {
+      check(peopleIds.has(pid), `${c.id}: people ref "${pid}" has no src/content/people/met/${pid}.md`);
     }
   }
 
-  // photos[].src and people[].image must exist under /public
-  for (const c of routeCities) {
-    for (const ph of c.photos ?? []) {
-      if (ph.src) check(publicAssetExists(ph.src), `${c.id}: photo src not found in /public: ${ph.src}`);
-    }
-    for (const p of c.people ?? []) {
-      if (p.image) check(publicAssetExists(p.image), `${c.id}: person image not found in /public: ${p.image}`);
+  // people/met frontmatter: filename == id, image exists
+  for (const pf of fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'))) {
+    const praw = fs.readFileSync(path.join(peopleDir, pf), 'utf8');
+    const pm = praw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    check(Boolean(pm), `${pf}: missing frontmatter`);
+    if (pm) {
+      let pd;
+      try { pd = parseYaml(pm[1]); }
+      catch (e) { check(false, `${pf}: frontmatter YAML parse failed — ${e.message}`); }
+      if (pd && typeof pd === 'object') {
+        check(pf === `${pd.id}.md`, `${pf}: filename must be ${pd.id}.md`);
+        if (pd.image) check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
+      } else if (pd !== undefined) {
+        check(false, `${pf}: frontmatter YAML is empty or not an object`);
+      }
     }
   }
 

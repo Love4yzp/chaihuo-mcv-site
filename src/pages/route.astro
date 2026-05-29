@@ -1,11 +1,10 @@
 ---
 export const prerender = true;
 
-import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import RouteContent from '@/app/components/RouteContent';
 import { getAllJournals, localizeJournal } from '@/lib/journals';
-import { localizeStop } from '@/features/route-map/projection';
+import { loadLocalizedStops } from '@/features/route-map/stops-loader';
 import type { Locale } from '@/i18n/index';
 import routeDict from '@/i18n/route';
 
@@ -13,11 +12,7 @@ const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = routeDict[locale];
 
 // Stops collection — localized once at page level
-const stopEntries = await getCollection('stops');
-const cities = stopEntries
-  .map((e) => e.data)
-  .sort((a, b) => a.order - b.order)
-  .map((s) => localizeStop(s, locale));
+const cities = await loadLocalizedStops(locale);
 
 const rawJournals = await getAllJournals();
 const journals = rawJournals.map(j => {

@@ -2,7 +2,6 @@ import { geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import chinaGeoJson from "@/data/china-provinces.json" with { type: "json" };
 import type { RouteCity } from "./types";
-import type { Locale } from "@/i18n/index";
 import { MAP_HEIGHT, MAP_SCALE_DENOMINATOR, MAP_TRANSLATE_Y_OFFSET, MAP_WIDTH } from "./constants";
 import type { ProjectedCity } from "./types";
 export { bboxAt, labelDims, placeLabels, rectsOverlap } from "./label-layout";
@@ -106,91 +105,3 @@ export function buildCityLines(cities: ProjectedCity[]) {
   return segments;
 }
 
-import type { Stop } from './stops-schema';
-
-/**
- * Explicit schema-aware locale adapter for a stop. Spec §6.
- *
- * When locale === 'zh': returns the input unchanged.
- *
- * When locale === 'en':
- *   - collapses _en / En sibling fields into the canonical key
- *     (label_en → label, terrainEn → terrain, relationStatsEn[i] → relationStats[i],
- *      event.summary_en → event.summary, expedition.world_en → expedition.world,
- *      people[i].name_en → people[i].name, etc.)
- *   - photos[].alt is NEVER modified — it is a locale-neutral a11y label
- *   - event.linkLabel falls back to the hardcoded English default 'Read field log'
- *     (NOT to the zh linkLabel) — preserves current CityPanel.tsx behavior;
- *     observable behavior of t['route.action.readFieldLog'] in the en dict.
- *   - all other localizable fields fall back to the zh value if the English
- *     sibling is missing or empty.
- *
- * Non-localized fields (id, order, lng, lat, altitude, themes, visited, isOrigin,
- * anchor, relationType, event.date, event.link, people[].id, people[].image,
- * photos[].src) are passed through.
- */
-export function localizeStop(stop: Stop, locale: Locale): Stop {
-  if (locale === 'zh') return stop;
-
-  const out: Stop = { ...stop };
-
-  if (stop.label_en) out.label = stop.label_en;
-  if (stop.terrainEn) out.terrain = stop.terrainEn;
-  if (stop.terrainStepEn) out.terrainStep = stop.terrainStepEn;
-  if (stop.climateEn) out.climate = stop.climateEn;
-  if (stop.challengeEn) out.challenge = stop.challengeEn;
-
-  if (stop.relationStatsEn && stop.relationStatsEn.length > 0) {
-    out.relationStats = stop.relationStats.map(
-      (zh, i) => stop.relationStatsEn?.[i] || zh,
-    );
-  }
-
-  if (stop.event) {
-    out.event = {
-      ...stop.event,
-      summary: stop.event.summary_en || stop.event.summary,
-      // INTENTIONAL DUPLICATION: this hardcoded string ALSO exists in
-      // src/i18n/route.ts:64 as t['route.action.readFieldLog'] = 'Read field log'
-      // and in src/features/route-map/CityPanel.tsx:363 as the existing fallback.
-      // Spec §6 requires localizeStop to own this fallback (otherwise the
-      // consumer has to retain a locale-aware fallback step, defeating the
-      // 'consumers see canonical fields' migration shape). Drift mitigation:
-      // renaming the dict key WILL NOT propagate here — fix by making the dict
-      // the single source of truth in a follow-up (see spec §13 scope-outs).
-      // For P4 we accept the duplication; the harness covers the observable
-      // behavior so a rename mismatch surfaces in tests.
-      linkLabel: stop.event.link
-        ? stop.event.linkLabel_en || 'Read field log'
-        : stop.event.linkLabel,
-    };
-  }
-
-  if (stop.expedition) {
-    out.expedition = {
-      ...stop.expedition,
-      world: stop.expedition.world_en || stop.expedition.world,
-      fire: stop.expedition.fire_en || stop.expedition.fire,
-      frontier: stop.expedition.frontier_en || stop.expedition.frontier,
-    };
-  }
-
-  if (stop.people && stop.people.length > 0) {
-    out.people = stop.people.map((p) => ({
-      ...p,
-      name: p.name_en || p.name,
-      role: p.role_en || p.role,
-      bio: p.bio_en || p.bio,
-    }));
-  }
-
-  if (stop.photos && stop.photos.length > 0) {
-    out.photos = stop.photos.map((ph) => ({
-      ...ph,
-      // alt deliberately NOT modified — locale-neutral a11y
-      caption: ph.caption_en || ph.caption,
-    }));
-  }
-
-  return out;
-}

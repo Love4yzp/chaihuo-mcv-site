@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { geoMercator } from 'd3-geo';
 import { loadStops } from './lib/load-stops';
-import type { Stop as RouteCity } from '../../src/features/route-map/stops-schema';
+import type { Stop as RouteCity } from '../../src/features/route-map/stops-loader';
 import { placeLabels } from '../../src/features/route-map/label-layout';
 import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import {
@@ -36,7 +36,6 @@ function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCit
   return {
     id: overrides.id,
     label: overrides.label,
-    label_en: overrides.label_en,
     lng: overrides.lng ?? 0,
     lat: overrides.lat ?? 0,
     visited: overrides.visited ?? true,
@@ -45,17 +44,12 @@ function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCit
     order: overrides.order ?? 0,
     relationType: overrides.relationType ?? 'education',
     relationStats: overrides.relationStats ?? [],
-    relationStatsEn: overrides.relationStatsEn,
     event: overrides.event,
     altitude: overrides.altitude ?? '0',
     terrain: overrides.terrain ?? '',
-    terrainEn: overrides.terrainEn ?? '',
     terrainStep: overrides.terrainStep ?? '',
-    terrainStepEn: overrides.terrainStepEn ?? '',
     climate: overrides.climate ?? '',
-    climateEn: overrides.climateEn ?? '',
     challenge: overrides.challenge ?? '',
-    challengeEn: overrides.challengeEn ?? '',
     themes: overrides.themes ?? [],
     cx: overrides.cx,
     cy: overrides.cy,
@@ -561,84 +555,36 @@ test('clicking the active theme again clears the lens and restores segment opaci
   await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('1');
 });
 
-// ── Phase 4: localizeStop tests ──────────────────────────────────────────────
+// ── Phase 5: Loader-level tests ──────────────────────────────────────────────
 
-import { localizeStop } from '../../src/features/route-map/projection';
-
-test('localizeStop returns input unchanged when locale is zh', async () => {
-  const stops = await loadStops();
-  const yulin = stops.find((s) => s.id === 'yulin')!;
-  expect(localizeStop(yulin, 'zh')).toBe(yulin);
+test('loadStops(zh) returns 9 stops in order with parsed body fields', async () => {
+  const stops = await loadStops('zh');
+  expect(stops.length).toBe(9);
+  expect(stops.map((s) => s.order)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.terrain).toContain('喀斯特');
+  expect(liuzhou.relationStats.length).toBeGreaterThan(0);
+  expect(liuzhou.expedition?.frontier).toContain('养鱼塘');
 });
 
-test('localizeStop collapses _en and En siblings into canonical keys when locale is en', async () => {
-  const stops = await loadStops();
-  const yulin = stops.find((s) => s.id === 'yulin')!;
-  const en = localizeStop(yulin, 'en');
-  // _en siblings
-  expect(en.label).toBe(yulin.label_en);
-  // En camelCase siblings
-  expect(en.terrain).toBe(yulin.terrainEn);
-  expect(en.terrainStep).toBe(yulin.terrainStepEn);
-  expect(en.climate).toBe(yulin.climateEn);
-  expect(en.challenge).toBe(yulin.challengeEn);
-  // event nested fields
-  expect(en.event!.summary).toBe(yulin.event!.summary_en);
-  // relationStats per-index
-  expect(en.relationStats).toEqual(yulin.relationStatsEn);
+test('loadStops(en) localizes label + body via .en.md', async () => {
+  const stops = await loadStops('en');
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.label).toBe('Liuzhou');
+  expect(liuzhou.terrain).toMatch(/Karst/i);
+  expect(liuzhou.event?.linkLabel).toBeTruthy();
 });
 
-test('localizeStop preserves photos[].alt untouched in en (a11y-first locale-neutral)', async () => {
-  const sample = {
-    id: 't', order: 99, visited: true, label: '测试', lng: 0, lat: 0,
-    altitude: '0', terrain: 't', terrainEn: 't', terrainStep: 's', terrainStepEn: 's',
-    climate: 'c', climateEn: 'c', challenge: 'ch', challengeEn: 'ch',
-    relationType: 'education' as const, themes: ['science' as const],
-    relationStats: [],
-    photos: [
-      { src: '/x.jpg', alt: '一个 a11y 描述', caption: '中文标题', caption_en: 'English caption' },
-    ],
-  };
-  const en = localizeStop(sample as never, 'en');
-  expect(en.photos![0].alt).toBe('一个 a11y 描述');
-  expect(en.photos![0].caption).toBe('English caption');
+test('loadStops resolves people refs into ResolvedPerson', async () => {
+  const stops = await loadStops('zh');
+  const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
+  expect(liuzhou.people?.[0]?.id).toBe('wei-shifu');
+  expect(liuzhou.people?.[0]?.name).toBe('韦师傅');
+  expect(liuzhou.people?.[0]?.bio).toBeTruthy();
 });
 
-test('localizeStop falls back to zh for missing English fields (most fields)', async () => {
-  const sample = {
-    id: 't', order: 99, visited: true, label: '测试',
-    lng: 0, lat: 0, altitude: '0',
-    terrain: '泥泞', terrainEn: '',
-    terrainStep: '第二级阶梯', terrainStepEn: '',
-    climate: '湿润', climateEn: '',
-    challenge: '挑战', challengeEn: '',
-    relationType: 'education' as const, themes: ['science' as const],
-    relationStats: ['一'], relationStatsEn: undefined,
-  };
-  const en = localizeStop(sample as never, 'en');
-  expect(en.terrain).toBe('泥泞');
-  expect(en.relationStats).toEqual(['一']);
-});
-
-test('localizeStop falls back event.linkLabel to hardcoded English default, NOT zh', async () => {
-  const sample = {
-    id: 't', order: 99, visited: true, label: '测试',
-    lng: 0, lat: 0, altitude: '0',
-    terrain: 't', terrainEn: 't', terrainStep: 's', terrainStepEn: 's',
-    climate: 'c', climateEn: 'c', challenge: 'ch', challengeEn: 'ch',
-    relationType: 'education' as const, themes: ['science' as const], relationStats: [],
-    event: {
-      date: '2026.01.01',
-      summary: 'zh',
-      summary_en: 'en summary',
-      link: 'https://example.com',
-      linkLabel: '阅读日记',     // present
-      linkLabel_en: undefined,   // missing
-    },
-  };
-  const en = localizeStop(sample as never, 'en');
-  // Must NOT fall back to '阅读日记' (the zh string)
-  expect(en.event!.linkLabel).not.toBe('阅读日记');
-  // Must be the hardcoded English default
-  expect(en.event!.linkLabel).toBe('Read field log');
+test('loadStops sets photo alt = caption (a11y compat)', async () => {
+  const stops = await loadStops('zh');
+  const withPhotos = stops.find((s) => (s.photos?.length ?? 0) > 0)!;
+  expect(withPhotos.photos![0].alt).toBe(withPhotos.photos![0].caption);
 });

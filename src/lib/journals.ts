@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import type { Locale } from '@/i18n/index';
-import type { Stop } from '@/features/route-map/stops-schema';
+import type { Stop } from '@/features/route-map/stops-loader';
 
 export type JournalEntry = CollectionEntry<'journals'>;
 export type JournalStatus = JournalEntry['data']['status'];
@@ -65,7 +65,7 @@ export function localizeJournal(
   const d = entry.data;
   const city = findCity(d.city, cities);
   const cityLabel = city
-    ? locale === 'en' && city.label_en ? city.label_en : city.label
+    ? city.label
     : d.city;
   const activities =
     locale === 'en' && d.activities_en.length > 0 ? d.activities_en : d.activities;
