@@ -4,6 +4,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { parse as parseYaml } from 'yaml';
+import { parseStopBody } from '../src/features/route-map/stops-body-parser.mjs';
 
 const root = process.cwd();
 const failures = [];
@@ -189,6 +190,7 @@ function validateStructuredData() {
   const heroes = readJson('src/data/heroes.json');
   const faq = readJson('src/data/faq.json');
   const partners = readJson('src/data/partners.json');
+  const stopsDir = path.join(root, 'src/content/stops');
   const stopFiles = loadStopsFromMd();
   const routeCities = stopFiles.map((s) => s.data);
   const stopFileById = new Map(stopFiles.map((s) => [s.data.id, s.file]));
@@ -258,10 +260,46 @@ function validateStructuredData() {
     check(orderedOrders[i] === i, `stops: order must be contiguous 0..N-1; missing ${i} (got ${orderedOrders[i]})`);
   }
 
-  // Filename matches <padded-order>-<id>.md
+  // Filename matches <padded-order>-<id>.md; also validate body shape
   for (const { file, data } of stopFiles) {
     const expected = `${String(data.order).padStart(2, '0')}-${data.id}.md`;
     check(file === expected, `${file}: filename must be ${expected}`);
+
+    const raw = fs.readFileSync(path.join(stopsDir, file), 'utf8');
+    const body = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+    // H1 == label consistency (spec §6)
+    const h1m = body.match(/^#\s+(.+?)\s*$/m);
+    if (h1m) {
+      check(h1m[1].trim() === data.label, `${file}: H1 "${h1m[1].trim()}" != frontmatter label "${data.label}"`);
+    }
+    try {
+      const parts = parseStopBody(body, 'zh');
+      // body event link must agree with frontmatter event.link
+      if (parts.event?.link) {
+        check(
+          parts.event.link === data.event?.link,
+          `${file}: body event link (${parts.event.link}) != frontmatter event.link (${data.event?.link ?? 'missing'})`,
+        );
+      }
+      // photos src must exist under /public
+      for (const p of parts.photos ?? []) {
+        check(publicAssetExists(p.src), `${file}: photo src not in /public: ${p.src}`);
+      }
+    } catch (e) {
+      check(false, `${file}: body parse failed — ${e.message}`);
+    }
+    // en sibling, if present, must parse with en grammar + H1 == label_en
+    const enFile = file.replace(/\.md$/, '.en.md');
+    const enPath = path.join(stopsDir, enFile);
+    if (fs.existsSync(enPath)) {
+      const enRaw = fs.readFileSync(enPath, 'utf8');
+      const enH1 = enRaw.match(/^#\s+(.+?)\s*$/m);
+      if (enH1 && data.label_en) {
+        check(enH1[1].trim() === data.label_en, `${enFile}: H1 "${enH1[1].trim()}" != frontmatter label_en "${data.label_en}"`);
+      }
+      try { parseStopBody(enRaw, 'en'); }
+      catch (e) { check(false, `${enFile}: en body parse failed — ${e.message}`); }
+    }
   }
 
   // Exactly one isOrigin: true
@@ -274,6 +312,18 @@ function validateStructuredData() {
   for (const c of routeCities) {
     for (const pid of c.people ?? []) {
       check(peopleIds.has(pid), `${c.id}: people ref "${pid}" has no src/content/people/met/${pid}.md`);
+    }
+  }
+
+  // people/met frontmatter: filename == id, image exists
+  for (const pf of fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'))) {
+    const praw = fs.readFileSync(path.join(peopleDir, pf), 'utf8');
+    const pm = praw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    check(Boolean(pm), `${pf}: missing frontmatter`);
+    if (pm) {
+      const pd = parseYaml(pm[1]);
+      check(pf === `${pd.id}.md`, `${pf}: filename must be ${pd.id}.md`);
+      if (pd.image) check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
     }
   }
 
