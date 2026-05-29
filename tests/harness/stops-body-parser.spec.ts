@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-// @ts-expect-error - pure .mjs, no type declarations needed for tests
 import { parseStopBody } from '../../src/features/route-map/stops-body-parser.mjs';
 
 const ZH_FULL = `# 柳州
@@ -61,12 +60,12 @@ test('parseStopBody extracts all sections from a full zh body', () => {
   expect(r.climate).toBe('中亚热带季风气候');
   expect(r.challenge).toContain('农业基地起伏泥泞土路行驶');
   expect(r.relationStats).toEqual(['深入三都镇养殖种植基地', '与新农人面对面技术对话', 'AI 检测场景探讨']);
-  expect(r.event.summary).toContain('走进柳州');
-  expect(r.event.linkLabel).toBe('阅读领队日记');
-  expect(r.event.link).toBe('https://www.yuque.com/x');
-  expect(r.expedition.world).toContain('桂中喀斯特盆地');
-  expect(r.expedition.fire).toContain('车载边缘 AI');
-  expect(r.expedition.frontier).toBe('把六轴机械臂,开进了养鱼塘。');
+  expect(r.event!.summary).toContain('走进柳州');
+  expect(r.event!.linkLabel).toBe('阅读领队日记');
+  expect(r.event!.link).toBe('https://www.yuque.com/x');
+  expect(r.expedition!.world).toContain('桂中喀斯特盆地');
+  expect(r.expedition!.fire).toContain('车载边缘 AI');
+  expect(r.expedition!.frontier).toBe('把六轴机械臂,开进了养鱼塘。');
   expect(r.photos).toEqual([{ src: '/heroes/karst-guangxi.webp', caption: '桂中喀斯特地貌' }]);
 });
 

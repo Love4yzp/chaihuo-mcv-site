@@ -77,6 +77,25 @@ function parseBullets(lines) {
     .map((m) => m[1]);
 }
 
+/**
+ * @typedef {{ summary: string, link?: string, linkLabel?: string }} BodyEvent
+ * @typedef {{ world: string, fire: string, frontier: string }} BodyExpedition
+ * @typedef {{ src: string, caption: string }} BodyPhoto
+ * @typedef {{
+ *   terrain: string,
+ *   terrainStep: string,
+ *   climate: string,
+ *   challenge: string,
+ *   relationStats: string[],
+ *   event?: BodyEvent,
+ *   expedition?: BodyExpedition,
+ *   photos?: BodyPhoto[],
+ * }} BodyParts
+ *
+ * @param {string} markdown
+ * @param {'zh' | 'en'} bodyLocale
+ * @returns {BodyParts}
+ */
 export function parseStopBody(markdown, bodyLocale) {
   const L = LABELS[bodyLocale];
   if (!L) throw new Error(`parseStopBody: unknown bodyLocale ${bodyLocale}`);
