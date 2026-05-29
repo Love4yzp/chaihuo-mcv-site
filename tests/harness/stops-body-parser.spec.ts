@@ -128,3 +128,26 @@ test('parseStopBody parses en headings under bodyLocale en', () => {
   expect(r.terrain).toBe('Plain');
   expect(r.relationStats).toEqual(['Activity one']);
 });
+
+test('parseStopBody tolerates CRLF line endings + a leading BOM', () => {
+  const crlf = '﻿# 柳州\r\n\r\n## 在地遥测\r\n\r\n- 地形: 平原\r\n- 阶梯: 第二级阶梯\r\n- 气候: 温带\r\n- 极境挑战: 风沙\r\n\r\n## 在地共创\r\n\r\n- 活动一\r\n';
+  const r = parseStopBody(crlf, 'zh');
+  expect(r.terrain).toBe('平原');          // no trailing \r
+  expect(r.challenge).toBe('风沙');
+  expect(r.relationStats).toEqual(['活动一']);
+});
+
+test('parseStopBody throws on a duplicate telemetry label', () => {
+  const dup = `## 在地遥测
+
+- 地形: a
+- 地形: b
+- 气候: c
+- 极境挑战: d
+
+## 在地共创
+
+- x
+`;
+  expect(() => parseStopBody(dup, 'zh')).toThrow(/duplicate telemetry label/i);
+});

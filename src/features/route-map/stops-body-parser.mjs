@@ -99,7 +99,12 @@ function parseBullets(lines) {
 export function parseStopBody(markdown, bodyLocale) {
   const L = LABELS[bodyLocale];
   if (!L) throw new Error(`parseStopBody: unknown bodyLocale ${bodyLocale}`);
-  const { sections } = splitSections(markdown);
+  // Normalize cross-platform input before parsing: strip a leading UTF-8 BOM
+  // (Windows editors like Notepad add one) and collapse CRLF/CR to LF so the
+  // line-split + paragraph regexes behave identically on every OS. Phase 5 is
+  // editor-agnostic authoring, so non-LF input is a realistic case.
+  const normalized = markdown.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const { sections } = splitSections(normalized);
   const byHeading = new Map(sections.map((s) => [s.heading, s]));
 
   // ── Section order enforcement (spec §6) ──
@@ -120,7 +125,9 @@ export function parseStopBody(markdown, bodyLocale) {
   for (const item of teleItems) {
     const m = item.match(/^([^:：]+)[:：]\s*(.+)$/);
     if (!m) throw new Error(`telemetry item not "label: value": ${item}`);
-    teleMap[m[1].trim()] = m[2].trim();
+    const key = m[1].trim();
+    if (key in teleMap) throw new Error(`duplicate telemetry label: ${key}`);
+    teleMap[key] = m[2].trim();
   }
   const need = [L.teleTerrain, L.teleStep, L.teleClimate, L.teleChallenge];
   for (const k of need) {

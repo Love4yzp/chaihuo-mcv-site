@@ -274,6 +274,10 @@ function validateStructuredData() {
     }
     try {
       const parts = parseStopBody(body, 'zh');
+      // frontmatter event present but body has no 现场记 section → content omission
+      if (data.event && !parts.event) {
+        check(false, `${file}: frontmatter has event but body is missing the "## 现场记" section`);
+      }
       // body event link must agree with frontmatter event.link
       if (parts.event?.link) {
         check(
@@ -293,11 +297,14 @@ function validateStructuredData() {
     const enPath = path.join(stopsDir, enFile);
     if (fs.existsSync(enPath)) {
       const enRaw = fs.readFileSync(enPath, 'utf8');
-      const enH1 = enRaw.match(/^#\s+(.+?)\s*$/m);
+      // .en.md normally has no frontmatter, but strip it if an author added one
+      // (mirrors the loader's stripFrontmatter so the validator agrees with runtime).
+      const enBody = enRaw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
+      const enH1 = enBody.match(/^#\s+(.+?)\s*$/m);
       if (enH1 && data.label_en) {
         check(enH1[1].trim() === data.label_en, `${enFile}: H1 "${enH1[1].trim()}" != frontmatter label_en "${data.label_en}"`);
       }
-      try { parseStopBody(enRaw, 'en'); }
+      try { parseStopBody(enBody, 'en'); }
       catch (e) { check(false, `${enFile}: en body parse failed — ${e.message}`); }
     }
   }
@@ -321,9 +328,15 @@ function validateStructuredData() {
     const pm = praw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     check(Boolean(pm), `${pf}: missing frontmatter`);
     if (pm) {
-      const pd = parseYaml(pm[1]);
-      check(pf === `${pd.id}.md`, `${pf}: filename must be ${pd.id}.md`);
-      if (pd.image) check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
+      let pd;
+      try { pd = parseYaml(pm[1]); }
+      catch (e) { check(false, `${pf}: frontmatter YAML parse failed — ${e.message}`); }
+      if (pd && typeof pd === 'object') {
+        check(pf === `${pd.id}.md`, `${pf}: filename must be ${pd.id}.md`);
+        if (pd.image) check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
+      } else if (pd !== undefined) {
+        check(false, `${pf}: frontmatter YAML is empty or not an object`);
+      }
     }
   }
 
