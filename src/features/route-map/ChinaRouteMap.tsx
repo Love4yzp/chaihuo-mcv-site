@@ -244,7 +244,7 @@ export default function ChinaRouteMap({
                   const s = 3.2;
                   arrow = (
                     <motion.path
-                      key={`arrow-${i}`}
+                      key={`arrow-${seg.from.label}-${seg.to.label}`}
                       d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
                       transform={`translate(${ax} ${ay}) rotate(${angle})`}
                       fill="#a16207"
@@ -259,7 +259,7 @@ export default function ChinaRouteMap({
                 }
 
                 return (
-                  <Fragment key={`seg-${i}`}>
+                  <Fragment key={`${seg.from.label}-${seg.to.label}`}>
                     {/* 皮肤层：半透明黄色霓虹微光轨迹背景 */}
                     {seg.visited && (
                       <path

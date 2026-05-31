@@ -12,11 +12,11 @@ export default function PhotoStrip({ photos }: { photos?: RoutePhoto[] }) {
 
   return (
     <div data-photo-strip="true" className="flex flex-wrap gap-2">
-      {photos.map((p, i) => {
+      {photos.map((p) => {
         const caption = p.caption;
         const label = p.alt ?? caption ?? 'photo';
         return (
-          <Dialog key={`${p.src}-${i}`}>
+          <Dialog key={p.src}>
             <DialogTrigger asChild>
               <button
                 type="button"

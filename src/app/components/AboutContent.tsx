@@ -197,11 +197,11 @@ function YearSpotlight({
 
                   {/* Event Bento Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {item.events.map((ev, j) => {
+                    {item.events.map((ev) => {
                       const isLongText = ev.text.length > 80;
                       return (
                         <motion.div
-                          key={j}
+                          key={`${ev.month}-${ev.text}`}
                           initial={{ opacity: 0, y: 15 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, amount: 0.15 }}
@@ -288,9 +288,9 @@ function YearSpotlight({
                           {item.year}
                         </span>
                         <div className="space-y-1.5 flex-1">
-                          {item.events.map((ev, idx) => (
+                          {item.events.map((ev) => (
                             <p
-                              key={idx}
+                              key={`${ev.month}-${ev.text}`}
                               className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-850 font-bold' : 'text-neutral-600 font-medium'}`}
                             >
                               <span className="text-brand-dark font-mono mr-1.5 uppercase font-bold">

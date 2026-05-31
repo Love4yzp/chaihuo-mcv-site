@@ -243,8 +243,8 @@ export default function CityPanel({
                       {locale === 'zh' ? '海拔高度纵断面图' : 'Elevation profile chart'}
                     </title>
                     {/* 阶梯基准线 */}
-                    {gridLines.map((g, idx) => (
-                      <g key={idx} opacity={0.25}>
+                    {gridLines.map((g) => (
+                      <g key={g.alt} opacity={0.25}>
                         <line
                           x1={paddingLeft}
                           y1={g.y}
@@ -298,14 +298,14 @@ export default function CityPanel({
                     />
 
                     {/* 城市海拔锚定点 */}
-                    {points.map((p, idx) => {
+                    {points.map((p) => {
                       const isActive = p.city.label === city.label;
                       const isVisited = p.city.visited;
 
                       return (
                         // biome-ignore lint/a11y/noStaticElementInteractions: SVG 图表海拔锚点命中区,指针优先可视化
                         <g
-                          key={idx}
+                          key={p.city.label}
                           className="cursor-pointer group"
                           onClick={() => onSelectCity?.(p.city.label)}
                         >
@@ -489,9 +489,9 @@ export default function CityPanel({
                     </div>
 
                     <div className={`grid grid-cols-1 gap-2 ${hero ? 'md:grid-cols-3' : ''}`}>
-                      {city.relationStats?.map((stat, idx) => (
+                      {city.relationStats?.map((stat) => (
                         <div
-                          key={idx}
+                          key={stat}
                           className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left"
                         >
                           <span className="block text-[11px] font-semibold text-neutral-700 leading-tight">

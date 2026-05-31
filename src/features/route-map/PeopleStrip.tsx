@@ -13,13 +13,13 @@ export default function PeopleStrip({ people }: { people?: RoutePerson[] }) {
 
   return (
     <div data-people-strip="true" className="flex flex-col gap-2.5">
-      {people.map((p, i) => {
+      {people.map((p) => {
         const name = p.name;
         const role = p.role;
         const bio = p.bio;
         return (
           <div
-            key={`${p.name}-${i}`}
+            key={p.name}
             data-people-card="true"
             className="flex items-start gap-3 rounded-xl border border-[#e5dfd3]/50 bg-[#f5f2eb]/60 p-2.5"
           >
