@@ -1,7 +1,13 @@
 import { ChevronLeft, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useMemo, useState } from 'react';
-import { ChinaRouteMap, CityPanel, countThemes, ThemeFilter } from '@/features/route-map';
+import {
+  ChinaRouteMap,
+  CityPanel,
+  countThemes,
+  MapLibreCanvas,
+  ThemeFilter,
+} from '@/features/route-map';
 import type { ThemeType } from '@/features/route-map/theme';
 import type { RouteCity } from '@/features/route-map/types';
 import type { Locale } from '@/i18n/index';
@@ -19,9 +25,16 @@ interface Props {
   journals: SerializedJournal[];
   locale?: Locale;
   t: Record<string, string>;
+  mapEngine?: 'svg' | 'maplibre';
 }
 
-export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
+export default function RouteContent({
+  cities,
+  journals,
+  locale = 'zh',
+  t,
+  mapEngine = 'svg',
+}: Props) {
   const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
 
   // Default to the latest visited city (visited === true and largest order)
@@ -59,6 +72,8 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
     expanded: { y: 0 },
   };
 
+  const MapComponent = mapEngine === 'maplibre' ? MapLibreCanvas : ChinaRouteMap;
+
   return (
     <div className="min-h-screen bg-neutral-50 pt-24 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col h-full">
@@ -95,7 +110,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
         {/* Desktop Split Screen Layout: Left 65% map, Right 35% panel */}
         <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch h-[calc(100vh-200px)]">
           <div className="lg:col-span-8 h-full min-h-[550px]">
-            <ChinaRouteMap
+            <MapComponent
               cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
@@ -121,7 +136,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
         {/* Mobile Layout: Top Map (45vh), Bottom Custom Drawer */}
         <div className="lg:hidden flex flex-col gap-4">
           <div className="w-full h-[45vh] min-h-[300px]">
-            <ChinaRouteMap
+            <MapComponent
               cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
