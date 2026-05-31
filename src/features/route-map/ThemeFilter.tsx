@@ -22,6 +22,7 @@ const IDLE_CLS = 'bg-white text-neutral-700 border-neutral-200 hover:border-neut
 
 export default function ThemeFilter({ counts, active, onSelect, t }: Props) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: 横向滚动的筛选 chip 组无对应原生元素,role="group" + aria-label 是恰当的 ARIA 模式
     <div
       role="group"
       aria-label={t['theme.ariaGroup'] ?? '按主题筛选地图'}

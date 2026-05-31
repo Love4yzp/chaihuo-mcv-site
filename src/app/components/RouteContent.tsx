@@ -139,6 +139,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
                   const active = selectedCityKey === c.label;
                   return (
                     <button
+                      type="button"
                       key={`${c.id}-${c.order}`}
                       onClick={() => handleCitySelect(c.label)}
                       className={`text-[11px] px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap ${
@@ -176,9 +177,19 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
           >
             {/* Drawer Drag Handle bar (120px Peek height including padding) */}
+            {/* biome-ignore lint/a11y/useSemanticElements: 把手内含 h4/图标等块级内容,原生 <button> 不能容纳;role="button" + tabIndex + onKeyDown 是恰当的可访问模式 */}
             <div
+              role="button"
+              tabIndex={0}
+              aria-expanded={isDrawerExpanded}
               className="w-full flex flex-col justify-between py-3 px-6 border-b border-[#e5dfd3]/40 cursor-pointer flex-shrink-0"
               onClick={() => setIsDrawerExpanded(!isDrawerExpanded)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setIsDrawerExpanded(!isDrawerExpanded);
+                }
+              }}
             >
               {/* Central pill handle */}
               <div className="w-12 h-1.5 bg-neutral-350/80 rounded-full mx-auto mb-3" />

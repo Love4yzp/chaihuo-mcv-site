@@ -11,7 +11,8 @@
       "!.astro",
       "!pnpm-lock.yaml",
       "!src/data/china-provinces.json",
-      "!**/*.css"
+      "!**/*.css",
+      "!**/*.astro"
     ]
   },
   "formatter": {
@@ -23,30 +24,21 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-      "correctness": {
-        "noUnusedImports": "off",
-        "noUnusedVariables": "off",
-        "useExhaustiveDependencies": "off",
-        "useHookAtTopLevel": "off"
-      },
-      "style": {
-        "noNonNullAssertion": "off"
-      },
-      "suspicious": {
-        "noExplicitAny": "off",
-        "noArrayIndexKey": "off"
-      },
-      "a11y": {
-        "noSvgWithoutTitle": "off",
-        "useButtonType": "off",
-        "noStaticElementInteractions": "off",
-        "useKeyWithClickEvents": "off",
-        "useSemanticElements": "off"
-      }
+      "recommended": true
     }
   },
   "javascript": {
     "formatter": { "quoteStyle": "single", "semicolons": "always" }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["tests/**"],
+      "linter": {
+        "rules": {
+          "style": { "noNonNullAssertion": "off" },
+          "suspicious": { "noExplicitAny": "off" }
+        }
+      }
+    }
+  ]
 }

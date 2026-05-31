@@ -142,6 +142,7 @@ function YearSpotlight({
                   const isActive = item.year === activeYear;
                   return (
                     <button
+                      type="button"
                       key={item.year}
                       onClick={() => jumpToSection(item.year)}
                       className="w-full text-left focus:outline-none block cursor-pointer group"
@@ -196,11 +197,11 @@ function YearSpotlight({
 
                   {/* Event Bento Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {item.events.map((ev, j) => {
+                    {item.events.map((ev) => {
                       const isLongText = ev.text.length > 80;
                       return (
                         <motion.div
-                          key={j}
+                          key={`${ev.month}-${ev.text}`}
                           initial={{ opacity: 0, y: 15 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, amount: 0.15 }}
@@ -238,6 +239,7 @@ function YearSpotlight({
         {/* Collapsible Chronicle Drawer for Minor Years */}
         <div className="mt-20 border-t border-neutral-200/60 pt-12 text-center">
           <button
+            type="button"
             onClick={() => setShowFullHistory(!showFullHistory)}
             className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-neutral-800 font-bold transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
           >
@@ -286,9 +288,9 @@ function YearSpotlight({
                           {item.year}
                         </span>
                         <div className="space-y-1.5 flex-1">
-                          {item.events.map((ev, idx) => (
+                          {item.events.map((ev) => (
                             <p
-                              key={idx}
+                              key={`${ev.month}-${ev.text}`}
                               className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-850 font-bold' : 'text-neutral-600 font-medium'}`}
                             >
                               <span className="text-brand-dark font-mono mr-1.5 uppercase font-bold">
@@ -508,7 +510,7 @@ export default function AboutContent({
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path
                 d="M3 8h10M9 4l4 4-4 4"
                 stroke="currentColor"

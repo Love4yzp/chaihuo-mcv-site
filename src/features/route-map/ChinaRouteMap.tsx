@@ -103,6 +103,7 @@ export default function ChinaRouteMap({
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: 鼠标视差容器,纯装饰性 hover 特效,无可操作交互
     <div
       ref={mapRef}
       onMouseMove={handleMouseMove}
@@ -137,6 +138,7 @@ export default function ChinaRouteMap({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+          <title>{t['map.title'] || '中国行程路线图'}</title>
           <defs>
             <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -242,7 +244,7 @@ export default function ChinaRouteMap({
                   const s = 3.2;
                   arrow = (
                     <motion.path
-                      key={`arrow-${i}`}
+                      key={`arrow-${seg.from.label}-${seg.to.label}`}
                       d={`M ${-s} ${-s * 0.75} L ${s * 0.85} 0 L ${-s} ${s * 0.75} Z`}
                       transform={`translate(${ax} ${ay}) rotate(${angle})`}
                       fill="#a16207"
@@ -257,7 +259,7 @@ export default function ChinaRouteMap({
                 }
 
                 return (
-                  <Fragment key={`seg-${i}`}>
+                  <Fragment key={`${seg.from.label}-${seg.to.label}`}>
                     {/* 皮肤层：半透明黄色霓虹微光轨迹背景 */}
                     {seg.visited && (
                       <path
@@ -481,6 +483,7 @@ export default function ChinaRouteMap({
                   )}
 
                   {/* 精密事件触发区 */}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: SVG 地图城市命中区,指针优先可视化;完整键盘可达性作为单独事项跟进 */}
                   <circle
                     cx={markerX}
                     cy={markerY}

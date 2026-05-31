@@ -49,6 +49,7 @@ export default function AntigravityCard({
 
   return (
     <div style={{ perspective: 1200 }} className="w-full inline-block">
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: 3D 倾斜为纯装饰性指针视差特效,无点击/动作,键盘不适用 */}
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}

@@ -25,6 +25,17 @@ interface SerializedJournal {
   city: string;
 }
 
+// SVG 高度图尺寸与内边距 —— 纯常量,放在组件外,避免被 useMemo 当作依赖项
+const maxAlt = 1510; // 最大海拔刻度 1510m (毕节)
+const svgW = 460;
+const svgH = 85;
+const paddingLeft = 25;
+const paddingRight = 20;
+const paddingTop = 12;
+const paddingBottom = 22;
+const plotW = svgW - paddingLeft - paddingRight;
+const plotH = svgH - paddingTop - paddingBottom;
+
 export default function CityPanel({
   city,
   cities,
@@ -50,6 +61,56 @@ export default function CityPanel({
     return t[key] ?? fallback;
   };
 
+  // 1. 过滤并计算海拔高程数据点，展示基准的横向行程断面
+  const elevationCities = useMemo(() => {
+    return cities.filter((c) => c.altitude != null);
+  }, [cities]);
+
+  // 映射高程坐标点
+  const points = useMemo(() => {
+    if (elevationCities.length === 0) return [];
+    return elevationCities.map((c, i) => {
+      const x =
+        elevationCities.length > 1
+          ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
+          : paddingLeft + plotW / 2;
+      const alt = parseFloat(c.altitude) || 0;
+      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
+      return {
+        x,
+        y,
+        city: c,
+        alt,
+      };
+    });
+  }, [elevationCities]);
+
+  // 生成剖面线与区域填充路径
+  const lineD = useMemo(() => {
+    if (points.length === 0) return '';
+    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  }, [points]);
+
+  const areaD = useMemo(() => {
+    if (points.length === 0) return '';
+    return `${lineD} L ${points[points.length - 1].x} ${svgH - paddingBottom} L ${points[0].x} ${svgH - paddingBottom} Z`;
+  }, [points, lineD]);
+
+  // 海拔网格基准线
+  const gridLines = useMemo(() => {
+    const alts = [500, 1000, 1500];
+    return alts.map((alt) => {
+      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
+      return { alt, y };
+    });
+  }, []);
+
+  // Filter journals for this city
+  const cityJournals = useMemo(() => {
+    if (!journals || !city) return [];
+    return journals.filter((j) => j.city === city.id);
+  }, [journals, city]);
+
   if (!city) {
     return (
       <AntigravityCard
@@ -71,69 +132,6 @@ export default function CityPanel({
     : (t['journal.legCounter'] ?? '{n} / {total}')
         .replace('{n}', String(city.order))
         .replace('{total}', String(totalLegs));
-
-  // 1. 过滤并计算海拔高程数据点，展示基准的横向行程断面
-  const elevationCities = useMemo(() => {
-    return cities.filter((c) => c.altitude != null);
-  }, [cities]);
-
-  // 最大海拔刻度 1510m (毕节)
-  const maxAlt = 1510;
-
-  // SVG 高度图尺寸与内边距
-  const svgW = 460;
-  const svgH = 85;
-  const paddingLeft = 25;
-  const paddingRight = 20;
-  const paddingTop = 12;
-  const paddingBottom = 22;
-  const plotW = svgW - paddingLeft - paddingRight;
-  const plotH = svgH - paddingTop - paddingBottom;
-
-  // 映射高程坐标点
-  const points = useMemo(() => {
-    if (elevationCities.length === 0) return [];
-    return elevationCities.map((c, i) => {
-      const x =
-        elevationCities.length > 1
-          ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
-          : paddingLeft + plotW / 2;
-      const alt = parseFloat(c.altitude) || 0;
-      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
-      return {
-        x,
-        y,
-        city: c,
-        alt,
-      };
-    });
-  }, [elevationCities, plotW, plotH, svgH, paddingBottom]);
-
-  // 生成剖面线与区域填充路径
-  const lineD = useMemo(() => {
-    if (points.length === 0) return '';
-    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  }, [points]);
-
-  const areaD = useMemo(() => {
-    if (points.length === 0) return '';
-    return `${lineD} L ${points[points.length - 1].x} ${svgH - paddingBottom} L ${points[0].x} ${svgH - paddingBottom} Z`;
-  }, [points, lineD, svgH, paddingBottom]);
-
-  // 海拔网格基准线
-  const gridLines = useMemo(() => {
-    const alts = [500, 1000, 1500];
-    return alts.map((alt) => {
-      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
-      return { alt, y };
-    });
-  }, [plotH, svgH, paddingBottom]);
-
-  // Filter journals for this city
-  const cityJournals = useMemo(() => {
-    if (!journals) return [];
-    return journals.filter((j) => j.city === city.id);
-  }, [journals, city.id]);
 
   return (
     <AnimatePresence mode="wait">
@@ -238,10 +236,15 @@ export default function CityPanel({
                   <svg
                     viewBox={`0 0 ${svgW} ${svgH}`}
                     className="w-full h-auto overflow-visible select-none"
+                    role="img"
+                    aria-label={locale === 'zh' ? '海拔高度纵断面图' : 'Elevation profile chart'}
                   >
+                    <title>
+                      {locale === 'zh' ? '海拔高度纵断面图' : 'Elevation profile chart'}
+                    </title>
                     {/* 阶梯基准线 */}
-                    {gridLines.map((g, idx) => (
-                      <g key={idx} opacity={0.25}>
+                    {gridLines.map((g) => (
+                      <g key={g.alt} opacity={0.25}>
                         <line
                           x1={paddingLeft}
                           y1={g.y}
@@ -295,13 +298,14 @@ export default function CityPanel({
                     />
 
                     {/* 城市海拔锚定点 */}
-                    {points.map((p, idx) => {
+                    {points.map((p) => {
                       const isActive = p.city.label === city.label;
                       const isVisited = p.city.visited;
 
                       return (
+                        // biome-ignore lint/a11y/noStaticElementInteractions: SVG 图表海拔锚点命中区,指针优先可视化
                         <g
-                          key={idx}
+                          key={p.city.label}
                           className="cursor-pointer group"
                           onClick={() => onSelectCity?.(p.city.label)}
                         >
@@ -485,9 +489,9 @@ export default function CityPanel({
                     </div>
 
                     <div className={`grid grid-cols-1 gap-2 ${hero ? 'md:grid-cols-3' : ''}`}>
-                      {city.relationStats?.map((stat, idx) => (
+                      {city.relationStats?.map((stat) => (
                         <div
-                          key={idx}
+                          key={stat}
                           className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left"
                         >
                           <span className="block text-[11px] font-semibold text-neutral-700 leading-tight">

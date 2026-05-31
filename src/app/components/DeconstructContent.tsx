@@ -1,6 +1,5 @@
-import { BatteryCharging, ChevronRight, Cpu, Factory } from 'lucide-react';
+import { BatteryCharging, ChevronRight, Cpu, Factory, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import type { ComponentType } from 'react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import { defaultViewport, fadeUp, springTransition, stagger } from './motion';
@@ -37,7 +36,7 @@ interface Props {
 
 // ─── Icon map ───
 
-const ICON_MAP: Record<string, ComponentType<any>> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Cpu,
   Factory,
   BatteryCharging,
@@ -314,7 +313,7 @@ export default function DeconstructContent({
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path
                 d="M3 8h10M9 4l4 4-4 4"
                 stroke="currentColor"

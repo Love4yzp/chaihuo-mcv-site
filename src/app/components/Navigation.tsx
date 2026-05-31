@@ -187,6 +187,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
 
           {/* Mobile hamburger */}
           <button
+            type="button"
             className="md:hidden relative w-8 h-8 flex items-center justify-center cursor-pointer"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? dict['nav.closeMenu'] : dict['nav.openMenu']}
@@ -225,6 +226,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
             >
               <div className="flex justify-end p-6 pb-2">
                 <button
+                  type="button"
                   onClick={closeMenu}
                   className="w-8 h-8 flex items-center justify-center text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
                   aria-label={dict['nav.closeMenu']}
@@ -236,6 +238,7 @@ export default function Navigation({ pathname, locale = 'zh' }: NavigationProps)
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
+                    aria-hidden="true"
                   >
                     <line x1="4" y1="4" x2="16" y2="16" />
                     <line x1="16" y1="4" x2="4" y2="16" />

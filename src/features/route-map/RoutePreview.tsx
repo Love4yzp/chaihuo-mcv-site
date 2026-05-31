@@ -103,7 +103,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
         const toY = round(seg.to.cy);
 
         return (
-          <g key={`seg-group-${i}`}>
+          <g key={`${seg.from.label}-${seg.to.label}`}>
             {/* Pulsing glow background for active route segments */}
             {seg.visited && (
               <path
