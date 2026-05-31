@@ -24,7 +24,7 @@ export interface RouteCity {
 }
 
 // 实际路线：21省 26城，深圳出发→深圳返回
-// 行程随科技馆/在地社区动态调整；当前仅展示已抵达城市 + 下一站，
+// 行程随科技馆/在地社区动态调整；当前已抵达拉萨（川藏段 2026.05 完成），
 // 后续路线在临近时再追加，避免地图上出现尚未确认的占位点。
 // order 字段表示行程顺序，visited 控制进度
 export const routeCities: RouteCity[] = [
@@ -94,9 +94,7 @@ export const routeCities: RouteCity[] = [
       linkLabel_en: "Read leader's diary",
     },
   },
-  // ── 计划中（临近确认） ──
-  // 仅展示临近确认的下一段行程；anchor: true 让地图保留前向参照点。
-  // event.date 让地图 hover tooltip 能显示计划日期。
+  // ── 黔中段（贵阳·毕节） ──
   {
     label: '贵阳', label_en: 'Guiyang',
     lng: 106.713, lat: 26.578, visited: true, order: 6, anchor: true,
@@ -115,13 +113,89 @@ export const routeCities: RouteCity[] = [
       summary_en: 'Up-close exchange and in-depth interviews with maker Mo — learning from his practice, documenting his story as a local creator, with on-location filming.',
     },
   },
+  // ── 川藏段（成都→拉萨，2026.05） ──
   {
     label: '成都', label_en: 'Chengdu',
     lng: 104.066, lat: 30.572, visited: true, order: 8, anchor: true,
     event: {
-      date: '2026.05.10',
-      summary: '计划停靠成都；现场行程随当地科技馆与社区合作伙伴最终确认后更新。',
-      summary_en: 'Planned stop in Chengdu; on-site activities will be confirmed with local science museums and community partners.',
+      date: '2026.05.17–05.22',
+      summary: '以成都为大本营：四川科技馆展览，往返江油·老河沟驿站、清溪镇唐家河、绵阳等地开展自然与科创探访；22 日基地车回成都柴火完成首保。',
+      summary_en: 'Using Chengdu as base camp: exhibition at the Sichuan Science & Technology Museum, with round trips to Jiangyou & Laohegou Station, Qingxi Town\'s Tangjiahe, and Mianyang for nature and STEM visits; on the 22nd the vehicle returned to Chaihuo Chengdu for its first maintenance service.',
+    },
+  },
+  {
+    label: '雅安', label_en: "Ya'an",
+    lng: 103.001, lat: 29.987, visited: true, order: 9, anchor: true,
+    event: {
+      date: '2026.05.23–05.24',
+      summary: '成都驶往雅安，途中偶遇王老师；探访熊猫基地，走进上里古镇，记录川西门户的在地风物。',
+      summary_en: "Drove from Chengdu to Ya'an, an unexpected reunion with Teacher Wang along the way; visited the panda base and the ancient town of Shangli, documenting the gateway to western Sichuan.",
+    },
+  },
+  {
+    label: '塔公镇', label_en: 'Tagong',
+    lng: 101.520, lat: 30.321, visited: true, order: 10, anchor: true,
+    event: {
+      date: '2026.05.25–05.26',
+      summary: '从雅安中学一路向西上高原，在塔公镇邂逅日照金山；走进多吉家，在草原上完成牦牛场景的设备测试。',
+      summary_en: "Headed west onto the plateau from Ya'an Middle School, catching the golden sunrise on the snow peaks at Tagong; visited Dorje's home and ran equipment field tests with yaks on the grassland.",
+    },
+  },
+  {
+    label: '理塘', label_en: 'Litang',
+    lng: 100.270, lat: 29.997, visited: true, order: 11,
+    event: {
+      date: '2026.05.27',
+      summary: '翻越雅江抵达「天空之城」理塘，再沿 318 国道前往巴塘。',
+      summary_en: 'Crossed Yajiang to reach Litang, the "city in the sky," then continued along National Highway 318 toward Batang.',
+    },
+  },
+  {
+    label: '巴塘', label_en: 'Batang',
+    lng: 99.104, lat: 30.005, visited: true, order: 12, anchor: true,
+    event: {
+      date: '2026.05.28',
+      summary: '从巴塘正式入藏，途经芒康、如美与东达山，翻山进入西藏地界。',
+      summary_en: 'Officially entered Tibet from Batang, passing through Markam, Rumei and the Dongda Mountain pass.',
+    },
+  },
+  {
+    label: '左贡', label_en: 'Zuogong',
+    lng: 97.842, lat: 29.670, visited: true, order: 13,
+    event: {
+      date: '2026.05.29',
+      summary: '左贡经邦达镇，挑战怒江 72 道拐天险，穿越横断山深处。',
+      summary_en: 'From Zuogong via Bangda, tackled the dramatic 72 switchbacks above the Nu River, threading deep through the Hengduan Mountains.',
+    },
+  },
+  {
+    label: '波密', label_en: 'Bomi',
+    lng: 95.768, lat: 29.859, visited: true, order: 14,
+    event: {
+      date: '2026.05.30',
+      summary: '抵达「藏地小江南」波密县，途中穿过鲁朗林海，向林芝、拉萨方向进发。',
+      summary_en: 'Reached Bomi County, the green heart of Tibet, crossing the Lulang forests en route toward Nyingchi and Lhasa.',
+    },
+  },
+  {
+    label: '林芝', label_en: 'Nyingchi',
+    lng: 94.362, lat: 29.649, visited: true, order: 15,
+    event: {
+      date: '2026.05.30',
+      summary: '途经林芝，沿尼洋河谷向拉萨方向行进。',
+      summary_en: 'Passed through Nyingchi, following the Niyang River valley onward to Lhasa.',
+    },
+  },
+  {
+    label: '拉萨', label_en: 'Lhasa',
+    lng: 91.140, lat: 29.645, visited: true, order: 16, anchor: true,
+    event: {
+      date: '2026.05.30–05.31',
+      summary: '抵达拉萨；以布达拉宫为背景完成一场高原上的人物采访，为川藏段旅程留下注脚。',
+      summary_en: 'Arrived in Lhasa; filmed an interview against the backdrop of the Potala Palace, a fitting coda to the Sichuan–Tibet leg of the journey.',
+      link: 'https://www.yuque.com/chaihuo-mcv/home',
+      linkLabel: '查看拉萨日记',
+      linkLabel_en: 'Read Lhasa log',
     },
   },
 ];
