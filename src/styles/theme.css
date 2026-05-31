@@ -262,3 +262,28 @@
   scrollbar-width: none;
 }
 
+/* ─── MapLibre HTML 城市标记 ─── */
+.mlc-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 2px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  white-space: nowrap;
+}
+.mlc-marker .mlc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--neutral-500);
+  box-shadow: 0 0 0 2px #ffffff;
+}
+.mlc-marker--visited .mlc-dot {
+  background: var(--brand);
+}
+
