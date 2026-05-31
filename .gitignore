@@ -65,3 +65,6 @@ scratch/
 .zencoder/
 skills-lock.json
 .gstack/
+
+# spec/plan working docs — keep uncommitted (user preference)
+docs/superpowers/
