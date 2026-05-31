@@ -1,0 +1,15 @@
+---
+export const prerender = true;
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ElementsContent from '@/app/components/ElementsContent';
+import type { Locale } from '@/i18n/index';
+import elementsDict from '@/i18n/elements';
+
+const locale = (Astro.currentLocale ?? 'zh') as Locale;
+const t = elementsDict[locale];
+---
+
+<BaseLayout title={t['title']} description={t['description']}>
+  <ElementsContent client:load locale={locale} t={t} />
+</BaseLayout>

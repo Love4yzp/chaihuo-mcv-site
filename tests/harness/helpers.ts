@@ -19,6 +19,8 @@ export const coreRoutes: HarnessRoute[] = [
   { path: '/en/guide', name: 'guide-en', locale: 'en' },
   { path: '/about', name: 'about-zh', locale: 'zh' },
   { path: '/en/about', name: 'about-en', locale: 'en' },
+  { path: '/elements', name: 'elements-zh', locale: 'zh' },
+  { path: '/en/elements', name: 'elements-en', locale: 'en' },
 ];
 
 export const detailRoutes: HarnessRoute[] = [
