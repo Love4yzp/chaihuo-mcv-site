@@ -1,4 +1,4 @@
-import type { ProjectedCity, Rect } from "./types";
+import type { ProjectedCity, Rect } from './types';
 
 type LabelMode = 'map' | 'projection';
 type LabelOffset = [number, number];
@@ -16,7 +16,7 @@ const MAX_LABEL_DISTANCE = 14;
 // Distance from the dot to the CENTER of the label box for a given offset.
 function offsetDistance(c: ProjectedCity, dx: number, dy: number): number {
   const { w, h } = labelDims(c);
-  const lcx = dx + w / 2;        // label box center relative to dot
+  const lcx = dx + w / 2; // label box center relative to dot
   const lcy = dy - h * 0.85 + h / 2;
   return Math.hypot(lcx, lcy);
 }
@@ -25,7 +25,11 @@ function overlapsAnyLabel(bb: Rect, placed: Rect[]): boolean {
   return placed.some((r) => rectsOverlap(r, bb));
 }
 
-function dotOverlapCount(bb: Rect, dotBoxes: Array<{ id: string; rect: Rect }>, cityId: string): number {
+function dotOverlapCount(
+  bb: Rect,
+  dotBoxes: Array<{ id: string; rect: Rect }>,
+  cityId: string,
+): number {
   let n = 0;
   for (const dot of dotBoxes) {
     if (dot.id !== cityId && rectsOverlap(dot.rect, bb)) n += 1;
@@ -38,12 +42,7 @@ export function rectsOverlap(a: Rect, b: Rect): boolean {
 }
 
 function padded(rect: Rect, padding = RECT_PADDING): Rect {
-  return [
-    rect[0] - padding,
-    rect[1] - padding,
-    rect[2] + padding,
-    rect[3] + padding,
-  ];
+  return [rect[0] - padding, rect[1] - padding, rect[2] + padding, rect[3] + padding];
 }
 
 export function labelDims(c: ProjectedCity): { w: number; h: number } {
@@ -124,7 +123,12 @@ function mapCandidates(c: ProjectedCity): LabelOffset[] {
   const extended: LabelOffset[] = [];
   for (let lane = 2; lane <= 5; lane++) {
     const y = lane * (h + 4);
-    extended.push([-w / 2, y], [-w / 2, -y], [pad + lane * 8, h * 0.35], [-(w + pad + lane * 8), h * 0.35]);
+    extended.push(
+      [-w / 2, y],
+      [-w / 2, -y],
+      [pad + lane * 8, h * 0.35],
+      [-(w + pad + lane * 8), h * 0.35],
+    );
   }
 
   return [...base, ...extended];
@@ -168,7 +172,7 @@ export function placeLabels(
       }
 
       if (dist > MAX_LABEL_DISTANCE) continue; // too far from its dot
-      if (labelHit) continue;                  // would overlap another label
+      if (labelHit) continue; // would overlap another label
 
       const cost = dotOverlapCount(rect, dotBoxes, city.id) * 100 + dist;
       if (cost < chosenCost) {

@@ -2,12 +2,14 @@ import type { Locale } from './index';
 
 const home: Record<Locale, Record<string, string>> = {
   zh: {
-    'title': '首页',
-    'description': '柴火基地车——一台即将穿越中国的移动 AI 实验室，深入山野与乡土，用技术连接每一个角落。',
+    title: '首页',
+    description:
+      '柴火基地车——一台即将穿越中国的移动 AI 实验室，深入山野与乡土，用技术连接每一个角落。',
     'hero.title': '柴火基地车',
     'hero.slogan': '生而荒野 行向未来',
     'hero.subtitle': '一台正在穿越中国的移动 AI 实验室',
-    'hero.body': '以柴火数字基地车为移动载体，深入山野、草原与乡土，把 AI 带到真实场景中。用 200 天行走中国，在极限环境里检验技术，与在地居民共创解决方案，让每一个人都有机会驾驭AI。',
+    'hero.body':
+      '以柴火数字基地车为移动载体，深入山野、草原与乡土，把 AI 带到真实场景中。用 200 天行走中国，在极限环境里检验技术，与在地居民共创解决方案，让每一个人都有机会驾驭AI。',
     'hero.watchVideo': '基地车视频',
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
@@ -19,7 +21,8 @@ const home: Record<Locale, Record<string, string>> = {
 
     'route.title1': '连接技术的',
     'route.title2': '每一个经纬度',
-    'route.body': '我们将跨越中国三大地形阶梯、六种气候类型和十余种地貌单元。这不仅是一条中国自然与人文地理的横截面，也是一场在现实环境中的技术实验。',
+    'route.body':
+      '我们将跨越中国三大地形阶梯、六种气候类型和十余种地貌单元。这不仅是一条中国自然与人文地理的横截面，也是一场在现实环境中的技术实验。',
     'route.provinces': '途经省份',
     'route.distance': '预计行驶公里',
     'route.days': '路程天数',
@@ -67,12 +70,14 @@ const home: Record<Locale, Record<string, string>> = {
     'cta.join': '加入行动',
   },
   en: {
-    'title': 'Home',
-    'description': 'Chaihuo MCV — A mobile AI laboratory traversing China, bridging technology and communities across the land.',
+    title: 'Home',
+    description:
+      'Chaihuo MCV — A mobile AI laboratory traversing China, bridging technology and communities across the land.',
     'hero.title': 'Chaihuo MCV',
     'hero.slogan': 'Born for the Wild, Driving the Future',
     'hero.subtitle': 'A mobile AI lab traversing China',
-    'hero.body': 'Using the Chaihuo Mobile Creative Vehicle as a moving platform, we venture deep into mountains, grasslands, and rural communities to bring AI into real-world scenarios. Over 200 days across China, we test technology in extreme environments, co-create solutions with local residents, and give everyone the opportunity to harness AI.',
+    'hero.body':
+      'Using the Chaihuo Mobile Creative Vehicle as a moving platform, we venture deep into mountains, grasslands, and rural communities to bring AI into real-world scenarios. Over 200 days across China, we test technology in extreme environments, co-create solutions with local residents, and give everyone the opportunity to harness AI.',
     'hero.watchVideo': 'MCV Video',
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
@@ -84,7 +89,8 @@ const home: Record<Locale, Record<string, string>> = {
 
     'route.title1': 'Connecting technology',
     'route.title2': 'to every coordinate',
-    'route.body': "We will cross China's three terrain steps, six climate zones, and over ten landform types. This is not just a cross-section of China's natural and cultural geography — it's a real-world technology experiment.",
+    'route.body':
+      "We will cross China's three terrain steps, six climate zones, and over ten landform types. This is not just a cross-section of China's natural and cultural geography — it's a real-world technology experiment.",
     'route.provinces': 'Provinces',
     'route.distance': 'Est. kilometers',
     'route.days': 'Days on the road',
@@ -105,7 +111,8 @@ const home: Record<Locale, Record<string, string>> = {
     'journal.origin': 'Origin',
     'journal.latest': 'Latest',
     'journal.upcoming': 'Upcoming',
-    'journal.upcomingDesc': 'This stop is still being planned. Details will appear closer to arrival.',
+    'journal.upcomingDesc':
+      'This stop is still being planned. Details will appear closer to arrival.',
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
@@ -117,13 +124,17 @@ const home: Record<Locale, Record<string, string>> = {
     'timeline.scrollHint': '← Drag to see all 200 days →',
 
     'lab.title': 'Mobile AI Laboratory',
-    'lab.subtitle': 'A mobile lab integrating edge computing, digital fabrication, and open experimentation',
+    'lab.subtitle':
+      'A mobile lab integrating edge computing, digital fabrication, and open experimentation',
     'lab.aiTitle': 'AI Edge Computing',
-    'lab.aiDesc': 'Equipped with high-performance edge devices to run AI models offline, processing data and delivering intelligent services in real time.',
+    'lab.aiDesc':
+      'Equipped with high-performance edge devices to run AI models offline, processing data and delivering intelligent services in real time.',
     'lab.fabTitle': 'Digital Fabrication Center',
-    'lab.fabDesc': 'Featuring 3D printers, laser cutters, CNC machines and more, rapidly turning ideas into physical prototypes.',
+    'lab.fabDesc':
+      'Featuring 3D printers, laser cutters, CNC machines and more, rapidly turning ideas into physical prototypes.',
     'lab.spaceTitle': 'Open Lab Space',
-    'lab.spaceDesc': 'Providing collaborative workspace that engages local communities in exploring the intersection of technology and life.',
+    'lab.spaceDesc':
+      'Providing collaborative workspace that engages local communities in exploring the intersection of technology and life.',
 
     'cta.label': 'Journals',
     'cta.title': 'One entry per stop, documenting what actually happened on the road',

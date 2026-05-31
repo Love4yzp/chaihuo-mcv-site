@@ -1,19 +1,19 @@
 ---
 export const prerender = true;
 
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import AboutContent from '@/app/components/AboutContent';
-import timelineData from '@/data/timeline.json';
-import partnersData from '@/data/partners.json';
 import heroesData from '@/data/heroes.json';
+import partnersData from '@/data/partners.json';
+import timelineData from '@/data/timeline.json';
+import aboutDict from '@/i18n/about';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
-import aboutDict from '@/i18n/about';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = aboutDict[locale];
 
-const partners = partnersData.map(p => {
+const partners = partnersData.map((p) => {
   const loc = localize(p, ['description'], locale);
   return { name: loc.name, description: loc.description };
 });

@@ -1,70 +1,250 @@
 {
   "years": [
-    { "year": "2011", "events": [
-      { "month": "8月", "text": "柴火创客空间成立", "en": "Chaihuo Makerspace was officially founded." }
-    ]},
-    { "year": "2012", "events": [
-      { "month": "4月", "text": "将 Maker Faire 引入中国，首站落地深圳", "en": "Brought Maker Faire to China and hosted the first in Shenzhen." },
-      { "month": "12月", "text": "迁址华侨城创意园，社区更跨界", "en": "Relocated to OCT-LOFT, fostering a more interdisciplinary community." }
-    ]},
-    { "year": "2013", "events": [
-      { "month": "8月", "text": "创始人潘昊荣登《福布斯》杂志封面", "en": "Founder Eric Pan appeared on the cover of Forbes magazine." }
-    ]},
-    { "year": "2014", "events": [
-      { "month": "4月", "text": "深圳 Maker Faire 升级为 Featured 级别，成为全球第 7 个最大级别活动", "en": "Maker Faire Shenzhen upgraded to a \"Featured\" event, the 7th largest globally." },
-      { "month": "11月", "text": "两院院士路甬祥到访柴火创客空间", "en": "Lu Yongxiang, academician, visited Chaihuo MakerSpace." }
-    ]},
-    { "year": "2015", "events": [
-      { "month": "1月", "text": "国务院总理李克强到访柴火，并成为空间荣誉会员", "en": "Premier Li Keqiang visited Chaihuo and became an honorary member." },
-      { "month": "12月", "text": "柴火入选成为国际级众创空间", "en": "Chaihuo was recognized as a national-level maker space." }
-    ]},
-    { "year": "2016", "events": [
-      { "month": "4月", "text": "WIRED 杂志\"未来城市\"纪录片《深圳：硬件硅谷》拍摄", "en": "WIRED filmed \"Future Cities: Shenzhen — The Silicon Valley of Hardware\" at Chaihuo." },
-      { "month": "8月", "text": "白宫高级科技顾问 Kate Cage 到访", "en": "Kate Cage, Senior Technology Advisor at the White House, visited Chaihuo." }
-    ]},
-    { "year": "2017", "events": [
-      { "month": "3月", "text": "柴火创客空间升级为产业对接平台，落户万科云设计公社", "en": "Transitioned into an industrial collaboration platform at Vanke Design Commune." },
-      { "month": "12月", "text": "天猫新零售项目合作", "en": "Partnered with Tmall on a New Retail initiative." }
-    ]},
-    { "year": "2018", "events": [
-      { "month": "8月", "text": "华润集团智慧空间项目合作", "en": "Partnered with China Resources Group on a Smart Space project." },
-      { "month": "10月", "text": "柴火创客空间正式落户河北", "en": "Official Opening of Hebei Chaihuo Makerspace." }
-    ]},
-    { "year": "2019", "events": [
-      { "month": "4月", "text": "索尼工作坊顺利举行，探控行业创新应用", "en": "Successfully hosted the Sony Workshop, exploring industrial applications." },
-      { "month": "7月", "text": "罗姆（ROHM）正式成为柴火创客空间社区伙伴", "en": "ROHM became an official community partner of Chaihuo." }
-    ]},
-    { "year": "2020", "events": [
-      { "month": "3月", "text": "与 Arduino 达成官方认证中国区战略合作", "en": "Strategic partnership with Arduino as certified partner in China." },
-      { "month": "5月", "text": "新一代信息技术赋能计划在深圳落地", "en": "Launched the Next-Gen Information Technology Empowerment Program." }
-    ]},
-    { "year": "2021", "events": [
-      { "month": "4月", "text": "全面升级会员体系，打造线上会员生态", "en": "Upgraded the membership system to create an online ecosystem." },
-      { "month": "12月", "text": "携手微软 Azure 举办物联网技术研讨会", "en": "Hosted an IoT technology seminar with Microsoft Azure." }
-    ]},
-    { "year": "2022", "events": [
-      { "month": "1月", "text": "推出\"创客马拉松\"等客制方案，赋能高校\"双创教育\"", "en": "Introduced \"Maker Hackathon\" programs to empower university innovation education." },
-      { "month": "7月", "text": "聚焦\"数字乡村\"领域发起\"数字乡村先锋计划\"", "en": "Launched the Digital Rural Pioneer Program." }
-    ]},
-    { "year": "2023", "events": [
-      { "month": "11月", "text": "Maker Faire Shenzhen 重启回归", "en": "Maker Faire Shenzhen made its official comeback." }
-    ]},
-    { "year": "2024", "events": [
-      { "month": "1月", "text": "携手矽递科技启动 Maker Camp in Shenzhen 项目", "en": "Launched Maker Camp in Shenzhen with Seeed Studio." },
-      { "month": "12月", "text": "成都柴火创客空间暨 Fab Lab Chengdu 正式开幕", "en": "Official Opening of Chengdu Chaihuo Makerspace and Fab Lab Chengdu." }
-    ]},
-    { "year": "2025", "events": [
-      { "month": "6月", "text": "柴火基地车「普罗米修斯号」项目正式立项", "en": "Chaihuo MCV \"Prometheus\" project officially approved." },
-      { "month": "12月", "text": "完成车辆选型与核心装备采购，启动改装", "en": "Vehicle selection and core equipment procurement completed, modification started." }
-    ]},
-    { "year": "2026", "events": [
-      { "month": "2月", "text": "车载边缘计算系统与数字加工中心安装完成", "en": "On-board edge computing system and digital fabrication center installed." },
-      { "month": "3月", "text": "基地车官网上线，开放在线报名通道", "en": "MCV official website launched, online registration opened." },
-      { "month": "4月", "text": "「普罗米修斯号」联合「深圳科技馆」首发，从深圳正式启程", "en": "Prometheus made its debut with the Shenzhen Science & Technology Museum and officially departed from Shenzhen." },
-      { "month": "4月", "text": "华南首站：深圳·广州·阳江", "en": "South China first leg: Shenzhen · Guangzhou · Yangjiang." },
-      { "month": "4月", "text": "穿越广西：玉林·南宁·柳州，走进广西科技馆与三都镇农业基地", "en": "Crossing Guangxi: Yulin · Nanning · Liuzhou — at the Guangxi Science Museum and the Sandu Town agricultural base." },
-      { "month": "5月", "text": "走进贵阳，与两位当地创客畅聊科创教育", "en": "In Guiyang — a candid conversation with two local makers on STEM education." }
-    ]}
+    {
+      "year": "2011",
+      "events": [
+        {
+          "month": "8月",
+          "text": "柴火创客空间成立",
+          "en": "Chaihuo Makerspace was officially founded."
+        }
+      ]
+    },
+    {
+      "year": "2012",
+      "events": [
+        {
+          "month": "4月",
+          "text": "将 Maker Faire 引入中国，首站落地深圳",
+          "en": "Brought Maker Faire to China and hosted the first in Shenzhen."
+        },
+        {
+          "month": "12月",
+          "text": "迁址华侨城创意园，社区更跨界",
+          "en": "Relocated to OCT-LOFT, fostering a more interdisciplinary community."
+        }
+      ]
+    },
+    {
+      "year": "2013",
+      "events": [
+        {
+          "month": "8月",
+          "text": "创始人潘昊荣登《福布斯》杂志封面",
+          "en": "Founder Eric Pan appeared on the cover of Forbes magazine."
+        }
+      ]
+    },
+    {
+      "year": "2014",
+      "events": [
+        {
+          "month": "4月",
+          "text": "深圳 Maker Faire 升级为 Featured 级别，成为全球第 7 个最大级别活动",
+          "en": "Maker Faire Shenzhen upgraded to a \"Featured\" event, the 7th largest globally."
+        },
+        {
+          "month": "11月",
+          "text": "两院院士路甬祥到访柴火创客空间",
+          "en": "Lu Yongxiang, academician, visited Chaihuo MakerSpace."
+        }
+      ]
+    },
+    {
+      "year": "2015",
+      "events": [
+        {
+          "month": "1月",
+          "text": "国务院总理李克强到访柴火，并成为空间荣誉会员",
+          "en": "Premier Li Keqiang visited Chaihuo and became an honorary member."
+        },
+        {
+          "month": "12月",
+          "text": "柴火入选成为国际级众创空间",
+          "en": "Chaihuo was recognized as a national-level maker space."
+        }
+      ]
+    },
+    {
+      "year": "2016",
+      "events": [
+        {
+          "month": "4月",
+          "text": "WIRED 杂志\"未来城市\"纪录片《深圳：硬件硅谷》拍摄",
+          "en": "WIRED filmed \"Future Cities: Shenzhen — The Silicon Valley of Hardware\" at Chaihuo."
+        },
+        {
+          "month": "8月",
+          "text": "白宫高级科技顾问 Kate Cage 到访",
+          "en": "Kate Cage, Senior Technology Advisor at the White House, visited Chaihuo."
+        }
+      ]
+    },
+    {
+      "year": "2017",
+      "events": [
+        {
+          "month": "3月",
+          "text": "柴火创客空间升级为产业对接平台，落户万科云设计公社",
+          "en": "Transitioned into an industrial collaboration platform at Vanke Design Commune."
+        },
+        {
+          "month": "12月",
+          "text": "天猫新零售项目合作",
+          "en": "Partnered with Tmall on a New Retail initiative."
+        }
+      ]
+    },
+    {
+      "year": "2018",
+      "events": [
+        {
+          "month": "8月",
+          "text": "华润集团智慧空间项目合作",
+          "en": "Partnered with China Resources Group on a Smart Space project."
+        },
+        {
+          "month": "10月",
+          "text": "柴火创客空间正式落户河北",
+          "en": "Official Opening of Hebei Chaihuo Makerspace."
+        }
+      ]
+    },
+    {
+      "year": "2019",
+      "events": [
+        {
+          "month": "4月",
+          "text": "索尼工作坊顺利举行，探控行业创新应用",
+          "en": "Successfully hosted the Sony Workshop, exploring industrial applications."
+        },
+        {
+          "month": "7月",
+          "text": "罗姆（ROHM）正式成为柴火创客空间社区伙伴",
+          "en": "ROHM became an official community partner of Chaihuo."
+        }
+      ]
+    },
+    {
+      "year": "2020",
+      "events": [
+        {
+          "month": "3月",
+          "text": "与 Arduino 达成官方认证中国区战略合作",
+          "en": "Strategic partnership with Arduino as certified partner in China."
+        },
+        {
+          "month": "5月",
+          "text": "新一代信息技术赋能计划在深圳落地",
+          "en": "Launched the Next-Gen Information Technology Empowerment Program."
+        }
+      ]
+    },
+    {
+      "year": "2021",
+      "events": [
+        {
+          "month": "4月",
+          "text": "全面升级会员体系，打造线上会员生态",
+          "en": "Upgraded the membership system to create an online ecosystem."
+        },
+        {
+          "month": "12月",
+          "text": "携手微软 Azure 举办物联网技术研讨会",
+          "en": "Hosted an IoT technology seminar with Microsoft Azure."
+        }
+      ]
+    },
+    {
+      "year": "2022",
+      "events": [
+        {
+          "month": "1月",
+          "text": "推出\"创客马拉松\"等客制方案，赋能高校\"双创教育\"",
+          "en": "Introduced \"Maker Hackathon\" programs to empower university innovation education."
+        },
+        {
+          "month": "7月",
+          "text": "聚焦\"数字乡村\"领域发起\"数字乡村先锋计划\"",
+          "en": "Launched the Digital Rural Pioneer Program."
+        }
+      ]
+    },
+    {
+      "year": "2023",
+      "events": [
+        {
+          "month": "11月",
+          "text": "Maker Faire Shenzhen 重启回归",
+          "en": "Maker Faire Shenzhen made its official comeback."
+        }
+      ]
+    },
+    {
+      "year": "2024",
+      "events": [
+        {
+          "month": "1月",
+          "text": "携手矽递科技启动 Maker Camp in Shenzhen 项目",
+          "en": "Launched Maker Camp in Shenzhen with Seeed Studio."
+        },
+        {
+          "month": "12月",
+          "text": "成都柴火创客空间暨 Fab Lab Chengdu 正式开幕",
+          "en": "Official Opening of Chengdu Chaihuo Makerspace and Fab Lab Chengdu."
+        }
+      ]
+    },
+    {
+      "year": "2025",
+      "events": [
+        {
+          "month": "6月",
+          "text": "柴火基地车「普罗米修斯号」项目正式立项",
+          "en": "Chaihuo MCV \"Prometheus\" project officially approved."
+        },
+        {
+          "month": "12月",
+          "text": "完成车辆选型与核心装备采购，启动改装",
+          "en": "Vehicle selection and core equipment procurement completed, modification started."
+        }
+      ]
+    },
+    {
+      "year": "2026",
+      "events": [
+        {
+          "month": "2月",
+          "text": "车载边缘计算系统与数字加工中心安装完成",
+          "en": "On-board edge computing system and digital fabrication center installed."
+        },
+        {
+          "month": "3月",
+          "text": "基地车官网上线，开放在线报名通道",
+          "en": "MCV official website launched, online registration opened."
+        },
+        {
+          "month": "4月",
+          "text": "「普罗米修斯号」联合「深圳科技馆」首发，从深圳正式启程",
+          "en": "Prometheus made its debut with the Shenzhen Science & Technology Museum and officially departed from Shenzhen."
+        },
+        {
+          "month": "4月",
+          "text": "华南首站：深圳·广州·阳江",
+          "en": "South China first leg: Shenzhen · Guangzhou · Yangjiang."
+        },
+        {
+          "month": "4月",
+          "text": "穿越广西：玉林·南宁·柳州，走进广西科技馆与三都镇农业基地",
+          "en": "Crossing Guangxi: Yulin · Nanning · Liuzhou — at the Guangxi Science Museum and the Sandu Town agricultural base."
+        },
+        {
+          "month": "5月",
+          "text": "走进贵阳，与两位当地创客畅聊科创教育",
+          "en": "In Guiyang — a candid conversation with two local makers on STEM education."
+        }
+      ]
+    }
   ],
   "phases": [
     { "label": "社区 Community", "range": [0, 3] },

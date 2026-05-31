@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { select } from "d3-selection";
-import { zoom, zoomIdentity, type D3ZoomEvent, type ZoomBehavior } from "d3-zoom";
-import "d3-transition"; // augments d3-selection with .transition()
+import { select } from 'd3-selection';
+import { type D3ZoomEvent, type ZoomBehavior, zoom, zoomIdentity } from 'd3-zoom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import 'd3-transition'; // augments d3-selection with .transition()
 
 export interface Transform {
   x: number;
@@ -48,7 +48,7 @@ export function useMapZoom(width: number, height: number, opts: UseMapZoomOption
         [0, 0],
         [width, height],
       ])
-      .on("zoom", (event: D3ZoomEvent<SVGSVGElement, unknown>) => {
+      .on('zoom', (event: D3ZoomEvent<SVGSVGElement, unknown>) => {
         const t = event.transform;
         setTransform({ x: t.x, y: t.y, k: t.k });
       });
@@ -58,7 +58,7 @@ export function useMapZoom(width: number, height: number, opts: UseMapZoomOption
     selection.call(behavior);
 
     return () => {
-      selection.on(".zoom", null);
+      selection.on('.zoom', null);
     };
   }, [width, height, minScale, maxScale]);
 

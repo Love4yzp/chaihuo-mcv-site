@@ -1,13 +1,21 @@
-import { useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Activity, Compass, Cpu, Users, MapPin, ArrowUpRight, Image as ImageIcon } from "lucide-react";
-import type { RouteCity } from "./types";
-import type { Locale } from "@/i18n/index";
-import { localePath } from "@/i18n/index";
-import AntigravityCard from "@/app/components/AntigravityCard";
-import ExpeditionLog from "./ExpeditionLog";
-import PeopleStrip from "./PeopleStrip";
-import PhotoStrip from "./PhotoStrip";
+import {
+  Activity,
+  ArrowUpRight,
+  Compass,
+  Cpu,
+  Image as ImageIcon,
+  MapPin,
+  Users,
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useMemo } from 'react';
+import AntigravityCard from '@/app/components/AntigravityCard';
+import type { Locale } from '@/i18n/index';
+import { localePath } from '@/i18n/index';
+import ExpeditionLog from './ExpeditionLog';
+import PeopleStrip from './PeopleStrip';
+import PhotoStrip from './PhotoStrip';
+import type { RouteCity } from './types';
 
 interface SerializedJournal {
   slug: string;
@@ -44,10 +52,15 @@ export default function CityPanel({
 
   if (!city) {
     return (
-      <AntigravityCard className={`flex flex-col items-center justify-center text-center px-6 py-12 ${hero ? 'min-h-[200px]' : 'min-h-[320px] h-full'}`}>
+      <AntigravityCard
+        className={`flex flex-col items-center justify-center text-center px-6 py-12 ${hero ? 'min-h-[200px]' : 'min-h-[320px] h-full'}`}
+      >
         <MapPin className="w-6 h-6 text-neutral-300 mb-3" />
         <p className="text-sm text-neutral-500 max-w-[36ch] leading-relaxed">
-          {getT('journal.empty', getT('route.journals.empty', '点击地图上的城市，查看那一程的现场记录。'))}
+          {getT(
+            'journal.empty',
+            getT('route.journals.empty', '点击地图上的城市，查看那一程的现场记录。'),
+          )}
         </p>
       </AntigravityCard>
     );
@@ -61,12 +74,12 @@ export default function CityPanel({
 
   // 1. 过滤并计算海拔高程数据点，展示基准的横向行程断面
   const elevationCities = useMemo(() => {
-    return cities.filter(c => c.altitude != null);
+    return cities.filter((c) => c.altitude != null);
   }, [cities]);
 
   // 最大海拔刻度 1510m (毕节)
   const maxAlt = 1510;
-  
+
   // SVG 高度图尺寸与内边距
   const svgW = 460;
   const svgH = 85;
@@ -81,35 +94,36 @@ export default function CityPanel({
   const points = useMemo(() => {
     if (elevationCities.length === 0) return [];
     return elevationCities.map((c, i) => {
-      const x = elevationCities.length > 1
-        ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
-        : paddingLeft + plotW / 2;
+      const x =
+        elevationCities.length > 1
+          ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
+          : paddingLeft + plotW / 2;
       const alt = parseFloat(c.altitude) || 0;
       const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
       return {
         x,
         y,
         city: c,
-        alt
+        alt,
       };
     });
   }, [elevationCities, plotW, plotH, svgH, paddingBottom]);
 
   // 生成剖面线与区域填充路径
   const lineD = useMemo(() => {
-    if (points.length === 0) return "";
+    if (points.length === 0) return '';
     return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
   }, [points]);
 
   const areaD = useMemo(() => {
-    if (points.length === 0) return "";
+    if (points.length === 0) return '';
     return `${lineD} L ${points[points.length - 1].x} ${svgH - paddingBottom} L ${points[0].x} ${svgH - paddingBottom} Z`;
   }, [points, lineD, svgH, paddingBottom]);
 
   // 海拔网格基准线
   const gridLines = useMemo(() => {
     const alts = [500, 1000, 1500];
-    return alts.map(alt => {
+    return alts.map((alt) => {
       const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
       return { alt, y };
     });
@@ -118,7 +132,7 @@ export default function CityPanel({
   // Filter journals for this city
   const cityJournals = useMemo(() => {
     if (!journals) return [];
-    return journals.filter(j => j.city === city.id);
+    return journals.filter((j) => j.city === city.id);
   }, [journals, city.id]);
 
   return (
@@ -154,9 +168,11 @@ export default function CityPanel({
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="flex items-baseline justify-between gap-4">
-                    <h3 className={`font-bold text-neutral-900 leading-tight ${hero ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}>
+                    <h3
+                      className={`font-bold text-neutral-900 leading-tight ${hero ? 'text-3xl md:text-4xl' : 'text-2xl md:text-3xl'}`}
+                    >
                       {city.label}
                     </h3>
                     {city.event?.date && (
@@ -180,7 +196,7 @@ export default function CityPanel({
                     <div className="mb-2 flex items-center gap-1.5">
                       <Users className="h-3.5 w-3.5 text-brand" />
                       <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#796f59]">
-                        {locale === "zh" ? "新文明 · 遇见的人" : "NEW CIVILIZATIONS"}
+                        {locale === 'zh' ? '新文明 · 遇见的人' : 'NEW CIVILIZATIONS'}
                       </h5>
                     </div>
                     <PeopleStrip people={city.people} />
@@ -193,7 +209,7 @@ export default function CityPanel({
                     <div className="mb-2 flex items-center gap-1.5">
                       <ImageIcon className="h-3.5 w-3.5 text-brand" />
                       <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#796f59]">
-                        {locale === "zh" ? "剧照" : "FROM THE FIELD"}
+                        {locale === 'zh' ? '剧照' : 'FROM THE FIELD'}
                       </h5>
                     </div>
                     <PhotoStrip photos={city.photos} />
@@ -205,14 +221,24 @@ export default function CityPanel({
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-[10px] uppercase tracking-[0.15em] text-neutral-500 font-semibold flex items-center gap-1 font-mono">
                       <Activity className="w-3 h-3 text-brand" />
-                      {getT('route.telemetry.elevationProfile', locale === 'zh' ? '海拔高度纵断面' : 'EXPEDITION ELEVATION PROFILE')}
+                      {getT(
+                        'route.telemetry.elevationProfile',
+                        locale === 'zh' ? '海拔高度纵断面' : 'EXPEDITION ELEVATION PROFILE',
+                      )}
                     </h4>
                     <span className="text-[10px] text-amber-700 font-mono font-bold">
-                      {getT('route.telemetry.currentElevation', locale === 'zh' ? '当前海拔' : 'Elev')}: {city.altitude}m
+                      {getT(
+                        'route.telemetry.currentElevation',
+                        locale === 'zh' ? '当前海拔' : 'Elev',
+                      )}
+                      : {city.altitude}m
                     </span>
                   </div>
 
-                  <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full h-auto overflow-visible select-none">
+                  <svg
+                    viewBox={`0 0 ${svgW} ${svgH}`}
+                    className="w-full h-auto overflow-visible select-none"
+                  >
                     {/* 阶梯基准线 */}
                     {gridLines.map((g, idx) => (
                       <g key={idx} opacity={0.25}>
@@ -239,11 +265,7 @@ export default function CityPanel({
                     ))}
 
                     {/* 海拔渐变阴影填充，反映山岳厚重感 */}
-                    <path
-                      d={areaD}
-                      fill="url(#elevation-grad)"
-                      opacity={0.12}
-                    />
+                    <path d={areaD} fill="url(#elevation-grad)" opacity={0.12} />
 
                     {/* 背景总航线路线虚线 */}
                     <path
@@ -258,9 +280,13 @@ export default function CityPanel({
                     {/* 已驶过航线实线（展示行车进度） */}
                     <path
                       d={(() => {
-                        const visitedPts = points.filter(p => p.city.visited || p.city.label === city.label);
-                        if (visitedPts.length === 0) return "";
-                        return visitedPts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+                        const visitedPts = points.filter(
+                          (p) => p.city.visited || p.city.label === city.label,
+                        );
+                        if (visitedPts.length === 0) return '';
+                        return visitedPts
+                          .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+                          .join(' ');
                       })()}
                       fill="none"
                       stroke="#eab308"
@@ -272,7 +298,7 @@ export default function CityPanel({
                     {points.map((p, idx) => {
                       const isActive = p.city.label === city.label;
                       const isVisited = p.city.visited;
-                      
+
                       return (
                         <g
                           key={idx}
@@ -290,7 +316,7 @@ export default function CityPanel({
                               className="animate-ping"
                             />
                           )}
-                          
+
                           {/* 海拔点 */}
                           <circle
                             cx={p.x}
@@ -340,7 +366,13 @@ export default function CityPanel({
                         {getT('journal.upcoming', getT('route.status.upcoming', '即将抵达'))}
                       </span>
                       <p className="text-sm text-neutral-500 leading-relaxed">
-                        {getT('journal.upcomingDesc', getT('route.status.upcomingDesc', '此城正在计划中，更多细节将在抵达前公开'))}
+                        {getT(
+                          'journal.upcomingDesc',
+                          getT(
+                            'route.status.upcomingDesc',
+                            '此城正在计划中，更多细节将在抵达前公开',
+                          ),
+                        )}
                       </p>
                     </div>
                   )}
@@ -369,14 +401,19 @@ export default function CityPanel({
             </div>
 
             {/* 右侧栏：地质地貌与运行测控 HUD 面板 */}
-            <div className={`w-full flex-shrink-0 flex flex-col bg-[#fcfbf9]/60 backdrop-blur-md border border-[#e5dfd3] rounded-2xl p-5 md:p-6 justify-between ${hero ? 'lg:w-[50%]' : ''}`}>
+            <div
+              className={`w-full flex-shrink-0 flex flex-col bg-[#fcfbf9]/60 backdrop-blur-md border border-[#e5dfd3] rounded-2xl p-5 md:p-6 justify-between ${hero ? 'lg:w-[50%]' : ''}`}
+            >
               <div>
                 {/* HUD 头部 */}
                 <div className="flex items-center justify-between pb-3 border-b border-[#e5dfd3]/60 mb-4">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-brand animate-pulse" />
                     <span className="font-semibold text-[11px] tracking-wider text-[#796f59] uppercase font-mono">
-                      {getT('route.telemetry.hud', locale === 'zh' ? '极境测控台' : 'Telemetry HUD')}
+                      {getT(
+                        'route.telemetry.hud',
+                        locale === 'zh' ? '极境测控台' : 'Telemetry HUD',
+                      )}
                     </span>
                   </div>
                   <span className="font-mono text-[9px] text-green-600 bg-green-50 px-2 py-0.5 rounded font-bold tracking-wider">
@@ -393,10 +430,14 @@ export default function CityPanel({
                     </div>
                     <div>
                       <h5 className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
-                        {getT('route.telemetry.altitude', 'ALTITUDE')} / {getT('route.telemetry.terrainStep', 'TERRAIN STEP')}
+                        {getT('route.telemetry.altitude', 'ALTITUDE')} /{' '}
+                        {getT('route.telemetry.terrainStep', 'TERRAIN STEP')}
                       </h5>
                       <p className="text-lg font-bold font-mono text-neutral-800 leading-tight mt-0.5">
-                        {city.altitude} <span className="text-[10px] font-sans font-semibold text-neutral-500">m</span>
+                        {city.altitude}{' '}
+                        <span className="text-[10px] font-sans font-semibold text-neutral-500">
+                          m
+                        </span>
                       </p>
                       <p className="text-[11px] text-neutral-600 font-semibold mt-1">
                         {city.terrainStep}
@@ -411,29 +452,44 @@ export default function CityPanel({
                     </div>
                     <div>
                       <h5 className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
-                        {getT('route.telemetry.climate', 'MICROCLIMATE')} / {getT('route.telemetry.terrain', 'TERRAIN')}
+                        {getT('route.telemetry.climate', 'MICROCLIMATE')} /{' '}
+                        {getT('route.telemetry.terrain', 'TERRAIN')}
                       </h5>
-                      <p className="text-xs font-bold text-neutral-800 leading-tight mt-1 truncate max-w-[170px]" title={city.climate}>
+                      <p
+                        className="text-xs font-bold text-neutral-800 leading-tight mt-1 truncate max-w-[170px]"
+                        title={city.climate}
+                      >
                         {city.climate}
                       </p>
-                      <p className="text-[10.5px] text-neutral-500 font-medium mt-1 leading-snug line-clamp-2" title={city.terrain}>
+                      <p
+                        className="text-[10.5px] text-neutral-500 font-medium mt-1 leading-snug line-clamp-2"
+                        title={city.terrain}
+                      >
                         {city.terrain}
                       </p>
                     </div>
                   </div>
 
                   {/* Grid 3: 在地共创实绩 */}
-                  <div className={`pt-3.5 border-t border-[#e5dfd3]/40 ${hero ? 'md:col-span-2' : ''}`}>
+                  <div
+                    className={`pt-3.5 border-t border-[#e5dfd3]/40 ${hero ? 'md:col-span-2' : ''}`}
+                  >
                     <div className="flex items-center gap-1.5 mb-2">
                       <Users className="w-3.5 h-3.5 text-brand" />
                       <h5 className="text-[10px] text-[#796f59] font-bold uppercase tracking-wider">
-                        {getT('route.telemetry.coCreation', locale === 'zh' ? '在地共创与科普实绩' : 'LOCAL CO-CREATION')}
+                        {getT(
+                          'route.telemetry.coCreation',
+                          locale === 'zh' ? '在地共创与科普实绩' : 'LOCAL CO-CREATION',
+                        )}
                       </h5>
                     </div>
-                    
+
                     <div className={`grid grid-cols-1 gap-2 ${hero ? 'md:grid-cols-3' : ''}`}>
                       {city.relationStats?.map((stat, idx) => (
-                        <div key={idx} className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left">
+                        <div
+                          key={idx}
+                          className="bg-[#f5f2eb]/60 rounded-lg px-2.5 py-1.5 border border-[#e5dfd3]/50 text-left"
+                        >
                           <span className="block text-[11px] font-semibold text-neutral-700 leading-tight">
                             {stat}
                           </span>
@@ -448,7 +504,12 @@ export default function CityPanel({
               <div className="mt-5 bg-[#fbf5e6]/60 border border-[#e8d5b5]/50 rounded-xl p-3 text-xs text-neutral-700 leading-relaxed shadow-[inset_0_1px_2px_rgba(232,213,181,0.05)] text-left">
                 <div className="font-semibold text-amber-800 mb-1 flex items-center gap-1.5 font-mono text-[10.5px]">
                   <Cpu className="w-3.5 h-3.5 text-brand animate-pulse" />
-                  <span>{getT('route.telemetry.challenge', locale === 'zh' ? '车载测控与极境行车挑战' : 'CHALLENGE')}</span>
+                  <span>
+                    {getT(
+                      'route.telemetry.challenge',
+                      locale === 'zh' ? '车载测控与极境行车挑战' : 'CHALLENGE',
+                    )}
+                  </span>
                 </div>
                 <p className="text-[11.5px] font-medium text-neutral-600 leading-relaxed">
                   {city.challenge}

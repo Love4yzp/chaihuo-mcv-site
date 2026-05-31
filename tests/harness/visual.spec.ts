@@ -27,7 +27,9 @@ test.describe('visual smoke', () => {
       }
 
       await attachPageScreenshot(page, testInfo, route.name);
-      expect(runtimeErrors, `${route.name} should not emit runtime console/page errors`).toEqual([]);
+      expect(runtimeErrors, `${route.name} should not emit runtime console/page errors`).toEqual(
+        [],
+      );
     });
   }
 });

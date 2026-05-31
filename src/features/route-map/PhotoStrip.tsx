@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/app/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog';
 
 export interface RoutePhoto {
   src: string;
@@ -14,7 +14,7 @@ export default function PhotoStrip({ photos }: { photos?: RoutePhoto[] }) {
     <div data-photo-strip="true" className="flex flex-wrap gap-2">
       {photos.map((p, i) => {
         const caption = p.caption;
-        const label = p.alt ?? caption ?? "photo";
+        const label = p.alt ?? caption ?? 'photo';
         return (
           <Dialog key={`${p.src}-${i}`}>
             <DialogTrigger asChild>

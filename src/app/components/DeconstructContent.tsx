@@ -1,9 +1,9 @@
-import type { ComponentType } from 'react';
+import { BatteryCharging, ChevronRight, Cpu, Factory } from 'lucide-react';
 import { motion } from 'motion/react';
-import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
+import type { ComponentType } from 'react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
-import { Cpu, Factory, BatteryCharging, ChevronRight } from 'lucide-react';
+import { defaultViewport, fadeUp, springTransition, stagger } from './motion';
 
 // ─── Types ───
 
@@ -45,10 +45,15 @@ const ICON_MAP: Record<string, ComponentType<any>> = {
 
 // ─── Component ───
 
-export default function DeconstructContent({ notes, equipment, companion, locale = 'zh', t }: Props) {
+export default function DeconstructContent({
+  notes,
+  equipment,
+  companion,
+  locale = 'zh',
+  t,
+}: Props) {
   return (
     <div className="min-h-screen bg-surface">
-
       {/* ═══════ HERO — 车辆标题 ═══════ */}
       <section className="pt-24 pb-16 px-6">
         <div className="max-w-6xl mx-auto">
@@ -108,7 +113,6 @@ export default function DeconstructContent({ notes, equipment, companion, locale
               </motion.div>
             ))}
           </motion.div>
-
         </div>
       </section>
 
@@ -124,7 +128,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             transition={springTransition}
           >
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">{t['notes.title']}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">
+                {t['notes.title']}
+              </h2>
               <p className="text-neutral-500 mt-2">{t['notes.subtitle']}</p>
             </div>
             <a
@@ -153,14 +159,12 @@ export default function DeconstructContent({ notes, equipment, companion, locale
                 transition={springTransition}
               >
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img
-                    src={note.image}
-                    alt={note.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={note.image} alt={note.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
-                  <h3 className="text-sm font-semibold text-neutral-900 mb-1 line-clamp-1">{note.title}</h3>
+                  <h3 className="text-sm font-semibold text-neutral-900 mb-1 line-clamp-1">
+                    {note.title}
+                  </h3>
                   <time className="text-xs text-neutral-400 font-mono">{note.date}</time>
                 </div>
               </motion.div>
@@ -200,7 +204,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             viewport={defaultViewport}
             transition={springTransition}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">{t['equipment.title']}</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">
+              {t['equipment.title']}
+            </h2>
             <p className="text-neutral-500 mt-2">{t['equipment.subtitle']}</p>
           </motion.div>
 
@@ -225,7 +231,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
                     <div className="w-10 h-10 bg-brand/10 rounded-lg flex items-center justify-center">
                       <IconComponent className="w-5 h-5 text-brand" />
                     </div>
-                    <h3 className="text-xl md:text-2xl font-semibold text-neutral-900">{category.title}</h3>
+                    <h3 className="text-xl md:text-2xl font-semibold text-neutral-900">
+                      {category.title}
+                    </h3>
                   </div>
 
                   <div className="divide-y divide-neutral-300">
@@ -284,7 +292,9 @@ export default function DeconstructContent({ notes, equipment, companion, locale
                 />
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-3">{companion.name}</h3>
+                <h3 className="text-xl md:text-2xl font-semibold text-neutral-900 mb-3">
+                  {companion.name}
+                </h3>
                 {companion.bio && (
                   <p className="text-sm text-neutral-600 leading-relaxed">{companion.bio}</p>
                 )}
@@ -304,7 +314,15 @@ export default function DeconstructContent({ notes, equipment, companion, locale
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M3 8h10M9 4l4 4-4 4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </a>
         </div>
       </section>

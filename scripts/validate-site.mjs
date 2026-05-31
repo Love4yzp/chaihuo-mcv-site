@@ -95,9 +95,9 @@ function loadTsModule(relativePath) {
 
 function loadStopsFromMd() {
   const dir = path.join(root, 'src/content/stops');
-  const files = fs.readdirSync(dir).filter(
-    (f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'),
-  );
+  const files = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'));
   return files.map((file) => {
     const src = fs.readFileSync(path.join(dir, file), 'utf8');
     const m = src.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -151,9 +151,7 @@ function publicAssetExists(assetPath) {
 
 function compareLocaleDictionaries() {
   const dir = path.join(root, 'src/i18n');
-  const files = fs
-    .readdirSync(dir)
-    .filter((name) => name.endsWith('.ts') && name !== 'index.ts');
+  const files = fs.readdirSync(dir).filter((name) => name.endsWith('.ts') && name !== 'index.ts');
 
   for (const file of files) {
     const mod = loadTsModule(`src/i18n/${file}`);
@@ -179,7 +177,10 @@ function validateRouteMirrors() {
   for (const page of zhPages) {
     const rel = path.relative(pagesDir, page);
     const enMirror = path.join(pagesDir, 'en', rel);
-    check(fs.existsSync(enMirror), `src/pages/${rel}: missing English mirror at src/pages/en/${rel}`);
+    check(
+      fs.existsSync(enMirror),
+      `src/pages/${rel}: missing English mirror at src/pages/en/${rel}`,
+    );
   }
 }
 
@@ -203,27 +204,48 @@ function validateStructuredData() {
   const routeCityIds = hasUniqueIds(routeCities, 'stops');
 
   for (const member of team) {
-    check(publicAssetExists(member.image), `team.json:${member.id}: missing public image ${member.image}`);
+    check(
+      publicAssetExists(member.image),
+      `team.json:${member.id}: missing public image ${member.image}`,
+    );
   }
 
   for (const hero of heroes) {
     check(Boolean(hero.alt), `heroes.json:${hero.id}: missing zh alt text`);
     check(Boolean(hero.alt_en), `heroes.json:${hero.id}: missing en alt text`);
-    check(publicAssetExists(hero.image), `heroes.json:${hero.id}: missing public image ${hero.image}`);
+    check(
+      publicAssetExists(hero.image),
+      `heroes.json:${hero.id}: missing public image ${hero.image}`,
+    );
   }
 
   const boardingIds = hasUniqueIds(boardings, 'boardings.json');
   for (const boarding of boardings) {
-    check(teamIds.has(boarding.crewId), `boardings.json:${boarding.id}: unknown crewId "${boarding.crewId}"`);
-    check(isDateString(boarding.boardedAt?.date), `boardings.json:${boarding.id}: invalid boardedAt.date`);
-    check(Boolean(boarding.boardedAt?.location_en), `boardings.json:${boarding.id}: missing boardedAt.location_en`);
+    check(
+      teamIds.has(boarding.crewId),
+      `boardings.json:${boarding.id}: unknown crewId "${boarding.crewId}"`,
+    );
+    check(
+      isDateString(boarding.boardedAt?.date),
+      `boardings.json:${boarding.id}: invalid boardedAt.date`,
+    );
+    check(
+      Boolean(boarding.boardedAt?.location_en),
+      `boardings.json:${boarding.id}: missing boardedAt.location_en`,
+    );
     if (boarding.disembarkedAt) {
-      check(isDateString(boarding.disembarkedAt.date), `boardings.json:${boarding.id}: invalid disembarkedAt.date`);
+      check(
+        isDateString(boarding.disembarkedAt.date),
+        `boardings.json:${boarding.id}: invalid disembarkedAt.date`,
+      );
       check(
         boarding.disembarkedAt.date >= boarding.boardedAt.date,
         `boardings.json:${boarding.id}: disembarkedAt.date is before boardedAt.date`,
       );
-      check(Boolean(boarding.disembarkedAt.location_en), `boardings.json:${boarding.id}: missing disembarkedAt.location_en`);
+      check(
+        Boolean(boarding.disembarkedAt.location_en),
+        `boardings.json:${boarding.id}: missing disembarkedAt.location_en`,
+      );
       if (boarding.disembarkedAt.handoffTo) {
         check(
           teamIds.has(boarding.disembarkedAt.handoffTo),
@@ -237,8 +259,14 @@ function validateStructuredData() {
   for (const category of equipment) {
     check(Boolean(category.title_en), `equipment.json:${category.id}: missing title_en`);
     for (const item of category.items ?? []) {
-      check(Boolean(item.name_en), `equipment.json:${category.id}: item "${item.name}" missing name_en`);
-      check(Boolean(item.spec_en), `equipment.json:${category.id}: item "${item.name}" missing spec_en`);
+      check(
+        Boolean(item.name_en),
+        `equipment.json:${category.id}: item "${item.name}" missing name_en`,
+      );
+      check(
+        Boolean(item.spec_en),
+        `equipment.json:${category.id}: item "${item.name}" missing spec_en`,
+      );
     }
   }
 
@@ -257,7 +285,10 @@ function validateStructuredData() {
   // Contiguous order 0..N-1
   const orderedOrders = routeCities.map((c) => c.order).sort((a, b) => a - b);
   for (let i = 0; i < orderedOrders.length; i++) {
-    check(orderedOrders[i] === i, `stops: order must be contiguous 0..N-1; missing ${i} (got ${orderedOrders[i]})`);
+    check(
+      orderedOrders[i] === i,
+      `stops: order must be contiguous 0..N-1; missing ${i} (got ${orderedOrders[i]})`,
+    );
   }
 
   // Filename matches <padded-order>-<id>.md; also validate body shape
@@ -270,7 +301,10 @@ function validateStructuredData() {
     // H1 == label consistency (spec §6)
     const h1m = body.match(/^#\s+(.+?)\s*$/m);
     if (h1m) {
-      check(h1m[1].trim() === data.label, `${file}: H1 "${h1m[1].trim()}" != frontmatter label "${data.label}"`);
+      check(
+        h1m[1].trim() === data.label,
+        `${file}: H1 "${h1m[1].trim()}" != frontmatter label "${data.label}"`,
+      );
     }
     try {
       const parts = parseStopBody(body, 'zh');
@@ -302,10 +336,16 @@ function validateStructuredData() {
       const enBody = enRaw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
       const enH1 = enBody.match(/^#\s+(.+?)\s*$/m);
       if (enH1 && data.label_en) {
-        check(enH1[1].trim() === data.label_en, `${enFile}: H1 "${enH1[1].trim()}" != frontmatter label_en "${data.label_en}"`);
+        check(
+          enH1[1].trim() === data.label_en,
+          `${enFile}: H1 "${enH1[1].trim()}" != frontmatter label_en "${data.label_en}"`,
+        );
       }
-      try { parseStopBody(enBody, 'en'); }
-      catch (e) { check(false, `${enFile}: en body parse failed — ${e.message}`); }
+      try {
+        parseStopBody(enBody, 'en');
+      } catch (e) {
+        check(false, `${enFile}: en body parse failed — ${e.message}`);
+      }
     }
   }
 
@@ -315,25 +355,39 @@ function validateStructuredData() {
 
   // people[] references (string ids) resolve to people/met files
   const peopleDir = path.join(root, 'src/content/people/met');
-  const peopleIds = new Set(fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md')).map((f) => f.replace(/\.md$/, '')));
+  const peopleIds = new Set(
+    fs
+      .readdirSync(peopleDir)
+      .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'))
+      .map((f) => f.replace(/\.md$/, '')),
+  );
   for (const c of routeCities) {
     for (const pid of c.people ?? []) {
-      check(peopleIds.has(pid), `${c.id}: people ref "${pid}" has no src/content/people/met/${pid}.md`);
+      check(
+        peopleIds.has(pid),
+        `${c.id}: people ref "${pid}" has no src/content/people/met/${pid}.md`,
+      );
     }
   }
 
   // people/met frontmatter: filename == id, image exists
-  for (const pf of fs.readdirSync(peopleDir).filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'))) {
+  for (const pf of fs
+    .readdirSync(peopleDir)
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.endsWith('.en.md'))) {
     const praw = fs.readFileSync(path.join(peopleDir, pf), 'utf8');
     const pm = praw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     check(Boolean(pm), `${pf}: missing frontmatter`);
     if (pm) {
       let pd;
-      try { pd = parseYaml(pm[1]); }
-      catch (e) { check(false, `${pf}: frontmatter YAML parse failed — ${e.message}`); }
+      try {
+        pd = parseYaml(pm[1]);
+      } catch (e) {
+        check(false, `${pf}: frontmatter YAML parse failed — ${e.message}`);
+      }
       if (pd && typeof pd === 'object') {
         check(pf === `${pd.id}.md`, `${pf}: filename must be ${pd.id}.md`);
-        if (pd.image) check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
+        if (pd.image)
+          check(publicAssetExists(pd.image), `${pf}: image not in /public: ${pd.image}`);
       } else if (pd !== undefined) {
         check(false, `${pf}: frontmatter YAML is empty or not an object`);
       }
@@ -344,16 +398,18 @@ function validateStructuredData() {
 }
 
 function validateJournals({ routeCityIds, teamIds, equipmentIds }) {
-  const journalFiles = walkFiles(
-    path.join(root, 'src/content/journals'),
-    (file) => file.endsWith('.md'),
+  const journalFiles = walkFiles(path.join(root, 'src/content/journals'), (file) =>
+    file.endsWith('.md'),
   );
 
   for (const file of journalFiles) {
     const rel = path.relative(root, file);
     const { data, body } = parseFrontmatter(file);
     check(isDateString(data.date), `${rel}: invalid date`);
-    check(['published', 'placeholder', 'draft'].includes(data.status), `${rel}: invalid status "${data.status}"`);
+    check(
+      ['published', 'placeholder', 'draft'].includes(data.status),
+      `${rel}: invalid status "${data.status}"`,
+    );
     check(routeCityIds.has(data.city), `${rel}: unknown city "${data.city}"`);
     check(Boolean(data.title_en), `${rel}: missing title_en`);
     check(Boolean(data.excerpt_en), `${rel}: missing excerpt_en`);
@@ -388,7 +444,9 @@ validateRouteMirrors();
 validateJournals(validateStructuredData());
 
 if (failures.length > 0) {
-  console.error(`Site validation failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`);
+  console.error(
+    `Site validation failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`,
+  );
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }

@@ -1,4 +1,4 @@
-import { type Variants } from "motion/react";
+import type { Variants } from 'motion/react';
 
 // ─── Animation Variants ───
 
@@ -46,7 +46,7 @@ export const stagger = (staggerMs = 0.15): Variants => ({
 // ─── Shared Transition ───
 
 export const springTransition = {
-  type: "spring" as const,
+  type: 'spring' as const,
   damping: 25,
   stiffness: 120,
 };
@@ -60,7 +60,7 @@ export const defaultViewport = {
 
 export const hoverLift = {
   whileHover: { y: -4 },
-  transition: { type: "spring" as const, damping: 20, stiffness: 300 },
+  transition: { type: 'spring' as const, damping: 20, stiffness: 300 },
 };
 
 export const buttonPress = {

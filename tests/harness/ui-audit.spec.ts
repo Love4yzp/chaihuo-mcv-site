@@ -45,8 +45,14 @@ test.describe('ui accessibility audit', () => {
           if (labelledBy) return labelledBy;
           const ariaLabel = element.getAttribute('aria-label')?.trim();
           if (ariaLabel) return ariaLabel;
-          if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
-            const label = element.id ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`) : null;
+          if (
+            element instanceof HTMLInputElement ||
+            element instanceof HTMLTextAreaElement ||
+            element instanceof HTMLSelectElement
+          ) {
+            const label = element.id
+              ? document.querySelector(`label[for="${CSS.escape(element.id)}"]`)
+              : null;
             if (label?.textContent?.trim()) return label.textContent.trim();
           }
           const imageAlt = element.querySelector('img[alt]')?.getAttribute('alt')?.trim();
@@ -59,9 +65,10 @@ test.describe('ui accessibility audit', () => {
         const describe = (element: Element) => {
           const tag = element.tagName.toLowerCase();
           const id = element.id ? `#${element.id}` : '';
-          const classes = element.className && typeof element.className === 'string'
-            ? `.${element.className.trim().split(/\s+/).slice(0, 3).join('.')}`
-            : '';
+          const classes =
+            element.className && typeof element.className === 'string'
+              ? `.${element.className.trim().split(/\s+/).slice(0, 3).join('.')}`
+              : '';
           return `${tag}${id}${classes}`;
         };
 
@@ -77,7 +84,10 @@ test.describe('ui accessibility audit', () => {
 
         const visibleH1s = Array.from(document.querySelectorAll('h1')).filter(isVisible);
         if (visibleH1s.length !== 1) {
-          issues.push({ rule: 'heading-h1', detail: `expected 1 visible h1, found ${visibleH1s.length}` });
+          issues.push({
+            rule: 'heading-h1',
+            detail: `expected 1 visible h1, found ${visibleH1s.length}`,
+          });
         }
 
         for (const image of Array.from(document.images)) {

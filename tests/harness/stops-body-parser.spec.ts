@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { parseStopBody } from '../../src/features/route-map/stops-body-parser.mjs';
 
 const ZH_FULL = `# 柳州
@@ -59,7 +59,11 @@ test('parseStopBody extracts all sections from a full zh body', () => {
   expect(r.terrainStep).toBe('第三级阶梯');
   expect(r.climate).toBe('中亚热带季风气候');
   expect(r.challenge).toContain('农业基地起伏泥泞土路行驶');
-  expect(r.relationStats).toEqual(['深入三都镇养殖种植基地', '与新农人面对面技术对话', 'AI 检测场景探讨']);
+  expect(r.relationStats).toEqual([
+    '深入三都镇养殖种植基地',
+    '与新农人面对面技术对话',
+    'AI 检测场景探讨',
+  ]);
   expect(r.event!.summary).toContain('走进柳州');
   expect(r.event!.linkLabel).toBe('阅读领队日记');
   expect(r.event!.link).toBe('https://www.yuque.com/x');
@@ -130,9 +134,10 @@ test('parseStopBody parses en headings under bodyLocale en', () => {
 });
 
 test('parseStopBody tolerates CRLF line endings + a leading BOM', () => {
-  const crlf = '﻿# 柳州\r\n\r\n## 在地遥测\r\n\r\n- 地形: 平原\r\n- 阶梯: 第二级阶梯\r\n- 气候: 温带\r\n- 极境挑战: 风沙\r\n\r\n## 在地共创\r\n\r\n- 活动一\r\n';
+  const crlf =
+    '﻿# 柳州\r\n\r\n## 在地遥测\r\n\r\n- 地形: 平原\r\n- 阶梯: 第二级阶梯\r\n- 气候: 温带\r\n- 极境挑战: 风沙\r\n\r\n## 在地共创\r\n\r\n- 活动一\r\n';
   const r = parseStopBody(crlf, 'zh');
-  expect(r.terrain).toBe('平原');          // no trailing \r
+  expect(r.terrain).toBe('平原'); // no trailing \r
   expect(r.challenge).toBe('风沙');
   expect(r.relationStats).toEqual(['活动一']);
 });

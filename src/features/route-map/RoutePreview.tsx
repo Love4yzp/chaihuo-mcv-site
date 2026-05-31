@@ -1,15 +1,15 @@
-import { useMemo } from "react";
-import { motion } from "motion/react";
-import type { RouteCity } from "./types";
+import { motion } from 'motion/react';
+import { useMemo } from 'react';
 import {
+  buildCityLines,
+  geoData,
   MAP_HEIGHT,
   MAP_WIDTH,
-  geoData,
   pathGenerator,
-  projectCities,
-  buildCityLines,
   placeLabels,
-} from "./projection";
+  projectCities,
+} from './projection';
+import type { RouteCity } from './types';
 
 interface Props {
   cities: RouteCity[];
@@ -23,10 +23,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
   const segments = useMemo(() => buildCityLines(projected), [projected]);
 
   // Find current city (last visited)
-  const current = useMemo(
-    () => [...projected].reverse().find((city) => city.visited),
-    [projected]
-  );
+  const current = useMemo(() => [...projected].reverse().find((city) => city.visited), [projected]);
 
   // Auto-calculated label offsets to prevent collision
   const labelOffsets = useMemo(() => placeLabels(projected), [projected]);
@@ -84,14 +81,14 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
           const d = pathGenerator(feature);
           if (!d) return null;
           const provinceName = feature.properties?.name || '';
-          const isVisited = ['广东', '广西', '贵州', '四川'].some(p => provinceName.includes(p));
+          const isVisited = ['广东', '广西', '贵州', '四川'].some((p) => provinceName.includes(p));
           return (
             <path
               key={feature.properties?.adcode ?? feature.properties?.name}
               d={d}
-              fill={isVisited ? "#fdf6d2" : "#ffffff"}
-              stroke={isVisited ? "#d4b423" : "#e3ded0"}
-              strokeWidth={isVisited ? "1.2" : "0.75"}
+              fill={isVisited ? '#fdf6d2' : '#ffffff'}
+              stroke={isVisited ? '#d4b423' : '#e3ded0'}
+              strokeWidth={isVisited ? '1.2' : '0.75'}
               className="transition-colors duration-300"
             />
           );
@@ -125,15 +122,15 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
               y1={fromY}
               x2={toX}
               y2={toY}
-              stroke={seg.visited ? "#f3d230" : "#b8a87f"}
-              strokeWidth={seg.visited ? "3.2" : "1.2"}
-              strokeDasharray={seg.visited ? "none" : "3 4"}
+              stroke={seg.visited ? '#f3d230' : '#b8a87f'}
+              strokeWidth={seg.visited ? '3.2' : '1.2'}
+              strokeDasharray={seg.visited ? 'none' : '3 4'}
               strokeLinecap="round"
               opacity={seg.visited ? 1 : 0.45}
               initial={{ pathLength: 0 }}
               whileInView={{ pathLength: 1 }}
-              viewport={{ once: true, margin: "-10%" }}
-              transition={{ duration: 1.2, delay: i * 0.06, ease: "easeOut" }}
+              viewport={{ once: true, margin: '-10%' }}
+              transition={{ duration: 1.2, delay: i * 0.06, ease: 'easeOut' }}
             />
 
             {/* Flowing electric charge pulse overlays for visited segments */}
@@ -149,7 +146,7 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
                 strokeDasharray="6 30"
                 initial={{ strokeDashoffset: 0 }}
                 animate={{ strokeDashoffset: -36 }}
-                transition={{ duration: 1.4, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
                 opacity={0.8}
                 style={{ pointerEvents: 'none' }}
               />
@@ -179,14 +176,14 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
                 fill="#f3d230"
                 initial={{ r: 6, opacity: 0.5 }}
                 animate={{ r: [6, 14], opacity: [0.5, 0] }}
-                transition={{ duration: 1.8, ease: "easeOut", repeat: Infinity, repeatDelay: 0.4 }}
+                transition={{ duration: 1.8, ease: 'easeOut', repeat: Infinity, repeatDelay: 0.4 }}
               />
             )}
             <circle
               cx={x}
               cy={y}
               r={isCurrent ? 5.5 : 4}
-              fill={city.visited ? "#f3d230" : "#c2b8a0"}
+              fill={city.visited ? '#f3d230' : '#c2b8a0'}
               stroke="#fffaf0"
               strokeWidth="1.6"
             />
@@ -212,14 +209,14 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
               data-city-id={city.id}
               x={x}
               y={y}
-              fill={isCurrent ? "#1f1b13" : city.visited ? "#534c3c" : "#8c8370"}
+              fill={isCurrent ? '#1f1b13' : city.visited ? '#534c3c' : '#8c8370'}
               fontSize={isCurrent ? 13 : 10}
               fontWeight={isCurrent ? 700 : 500}
               style={{
-                paintOrder: "stroke",
-                stroke: "#f7f4ed",
+                paintOrder: 'stroke',
+                stroke: '#f7f4ed',
                 strokeWidth: 3.5,
-                strokeLinejoin: "round",
+                strokeLinejoin: 'round',
               }}
             >
               {city.label}

@@ -2,15 +2,19 @@
 import logoHorizontalImport from '@/assets/logo-horizontal.png';
 import wechatQrImport from '@/assets/qr-wechat.png';
 import type { Locale } from '@/i18n/index';
-import ui from '@/i18n/ui';
 import { localePath } from '@/i18n/index';
+import ui from '@/i18n/ui';
 
-const logoSrc = typeof logoHorizontalImport === 'object' && logoHorizontalImport !== null && 'src' in logoHorizontalImport
-  ? (logoHorizontalImport as { src: string }).src
-  : logoHorizontalImport as string;
-const wechatQrSrc = typeof wechatQrImport === 'object' && wechatQrImport !== null && 'src' in wechatQrImport
-  ? (wechatQrImport as { src: string }).src
-  : wechatQrImport as string;
+const logoSrc =
+  typeof logoHorizontalImport === 'object' &&
+  logoHorizontalImport !== null &&
+  'src' in logoHorizontalImport
+    ? (logoHorizontalImport as { src: string }).src
+    : (logoHorizontalImport as string);
+const wechatQrSrc =
+  typeof wechatQrImport === 'object' && wechatQrImport !== null && 'src' in wechatQrImport
+    ? (wechatQrImport as { src: string }).src
+    : (wechatQrImport as string);
 
 interface Props {
   locale?: Locale;

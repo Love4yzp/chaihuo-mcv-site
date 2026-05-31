@@ -4,7 +4,8 @@ const ui: Record<Locale, Record<string, string>> = {
   zh: {
     // Site
     'site.name': '柴火基地车',
-    'site.description': '柴火基地车 — 一台即将穿越中国的移动 AI 实验室，深入山野与乡土，用技术连接每一个角落。',
+    'site.description':
+      '柴火基地车 — 一台即将穿越中国的移动 AI 实验室，深入山野与乡土，用技术连接每一个角落。',
 
     // Navigation
     'nav.home': '首页',
@@ -18,7 +19,8 @@ const ui: Record<Locale, Record<string, string>> = {
     'nav.switchLang': '切换语言',
 
     // Footer
-    'footer.description': '柴火基地车是一项连接数字与现实的开源创新项目，旨在通过移动平台将科技的人文关怀带向深处。',
+    'footer.description':
+      '柴火基地车是一项连接数字与现实的开源创新项目，旨在通过移动平台将科技的人文关怀带向深处。',
     'footer.followUs': '关注我们的社交媒体，获取最新动态',
     'footer.projectLinks': '项目入口',
     'footer.contact': '联系我们',
@@ -33,7 +35,8 @@ const ui: Record<Locale, Record<string, string>> = {
   },
   en: {
     'site.name': 'Chaihuo MCV',
-    'site.description': 'Chaihuo MCV — A mobile AI laboratory traversing China, bringing technology to every corner of the land.',
+    'site.description':
+      'Chaihuo MCV — A mobile AI laboratory traversing China, bringing technology to every corner of the land.',
 
     'nav.home': 'Home',
     'nav.journals': 'Journals',
@@ -45,7 +48,8 @@ const ui: Record<Locale, Record<string, string>> = {
     'nav.closeMenu': 'Close menu',
     'nav.switchLang': 'Switch language',
 
-    'footer.description': 'Chaihuo MCV is an open-source innovation project bridging digital and physical worlds, bringing the humanistic power of technology to those who need it most.',
+    'footer.description':
+      'Chaihuo MCV is an open-source innovation project bridging digital and physical worlds, bringing the humanistic power of technology to those who need it most.',
     'footer.followUs': 'Follow us on social media for the latest updates',
     'footer.projectLinks': 'Explore',
     'footer.contact': 'Contact',

@@ -1,31 +1,31 @@
 ---
 export const prerender = true;
 
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import HomeContent from '@/app/components/HomeContent';
-import heroesData from '@/data/heroes.json';
+import { PROJECT_END, PROJECT_START } from '@/config/project';
 import boardingsData from '@/data/boardings.json';
+import heroesData from '@/data/heroes.json';
 import teamData from '@/data/team.json';
-import { PROJECT_START, PROJECT_END } from '@/config/project';
-import type { Locale } from '@/i18n/index';
-import home from '@/i18n/home';
 import { loadLocalizedStops } from '@/features/route-map/stops-loader';
+import home from '@/i18n/home';
+import type { Locale } from '@/i18n/index';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = home[locale];
 
 const cities = await loadLocalizedStops(locale);
 
-const memberById = new Map(teamData.map(m => [m.id, m] as const));
+const memberById = new Map(teamData.map((m) => [m.id, m] as const));
 const memberDisplayName = (id: string | undefined) => {
   if (!id) return null;
   const m = memberById.get(id);
   if (!m) return null;
-  return locale === 'en' ? (m.name_en || m.name) : m.name;
+  return locale === 'en' ? m.name_en || m.name : m.name;
 };
 
 const segments = boardingsData
-  .map(b => {
+  .map((b) => {
     const member = memberById.get(b.crewId);
     if (!member) return null;
     const handoffToId = (b.disembarkedAt as { handoffTo?: string } | null)?.handoffTo;
@@ -33,15 +33,17 @@ const segments = boardingsData
       id: b.id,
       role: b.role,
       crewId: member.id,
-      name: locale === 'en' ? (member.name_en || member.name) : member.name,
+      name: locale === 'en' ? member.name_en || member.name : member.name,
       image: member.image,
-      bio: locale === 'en' ? (member.bio_en || member.bio || '') : (member.bio || ''),
+      bio: locale === 'en' ? member.bio_en || member.bio || '' : member.bio || '',
       startDate: b.boardedAt.date,
       endDate: b.disembarkedAt?.date ?? null,
       handoffName: memberDisplayName(handoffToId),
       startLocation: locale === 'en' ? b.boardedAt.location_en : b.boardedAt.location,
       endLocation: b.disembarkedAt
-        ? (locale === 'en' ? b.disembarkedAt.location_en : b.disembarkedAt.location)
+        ? locale === 'en'
+          ? b.disembarkedAt.location_en
+          : b.disembarkedAt.location
         : null,
     };
   })
@@ -50,10 +52,10 @@ const segments = boardingsData
 const ROLE_ORDER = ['领队', '技术担当', '媒体担当'];
 const localizeRole = (zhRole: string): string => {
   if (locale === 'zh') return zhRole;
-  const m = teamData.find(tm => tm.role === zhRole);
+  const m = teamData.find((tm) => tm.role === zhRole);
   return m?.role_en ?? zhRole;
 };
-const roles = ROLE_ORDER.map(r => ({ key: r, label: localizeRole(r) }));
+const roles = ROLE_ORDER.map((r) => ({ key: r, label: localizeRole(r) }));
 
 // Month markers — first day of each month within the project window
 const monthMarkers: Array<{ label: string; pct: number }> = [];
@@ -66,9 +68,10 @@ if (cursor < startDate) cursor.setUTCMonth(cursor.getUTCMonth() + 1);
 while (cursor < endDate) {
   const pct = ((cursor.getTime() - startDate.getTime()) / totalMs) * 100;
   if (pct >= 0 && pct <= 100) {
-    const label = locale === 'en'
-      ? cursor.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase()
-      : `${cursor.getUTCMonth() + 1}月`;
+    const label =
+      locale === 'en'
+        ? cursor.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase()
+        : `${cursor.getUTCMonth() + 1}月`;
     monthMarkers.push({ label, pct });
   }
   cursor.setUTCMonth(cursor.getUTCMonth() + 1);

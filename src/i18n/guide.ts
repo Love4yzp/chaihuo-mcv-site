@@ -2,8 +2,8 @@ import type { Locale } from './index';
 
 const guide: Record<Locale, Record<string, string>> = {
   zh: {
-    'title': '上车指南',
-    'description': '加入柴火基地车的行动——跟车同行、在地共创、在地赋能，多种参与方式等你选择。',
+    title: '上车指南',
+    description: '加入柴火基地车的行动——跟车同行、在地共创、在地赋能，多种参与方式等你选择。',
     'hero.subtitle': 'Get Involved',
     'hero.title': '加入行动',
     'hero.body': '你不是看客，是答案的一部分',
@@ -39,8 +39,9 @@ const guide: Record<Locale, Record<string, string>> = {
     'faq.subtitle': '7 个问题，3 分钟了解所有细节',
   },
   en: {
-    'title': 'Get Involved',
-    'description': 'Join the Chaihuo MCV journey — ride along, co-create locally, or get empowered with technology.',
+    title: 'Get Involved',
+    description:
+      'Join the Chaihuo MCV journey — ride along, co-create locally, or get empowered with technology.',
     'hero.subtitle': 'Get Involved',
     'hero.title': 'Join the Action',
     'hero.body': "You're not a spectator — you're part of the answer",
@@ -49,19 +50,22 @@ const guide: Record<Locale, Record<string, string>> = {
     'methods.subtitle': 'From riding along to making an impact on the ground',
 
     'ride.title': 'Ride Along',
-    'ride.body': 'Join the crew for a 200-day journey across China. Choose a segment or the full trip — flexible participation.',
+    'ride.body':
+      'Join the crew for a 200-day journey across China. Choose a segment or the full trip — flexible participation.',
     'ride.role1': 'Tech crew: 1–2 people',
     'ride.role2': 'Media crew: 1–2 people',
     'ride.apply': 'Apply via Email',
 
     'cocreate.title': 'Local Co-Creation',
-    'cocreate.body': 'Partner with the MCV to co-host workshops, themed talks, and sustainable innovation events in your area.',
+    'cocreate.body':
+      'Partner with the MCV to co-host workshops, themed talks, and sustainable innovation events in your area.',
     'cocreate.role1': 'Designers · Researchers · Educators',
     'cocreate.role2': 'NGOs · Community centers',
     'cocreate.qrLabel': 'Scan QR for WeChat form',
 
     'empower.title': 'Local Empowerment',
-    'empower.body': 'Access tech training, expert consulting, and industry case studies to upgrade your projects with cutting-edge technology.',
+    'empower.body':
+      'Access tech training, expert consulting, and industry case studies to upgrade your projects with cutting-edge technology.',
     'empower.role1': 'Entrepreneurs · SME owners',
     'empower.role2': 'Education · Agriculture · Environment · Architecture',
     'empower.qrLabel': 'Scan QR for WeChat form',
@@ -70,7 +74,8 @@ const guide: Record<Locale, Record<string, string>> = {
     'apply.rideDetail': 'Send your resume/portfolio + preferred route segment + preferred role to',
     'apply.rideSubject': ', subject line: "Chaihuo MCV Ride-Along Application"',
     'apply.local': 'For local partnerships: ',
-    'apply.localDetail': "Scan the QR code on the cards above to submit your interest — we'll get back to you ASAP",
+    'apply.localDetail':
+      "Scan the QR code on the cards above to submit your interest — we'll get back to you ASAP",
 
     'faq.title': 'FAQ',
     'faq.subtitle': '7 questions, 3 minutes to learn everything',
