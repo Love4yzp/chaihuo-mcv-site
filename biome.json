@@ -35,8 +35,7 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noArrayIndexKey": "off",
-        "noCommentText": "off"
+        "noArrayIndexKey": "off"
       },
       "a11y": {
         "noSvgWithoutTitle": "off",

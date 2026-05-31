@@ -336,7 +336,7 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                   <div className="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3 text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-                      // prometheus active telemetry
+                      {/* TODO: 信息呈现待重新构思 — 旧排版残留,先不显示 */}
                     </span>
                     <span>live feed</span>
                   </div>
