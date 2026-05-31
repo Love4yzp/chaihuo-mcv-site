@@ -103,6 +103,7 @@ export default function ChinaRouteMap({
   };
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: 鼠标视差容器,纯装饰性 hover 特效,无可操作交互
     <div
       ref={mapRef}
       onMouseMove={handleMouseMove}
@@ -482,6 +483,7 @@ export default function ChinaRouteMap({
                   )}
 
                   {/* 精密事件触发区 */}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: SVG 地图城市命中区,指针优先可视化;完整键盘可达性作为单独事项跟进 */}
                   <circle
                     cx={markerX}
                     cy={markerY}

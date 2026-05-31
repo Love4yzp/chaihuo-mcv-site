@@ -305,6 +305,7 @@ export default function CityPanel({
                       const isVisited = p.city.visited;
 
                       return (
+                        // biome-ignore lint/a11y/noStaticElementInteractions: SVG 图表海拔锚点命中区,指针优先可视化
                         <g
                           key={idx}
                           className="cursor-pointer group"
