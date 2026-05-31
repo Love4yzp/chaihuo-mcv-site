@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "build": "pnpm run check && astro build",
     "build:astro": "astro build",
-    "check": "pnpm run check:content && pnpm run check:astro",
+    "check": "pnpm run lint && pnpm run check:content && pnpm run check:astro",
+    "lint": "biome check .",
+    "format": "biome format --write .",
     "check:astro": "astro check",
     "check:content": "node scripts/validate-site.mjs",
     "harness": "pnpm run check && playwright test",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "@biomejs/biome": "^2.4.16",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/d3-geo": "^3.1.0",
