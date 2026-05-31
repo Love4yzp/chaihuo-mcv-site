@@ -25,10 +25,6 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "correctness": {
-        "useExhaustiveDependencies": "off",
-        "useHookAtTopLevel": "off"
-      },
       "suspicious": {
         "noArrayIndexKey": "off"
       }

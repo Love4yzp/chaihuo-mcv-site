@@ -25,6 +25,17 @@ interface SerializedJournal {
   city: string;
 }
 
+// SVG 高度图尺寸与内边距 —— 纯常量,放在组件外,避免被 useMemo 当作依赖项
+const maxAlt = 1510; // 最大海拔刻度 1510m (毕节)
+const svgW = 460;
+const svgH = 85;
+const paddingLeft = 25;
+const paddingRight = 20;
+const paddingTop = 12;
+const paddingBottom = 22;
+const plotW = svgW - paddingLeft - paddingRight;
+const plotH = svgH - paddingTop - paddingBottom;
+
 export default function CityPanel({
   city,
   cities,
@@ -50,6 +61,56 @@ export default function CityPanel({
     return t[key] ?? fallback;
   };
 
+  // 1. 过滤并计算海拔高程数据点，展示基准的横向行程断面
+  const elevationCities = useMemo(() => {
+    return cities.filter((c) => c.altitude != null);
+  }, [cities]);
+
+  // 映射高程坐标点
+  const points = useMemo(() => {
+    if (elevationCities.length === 0) return [];
+    return elevationCities.map((c, i) => {
+      const x =
+        elevationCities.length > 1
+          ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
+          : paddingLeft + plotW / 2;
+      const alt = parseFloat(c.altitude) || 0;
+      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
+      return {
+        x,
+        y,
+        city: c,
+        alt,
+      };
+    });
+  }, [elevationCities]);
+
+  // 生成剖面线与区域填充路径
+  const lineD = useMemo(() => {
+    if (points.length === 0) return '';
+    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+  }, [points]);
+
+  const areaD = useMemo(() => {
+    if (points.length === 0) return '';
+    return `${lineD} L ${points[points.length - 1].x} ${svgH - paddingBottom} L ${points[0].x} ${svgH - paddingBottom} Z`;
+  }, [points, lineD]);
+
+  // 海拔网格基准线
+  const gridLines = useMemo(() => {
+    const alts = [500, 1000, 1500];
+    return alts.map((alt) => {
+      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
+      return { alt, y };
+    });
+  }, []);
+
+  // Filter journals for this city
+  const cityJournals = useMemo(() => {
+    if (!journals || !city) return [];
+    return journals.filter((j) => j.city === city.id);
+  }, [journals, city]);
+
   if (!city) {
     return (
       <AntigravityCard
@@ -71,69 +132,6 @@ export default function CityPanel({
     : (t['journal.legCounter'] ?? '{n} / {total}')
         .replace('{n}', String(city.order))
         .replace('{total}', String(totalLegs));
-
-  // 1. 过滤并计算海拔高程数据点，展示基准的横向行程断面
-  const elevationCities = useMemo(() => {
-    return cities.filter((c) => c.altitude != null);
-  }, [cities]);
-
-  // 最大海拔刻度 1510m (毕节)
-  const maxAlt = 1510;
-
-  // SVG 高度图尺寸与内边距
-  const svgW = 460;
-  const svgH = 85;
-  const paddingLeft = 25;
-  const paddingRight = 20;
-  const paddingTop = 12;
-  const paddingBottom = 22;
-  const plotW = svgW - paddingLeft - paddingRight;
-  const plotH = svgH - paddingTop - paddingBottom;
-
-  // 映射高程坐标点
-  const points = useMemo(() => {
-    if (elevationCities.length === 0) return [];
-    return elevationCities.map((c, i) => {
-      const x =
-        elevationCities.length > 1
-          ? paddingLeft + (i * plotW) / (elevationCities.length - 1)
-          : paddingLeft + plotW / 2;
-      const alt = parseFloat(c.altitude) || 0;
-      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
-      return {
-        x,
-        y,
-        city: c,
-        alt,
-      };
-    });
-  }, [elevationCities, plotW, plotH, svgH, paddingBottom]);
-
-  // 生成剖面线与区域填充路径
-  const lineD = useMemo(() => {
-    if (points.length === 0) return '';
-    return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  }, [points]);
-
-  const areaD = useMemo(() => {
-    if (points.length === 0) return '';
-    return `${lineD} L ${points[points.length - 1].x} ${svgH - paddingBottom} L ${points[0].x} ${svgH - paddingBottom} Z`;
-  }, [points, lineD, svgH, paddingBottom]);
-
-  // 海拔网格基准线
-  const gridLines = useMemo(() => {
-    const alts = [500, 1000, 1500];
-    return alts.map((alt) => {
-      const y = svgH - paddingBottom - (alt / maxAlt) * plotH;
-      return { alt, y };
-    });
-  }, [plotH, svgH, paddingBottom]);
-
-  // Filter journals for this city
-  const cityJournals = useMemo(() => {
-    if (!journals) return [];
-    return journals.filter((j) => j.city === city.id);
-  }, [journals, city.id]);
 
   return (
     <AnimatePresence mode="wait">

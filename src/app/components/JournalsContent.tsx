@@ -8,7 +8,7 @@ import {
   Mountain,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { RouteCity } from '@/features/route-map/types';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
@@ -28,24 +28,26 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
   const [activeStatus, setActiveStatus] = useState<string>('all');
   const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
-  const syncFiltersFromUrl = () => {
+  // Stable across renders (only uses stable state setters), so the effects below
+  // still run once on mount — behaviour identical to empty deps.
+  const syncFiltersFromUrl = useCallback(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     setActiveCity(params.get('city') ?? 'all');
     setActiveStatus(params.get('status') ?? 'all');
-  };
+  }, []);
 
   // Sync state with URL Search Params on mount
   useEffect(() => {
     syncFiltersFromUrl();
-  }, []);
+  }, [syncFiltersFromUrl]);
 
   // Keep filters in sync with browser history navigation
   useEffect(() => {
     if (typeof window === 'undefined') return;
     window.addEventListener('popstate', syncFiltersFromUrl);
     return () => window.removeEventListener('popstate', syncFiltersFromUrl);
-  }, []);
+  }, [syncFiltersFromUrl]);
 
   // Update URL Search Params when filters change
   const handleCityChange = (cityId: string) => {
