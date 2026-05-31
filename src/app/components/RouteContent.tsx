@@ -139,6 +139,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
                   const active = selectedCityKey === c.label;
                   return (
                     <button
+                      type="button"
                       key={`${c.id}-${c.order}`}
                       onClick={() => handleCitySelect(c.label)}
                       className={`text-[11px] px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap ${

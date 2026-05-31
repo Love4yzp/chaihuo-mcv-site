@@ -137,6 +137,7 @@ export default function ChinaRouteMap({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
+          <title>{t['map.title'] || '中国行程路线图'}</title>
           <defs>
             <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3.5" result="blur" />

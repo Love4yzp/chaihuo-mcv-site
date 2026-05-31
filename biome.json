@@ -33,8 +33,6 @@
         "noArrayIndexKey": "off"
       },
       "a11y": {
-        "noSvgWithoutTitle": "off",
-        "useButtonType": "off",
         "noStaticElementInteractions": "off",
         "useKeyWithClickEvents": "off",
         "useSemanticElements": "off"

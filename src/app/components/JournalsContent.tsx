@@ -168,6 +168,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                 { key: 'placeholder', label: t['filter.placeholder'] },
               ].map((status) => (
                 <button
+                  type="button"
                   key={status.key}
                   onClick={() => handleStatusChange(status.key)}
                   className={`px-4 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${

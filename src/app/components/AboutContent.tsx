@@ -142,6 +142,7 @@ function YearSpotlight({
                   const isActive = item.year === activeYear;
                   return (
                     <button
+                      type="button"
                       key={item.year}
                       onClick={() => jumpToSection(item.year)}
                       className="w-full text-left focus:outline-none block cursor-pointer group"
@@ -238,6 +239,7 @@ function YearSpotlight({
         {/* Collapsible Chronicle Drawer for Minor Years */}
         <div className="mt-20 border-t border-neutral-200/60 pt-12 text-center">
           <button
+            type="button"
             onClick={() => setShowFullHistory(!showFullHistory)}
             className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-neutral-800 font-bold transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
           >
@@ -508,7 +510,7 @@ export default function AboutContent({
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path
                 d="M3 8h10M9 4l4 4-4 4"
                 stroke="currentColor"

@@ -238,7 +238,12 @@ export default function CityPanel({
                   <svg
                     viewBox={`0 0 ${svgW} ${svgH}`}
                     className="w-full h-auto overflow-visible select-none"
+                    role="img"
+                    aria-label={locale === 'zh' ? '海拔高度纵断面图' : 'Elevation profile chart'}
                   >
+                    <title>
+                      {locale === 'zh' ? '海拔高度纵断面图' : 'Elevation profile chart'}
+                    </title>
                     {/* 阶梯基准线 */}
                     {gridLines.map((g, idx) => (
                       <g key={idx} opacity={0.25}>
