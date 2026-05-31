@@ -11,19 +11,22 @@ const elements: Record<Locale, Record<string, string>> = {
     radius: '圆角',
     components: '组件示例',
     motion: '动效',
-    motionNote: '页面切换:250ms 淡出 / 350ms 淡入 + 上滑;缓动 cubic-bezier(0.4, 0, 0.2, 1);尊重 reduced-motion。',
+    motionNote:
+      '页面切换:250ms 淡出 / 350ms 淡入 + 上滑;缓动 cubic-bezier(0.4, 0, 0.2, 1);尊重 reduced-motion。',
   },
   en: {
     title: 'Design System Reference',
     description: 'Color, typography, component and motion reference for the Chaihuo MCV site.',
     heading: 'Design System Reference',
-    intro: 'This page lays out the site design tokens so the whole visual system can be checked at a glance.',
+    intro:
+      'This page lays out the site design tokens so the whole visual system can be checked at a glance.',
     colors: 'Colors',
     typography: 'Typography',
     radius: 'Radius',
     components: 'Components',
     motion: 'Motion',
-    motionNote: 'Page transitions: 250ms fade-out / 350ms fade-in + slide-up; easing cubic-bezier(0.4, 0, 0.2, 1); respects reduced-motion.',
+    motionNote:
+      'Page transitions: 250ms fade-out / 350ms fade-in + slide-up; easing cubic-bezier(0.4, 0, 0.2, 1); respects reduced-motion.',
   },
 };
 

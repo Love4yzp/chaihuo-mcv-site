@@ -1,25 +1,26 @@
-import { useMemo } from "react";
-import { motion } from "motion/react";
-import ReactSlick from "react-slick";
+import { motion } from 'motion/react';
+import { useMemo } from 'react';
+import ReactSlick from 'react-slick';
+
 // Vite 8 CJS interop: default export is nested
 const Slider = (
-  "default" in ReactSlick ? (ReactSlick as any).default : ReactSlick
+  'default' in ReactSlick ? (ReactSlick as any).default : ReactSlick
 ) as typeof ReactSlick;
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import type { Stop as RouteCity } from "@/features/route-map/stops-loader";
-import RoutePreview from "@/features/route-map/RoutePreview";
-import {
-  fadeUp,
-  fadeLeft,
-  stagger,
-  springTransition,
-  defaultViewport,
-  buttonPress,
-} from "../components/motion";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import RoutePreview from '@/features/route-map/RoutePreview';
+import type { Stop as RouteCity } from '@/features/route-map/stops-loader';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
+import {
+  buttonPress,
+  defaultViewport,
+  fadeLeft,
+  fadeUp,
+  springTransition,
+  stagger,
+} from '../components/motion';
 import RoleTimeline from './RoleTimeline';
 
 // ─── Types ───
@@ -61,9 +62,21 @@ interface Props {
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const DEPARTURE_DATE = Date.UTC(2026, 3, 22);
 const labCards = [
-  ['lab.aiTitle', 'lab.aiDesc', 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
-  ['lab.fabTitle', 'lab.fabDesc', 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
-  ['lab.spaceTitle', 'lab.spaceDesc', 'https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80'],
+  [
+    'lab.aiTitle',
+    'lab.aiDesc',
+    'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
+  ],
+  [
+    'lab.fabTitle',
+    'lab.fabDesc',
+    'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
+  ],
+  [
+    'lab.spaceTitle',
+    'lab.spaceDesc',
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=800&q=80',
+  ],
 ] as const;
 
 function getDepartureDays(now = new Date()) {
@@ -72,18 +85,12 @@ function getDepartureDays(now = new Date()) {
 }
 
 export default function HomeContent({ cities, heroImages, timeline, locale = 'zh', t }: Props) {
-  const sortedCities = useMemo(
-    () => [...cities].sort((a, b) => a.order - b.order),
-    [cities],
-  );
+  const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
   const lastVisited = useMemo(
-    () => [...sortedCities].reverse().find(c => c.visited) ?? null,
+    () => [...sortedCities].reverse().find((c) => c.visited) ?? null,
     [sortedCities],
   );
-  const visitedCount = useMemo(
-    () => cities.filter((city) => city.visited).length,
-    [cities],
-  );
+  const visitedCount = useMemo(() => cities.filter((city) => city.visited).length, [cities]);
   const departureDays = getDepartureDays();
 
   const SliderPrevArrow = ({ onClick }: { onClick?: () => void }) => (
@@ -155,7 +162,9 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
               <div className="text-brand font-bold text-4xl md:text-6xl mt-2">
                 {t['hero.slogan']}
               </div>
-              <div className="text-base md:text-lg text-neutral-300 mt-3 font-normal">{t['hero.subtitle']}</div>
+              <div className="text-base md:text-lg text-neutral-300 mt-3 font-normal">
+                {t['hero.subtitle']}
+              </div>
             </motion.h1>
             <motion.p
               className="text-base md:text-lg text-neutral-300 mb-10 max-w-lg leading-relaxed"
@@ -176,12 +185,12 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                 whileHover={{
                   y: -4,
                   scale: 1.02,
-                  backgroundColor: "rgba(255, 255, 255, 0.15)",
-                  borderColor: "rgba(255, 255, 255, 0.4)",
-                  boxShadow: "0 12px 30px rgba(0, 0, 0, 0.25)"
+                  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                  borderColor: 'rgba(255, 255, 255, 0.4)',
+                  boxShadow: '0 12px 30px rgba(0, 0, 0, 0.25)',
                 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               >
                 <span>{t['hero.aboutAction']}</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
@@ -194,12 +203,12 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                 whileHover={{
                   y: -4,
                   scale: 1.02,
-                  backgroundColor: "rgba(243, 210, 48, 0.2)",
-                  borderColor: "rgba(243, 210, 48, 0.55)",
-                  boxShadow: "0 15px 35px rgba(243, 210, 48, 0.25)"
+                  backgroundColor: 'rgba(243, 210, 48, 0.2)',
+                  borderColor: 'rgba(243, 210, 48, 0.55)',
+                  boxShadow: '0 15px 35px rgba(243, 210, 48, 0.25)',
                 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                transition={{ type: 'spring', damping: 20, stiffness: 300 }}
               >
                 <span>{t['hero.joinAction']}</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-200" />
@@ -217,14 +226,18 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
       {/* 实时任务状态条 — hero 图片之后,独立一条,居中 */}
       <div className="bg-neutral-900 text-white">
         <div className="max-w-7xl mx-auto px-6 py-3.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm">
-          <span className="text-white/70">{(t['status.days'] ?? '已出发 {days} 天').replace('{days}', String(departureDays))}</span>
+          <span className="text-white/70">
+            {(t['status.days'] ?? '已出发 {days} 天').replace('{days}', String(departureDays))}
+          </span>
           <span className="text-white/25">·</span>
           <span className="flex items-center gap-2 font-semibold text-white">
             <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
             {(t['status.current'] ?? '位于 {city}').replace('{city}', lastVisited?.label ?? '')}
           </span>
           <span className="text-white/25">·</span>
-          <span className="text-white/70">{(t['status.cities'] ?? '已抵达 {count} 城').replace('{count}', String(visitedCount))}</span>
+          <span className="text-white/70">
+            {(t['status.cities'] ?? '已抵达 {count} 城').replace('{count}', String(visitedCount))}
+          </span>
         </div>
       </div>
 
@@ -270,15 +283,21 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                 className="grid grid-cols-2 gap-3"
               >
                 <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.arrivedStops']}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">
+                    {t['telemetry.arrivedStops']}
+                  </div>
                   <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-baseline gap-1">
                     <span>{visitedCount}</span>
-                    <span className="text-xs text-neutral-450 font-normal">/ {cities.length} stops</span>
+                    <span className="text-xs text-neutral-450 font-normal">
+                      / {cities.length} stops
+                    </span>
                   </div>
                 </div>
 
                 <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between relative overflow-hidden group">
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.days']}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">
+                    {t['telemetry.days']}
+                  </div>
                   <div className="text-xl font-bold font-mono text-neutral-900 mt-1 flex items-center gap-2">
                     <span>{departureDays}</span>
                     <span className="relative flex h-2 w-2">
@@ -289,12 +308,18 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                 </div>
 
                 <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.current']}</div>
-                  <div className="text-base font-bold text-neutral-900 mt-1 truncate">{lastVisited?.label ?? '-'}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">
+                    {t['telemetry.current']}
+                  </div>
+                  <div className="text-base font-bold text-neutral-900 mt-1 truncate">
+                    {lastVisited?.label ?? '-'}
+                  </div>
                 </div>
 
                 <div className="bg-white/60 backdrop-blur-md border border-white/80 p-3.5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">{t['telemetry.planProvinces']}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-neutral-400 font-semibold">
+                    {t['telemetry.planProvinces']}
+                  </div>
                   <div className="text-base font-bold text-neutral-900 mt-1">21 省 26 城</div>
                 </div>
               </motion.div>
@@ -322,18 +347,26 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                     </div>
                     <div className="flex justify-between items-baseline gap-4">
                       <span className="text-neutral-500 shrink-0">GEO / 地貌</span>
-                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={lastVisited.terrain}>
+                      <span
+                        className="text-neutral-200 text-right truncate max-w-[200px]"
+                        title={lastVisited.terrain}
+                      >
                         {lastVisited.terrain}
                       </span>
                     </div>
                     <div className="flex justify-between items-baseline gap-4">
                       <span className="text-neutral-500 shrink-0">CLM / 气候</span>
-                      <span className="text-neutral-200 text-right truncate max-w-[200px]" title={lastVisited.climate}>
+                      <span
+                        className="text-neutral-200 text-right truncate max-w-[200px]"
+                        title={lastVisited.climate}
+                      >
                         {lastVisited.climate}
                       </span>
                     </div>
                     <div className="border-t border-neutral-800/60 pt-2 mt-2 flex flex-col gap-1">
-                      <span className="text-[10px] text-brand/75 uppercase tracking-wider font-semibold">Current Tech Challenge / 实时技术挑战:</span>
+                      <span className="text-[10px] text-brand/75 uppercase tracking-wider font-semibold">
+                        Current Tech Challenge / 实时技术挑战:
+                      </span>
                       <span className="text-neutral-300 leading-relaxed text-[11px] font-sans mt-0.5">
                         {lastVisited.challenge}
                       </span>
@@ -454,9 +487,7 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
                   style={{ backgroundImage: `url(${image})` }}
                 />
                 <div className="p-6">
-                  <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">
-                    {t[title]}
-                  </h3>
+                  <h3 className="text-xl md:text-2xl font-semibold mb-3 text-black">{t[title]}</h3>
                   <p className="text-neutral-500 mb-4">{t[desc]}</p>
                 </div>
               </motion.div>
@@ -481,9 +512,7 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
             <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">
               {t['cta.title']}
             </h2>
-            <p className="text-neutral-500 text-sm max-w-lg">
-              {t['cta.body']}
-            </p>
+            <p className="text-neutral-500 text-sm max-w-lg">{t['cta.body']}</p>
           </motion.div>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
             <motion.a

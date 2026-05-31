@@ -1,11 +1,19 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { fadeUp, stagger, springTransition } from './motion';
-import { Clock, MapPin, ChevronDown, Mountain, Compass, AlertCircle, ArrowRight } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  ChevronDown,
+  Clock,
+  Compass,
+  MapPin,
+  Mountain,
+} from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useEffect, useState } from 'react';
+import type { RouteCity } from '@/features/route-map/types';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
-import type { RouteCity } from '@/features/route-map/types';
 import type { LocalizedJournal } from '@/lib/journals';
+import { fadeUp, springTransition, stagger } from './motion';
 
 interface Props {
   cities: RouteCity[];
@@ -77,11 +85,9 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
   });
 
   // Unique cities referenced in the cities prop
-  const citiesList = Array.from(
-    new Map(
-      cities.map((city) => [city.id, city.label]),
-    ),
-  ).map(([id, label]) => ({ id, label }));
+  const citiesList = Array.from(new Map(cities.map((city) => [city.id, city.label]))).map(
+    ([id, label]) => ({ id, label }),
+  );
 
   // Helper to retrieve city details for a given city ID
   const getCityTelemetry = (cityId: string) => {
@@ -99,11 +105,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       {/* 顶部 Hero */}
       <section className="pt-28 pb-12 px-6">
         <div className="max-w-5xl mx-auto">
-          <motion.div
-            variants={stagger(0.1)}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div variants={stagger(0.1)} initial="hidden" animate="visible">
             <motion.p
               className="text-xs font-semibold tracking-[0.3em] text-neutral-400 uppercase mb-3"
               variants={fadeUp}
@@ -132,7 +134,6 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       {/* Filter and Count Bar */}
       <section className="py-6 px-6 bg-white border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-          
           {/* Controls: Dropdown + Chips */}
           <div className="flex flex-wrap items-center gap-4">
             {/* City Dropdown */}
@@ -141,7 +142,10 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
               <select
                 value={activeCity}
                 onChange={(e) => handleCityChange(e.target.value)}
-                aria-label={t['filter.cityAria'] ?? (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')}
+                aria-label={
+                  t['filter.cityAria'] ??
+                  (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')
+                }
                 className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
               >
                 <option value="all">{t['filter.all']}</option>
@@ -185,14 +189,15 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
             </span>
             <span className="text-neutral-300">•</span>
             <span className="text-emerald-600">
-              {locale === 'en' ? 'Published' : '已发布'} {journals.filter(j => j.status === 'published').length}
+              {locale === 'en' ? 'Published' : '已发布'}{' '}
+              {journals.filter((j) => j.status === 'published').length}
             </span>
             <span className="text-neutral-300">•</span>
             <span className="text-amber-600">
-              {locale === 'en' ? 'In progress' : '整理中'} {journals.filter(j => j.status === 'placeholder').length}
+              {locale === 'en' ? 'In progress' : '整理中'}{' '}
+              {journals.filter((j) => j.status === 'placeholder').length}
             </span>
           </div>
-
         </div>
       </section>
 
@@ -208,15 +213,11 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
             >
               {filteredJournals.map((entry) => {
                 const isPublished = entry.status === 'published';
-                
+
                 if (isPublished) {
                   // Published Card
                   return (
-                    <motion.div
-                      key={entry.slug}
-                      variants={fadeUp}
-                      className="group"
-                    >
+                    <motion.div key={entry.slug} variants={fadeUp} className="group">
                       <a
                         href={localePath(`/journals/${entry.slug}`, locale)}
                         className="block bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-lg hover:border-brand/80 border border-neutral-300 transition-all duration-300"
@@ -357,7 +358,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                                 </div>
                               </div>
                             </div>
-                            
+
                             {/* Little down arrow for popover bubble */}
                             <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-[6px] border-transparent border-t-neutral-950/95" />
                           </motion.div>
@@ -371,12 +372,8 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
           ) : (
             <div className="text-center py-24 bg-white border border-neutral-300 rounded-2xl shadow-xs">
               <Compass className="w-12 h-12 text-neutral-300 mx-auto mb-4 animate-spin [animation-duration:10s]" />
-              <h3 className="text-xl font-bold text-neutral-900 mb-2">
-                {t['empty.title']}
-              </h3>
-              <p className="text-sm text-neutral-500 max-w-sm mx-auto">
-                {t['empty.subtitle']}
-              </p>
+              <h3 className="text-xl font-bold text-neutral-900 mb-2">{t['empty.title']}</h3>
+              <p className="text-sm text-neutral-500 max-w-sm mx-auto">{t['empty.subtitle']}</p>
             </div>
           )}
         </div>

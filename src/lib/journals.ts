@@ -1,6 +1,6 @@
-import { getCollection, type CollectionEntry } from 'astro:content';
-import type { Locale } from '@/i18n/index';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import type { Stop } from '@/features/route-map/stops-loader';
+import type { Locale } from '@/i18n/index';
 
 export type JournalEntry = CollectionEntry<'journals'>;
 export type JournalStatus = JournalEntry['data']['status'];
@@ -26,22 +26,15 @@ export async function getAllJournals(
   opts: { includeDrafts?: boolean } = {},
 ): Promise<JournalEntry[]> {
   const all = await getCollection('journals');
-  const filtered = opts.includeDrafts
-    ? all
-    : all.filter((j) => j.data.status !== 'draft');
+  const filtered = opts.includeDrafts ? all : all.filter((j) => j.data.status !== 'draft');
   return filtered.sort((a, b) => b.data.date.localeCompare(a.data.date));
 }
 
-export function getJournalsByCity(
-  journals: JournalEntry[],
-  cityId: string,
-): JournalEntry[] {
+export function getJournalsByCity(journals: JournalEntry[], cityId: string): JournalEntry[] {
   return journals.filter((j) => j.data.city === cityId);
 }
 
-export function countByStatus(
-  journals: JournalEntry[],
-): Record<JournalStatus, number> {
+export function countByStatus(journals: JournalEntry[]): Record<JournalStatus, number> {
   const counts: Record<JournalStatus, number> = {
     published: 0,
     placeholder: 0,
@@ -64,11 +57,8 @@ export function localizeJournal(
 ): LocalizedJournal {
   const d = entry.data;
   const city = findCity(d.city, cities);
-  const cityLabel = city
-    ? city.label
-    : d.city;
-  const activities =
-    locale === 'en' && d.activities_en.length > 0 ? d.activities_en : d.activities;
+  const cityLabel = city ? city.label : d.city;
+  const activities = locale === 'en' && d.activities_en.length > 0 ? d.activities_en : d.activities;
   return {
     slug: entry.id,
     date: d.date,

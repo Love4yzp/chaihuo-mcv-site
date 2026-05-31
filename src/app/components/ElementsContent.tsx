@@ -1,6 +1,6 @@
-import { type ReactNode } from 'react';
-import { Button } from '@/app/components/ui/button';
+import type { ReactNode } from 'react';
 import { Badge } from '@/app/components/ui/badge';
+import { Button } from '@/app/components/ui/button';
 import type { Locale } from '@/i18n/index';
 
 interface ElementsContentProps {
@@ -24,10 +24,26 @@ const SWATCHES: { name: string; className: string; text: string }[] = [
 ];
 
 const TYPE_SCALE: { tag: string; sample: string; cls: string }[] = [
-  { tag: 'h1 / text-3xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-3xl font-bold text-neutral-900' },
-  { tag: 'h2 / text-2xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-2xl font-bold text-neutral-900' },
-  { tag: 'h3 / text-xl 600', sample: '普罗米修斯号 · Prometheus', cls: 'text-xl font-semibold text-neutral-900' },
-  { tag: 'body / text-base', sample: '正文示例 Body sample 0123456789', cls: 'text-base text-neutral-900' },
+  {
+    tag: 'h1 / text-3xl 700',
+    sample: '普罗米修斯号 · Prometheus',
+    cls: 'text-3xl font-bold text-neutral-900',
+  },
+  {
+    tag: 'h2 / text-2xl 700',
+    sample: '普罗米修斯号 · Prometheus',
+    cls: 'text-2xl font-bold text-neutral-900',
+  },
+  {
+    tag: 'h3 / text-xl 600',
+    sample: '普罗米修斯号 · Prometheus',
+    cls: 'text-xl font-semibold text-neutral-900',
+  },
+  {
+    tag: 'body / text-base',
+    sample: '正文示例 Body sample 0123456789',
+    cls: 'text-base text-neutral-900',
+  },
   { tag: 'small / text-sm', sample: '辅助文字 Caption sample', cls: 'text-sm text-neutral-500' },
 ];
 
@@ -57,7 +73,10 @@ export default function ElementsContent({ t }: ElementsContentProps) {
         <Section title={t['colors']}>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {SWATCHES.map((s) => (
-              <div key={s.name} className={`${s.className} ${s.text} rounded-lg border border-neutral-300 p-4 h-24 flex flex-col justify-end`}>
+              <div
+                key={s.name}
+                className={`${s.className} ${s.text} rounded-lg border border-neutral-300 p-4 h-24 flex flex-col justify-end`}
+              >
                 <span className="text-sm font-medium">{s.name}</span>
               </div>
             ))}

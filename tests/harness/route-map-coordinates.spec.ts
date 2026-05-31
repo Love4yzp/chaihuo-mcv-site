@@ -1,18 +1,18 @@
-import { test, expect, type Page } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { geoMercator } from 'd3-geo';
-import { loadStops } from './lib/load-stops';
-import type { Stop as RouteCity } from '../../src/features/route-map/stops-loader';
-import { placeLabels } from '../../src/features/route-map/label-layout';
-import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import {
   MAP_HEIGHT,
   MAP_SCALE_DENOMINATOR,
   MAP_TRANSLATE_Y_OFFSET,
   MAP_WIDTH,
 } from '../../src/features/route-map/constants';
+import { placeLabels } from '../../src/features/route-map/label-layout';
+import type { Stop as RouteCity } from '../../src/features/route-map/stops-loader';
+import { cityMatchesTheme, countThemes, THEME_ORDER } from '../../src/features/route-map/theme';
 import type { ProjectedCity } from '../../src/features/route-map/types';
 import { centerOn, IDENTITY } from '../../src/features/route-map/useMapZoom';
 import { gotoRoute } from './helpers';
+import { loadStops } from './lib/load-stops';
 
 const projection = geoMercator()
   .center([105, 36])
@@ -32,7 +32,9 @@ test.beforeAll(async () => {
     .sort();
 });
 
-function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCity, 'id' | 'label' | 'cx' | 'cy'>): ProjectedCity {
+function makeProjectedCity(
+  overrides: Partial<ProjectedCity> & Pick<ProjectedCity, 'id' | 'label' | 'cx' | 'cy'>,
+): ProjectedCity {
   return {
     id: overrides.id,
     label: overrides.label,
@@ -61,29 +63,31 @@ function makeProjectedCity(overrides: Partial<ProjectedCity> & Pick<ProjectedCit
 }
 
 async function getVisibleProvinceFootprint(page: Page, svgSelector: string) {
-  return page.locator(`${svgSelector} path[fill="#ffffff"], ${svgSelector} path[fill="#fdf6d2"]`).evaluateAll((nodes) => {
-    const boxes = nodes
-      .filter((node) => node.getClientRects().length > 0)
-      .map((node) => {
-        const box = (node as SVGGraphicsElement).getBBox();
-        return {
-          x1: box.x,
-          y1: box.y,
-          x2: box.x + box.width,
-          y2: box.y + box.height,
-        };
-      });
+  return page
+    .locator(`${svgSelector} path[fill="#ffffff"], ${svgSelector} path[fill="#fdf6d2"]`)
+    .evaluateAll((nodes) => {
+      const boxes = nodes
+        .filter((node) => node.getClientRects().length > 0)
+        .map((node) => {
+          const box = (node as SVGGraphicsElement).getBBox();
+          return {
+            x1: box.x,
+            y1: box.y,
+            x2: box.x + box.width,
+            y2: box.y + box.height,
+          };
+        });
 
-    return boxes.reduce(
-      (acc, box) => ({
-        x1: Math.min(acc.x1, box.x1),
-        y1: Math.min(acc.y1, box.y1),
-        x2: Math.max(acc.x2, box.x2),
-        y2: Math.max(acc.y2, box.y2),
-      }),
-      { x1: Infinity, y1: Infinity, x2: -Infinity, y2: -Infinity },
-    );
-  });
+      return boxes.reduce(
+        (acc, box) => ({
+          x1: Math.min(acc.x1, box.x1),
+          y1: Math.min(acc.y1, box.y1),
+          x2: Math.max(acc.x2, box.x2),
+          y2: Math.max(acc.y2, box.y2),
+        }),
+        { x1: Infinity, y1: Infinity, x2: -Infinity, y2: -Infinity },
+      );
+    });
 }
 
 async function getVisibleLabelIds(page: Page, selector = '[data-route-city-label="true"]') {
@@ -151,7 +155,10 @@ test('label placement is indexed by stable city id', () => {
 
 test('route city theme tags cover the expected stops', () => {
   const idsWith = (theme: string) =>
-    routeCities.filter((c) => c.themes.includes(theme as never)).map((c) => c.id).sort();
+    routeCities
+      .filter((c) => c.themes.includes(theme as never))
+      .map((c) => c.id)
+      .sort();
 
   expect(idsWith('science')).toEqual(
     ['guangzhou', 'guiyang', 'nanning', 'yangjiang', 'yulin'].sort(),
@@ -189,7 +196,15 @@ test('placeLabels hides a low-priority label that cannot sit near its dot', () =
 
 test('placeLabels always keeps the origin label even when crowded', () => {
   const placements = placeLabels([
-    makeProjectedCity({ id: 'origin', label: '深圳', cx: 100, cy: 100, order: 0, isOrigin: true, visited: true }),
+    makeProjectedCity({
+      id: 'origin',
+      label: '深圳',
+      cx: 100,
+      cy: 100,
+      order: 0,
+      isOrigin: true,
+      visited: true,
+    }),
     makeProjectedCity({ id: 'x', label: '甲', cx: 106, cy: 100, order: 1, visited: true }),
     makeProjectedCity({ id: 'y', label: '乙', cx: 112, cy: 100, order: 2, visited: true }),
   ]);
@@ -294,21 +309,29 @@ test('route page visible labels render near a city dot', async ({ page }) => {
       .filter((n) => n.getClientRects().length > 0)
       .map((n) => {
         const r = n.getBoundingClientRect();
-        return { id: n.getAttribute('data-city-id'), cx: r.x + r.width / 2, cy: r.y + r.height / 2 };
+        return {
+          id: n.getAttribute('data-city-id'),
+          cx: r.x + r.width / 2,
+          cy: r.y + r.height / 2,
+        };
       }),
   );
-  const dotCenters = await page.locator('main svg circle[fill="transparent"]').evaluateAll((nodes) =>
-    nodes
-      .filter((n) => n.getBoundingClientRect().height > 0)
-      .map((n) => {
-        const r = n.getBoundingClientRect();
-        return { cx: r.x + r.width / 2, cy: r.y + r.height / 2 };
-      }),
-  );
+  const dotCenters = await page
+    .locator('main svg circle[fill="transparent"]')
+    .evaluateAll((nodes) =>
+      nodes
+        .filter((n) => n.getBoundingClientRect().height > 0)
+        .map((n) => {
+          const r = n.getBoundingClientRect();
+          return { cx: r.x + r.width / 2, cy: r.y + r.height / 2 };
+        }),
+    );
 
   expect(labelBoxes.length).toBeGreaterThan(0);
   for (const label of labelBoxes) {
-    const nearest = Math.min(...dotCenters.map((d) => Math.hypot(d.cx - label.cx, d.cy - label.cy)));
+    const nearest = Math.min(
+      ...dotCenters.map((d) => Math.hypot(d.cx - label.cx, d.cy - label.cy)),
+    );
     expect(nearest, `label ${label.id} should sit near a dot`).toBeLessThan(70);
   }
 });
@@ -333,12 +356,16 @@ test('route page projection labels do not overlap each other', async ({ page }) 
   const boxes = await getVisibleLabelBoxes(page);
   for (let i = 0; i < boxes.length; i++) {
     for (let j = i + 1; j < boxes.length; j++) {
-      expect(boxesOverlap(boxes[i], boxes[j]), `${boxes[i].id} overlaps ${boxes[j].id}`).toBe(false);
+      expect(boxesOverlap(boxes[i], boxes[j]), `${boxes[i].id} overlaps ${boxes[j].id}`).toBe(
+        false,
+      );
     }
   }
 });
 
-test('route page China outline is scaled large enough for labels and horse route', async ({ page }) => {
+test('route page China outline is scaled large enough for labels and horse route', async ({
+  page,
+}) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   const box = await getVisibleProvinceFootprint(page, 'main svg');
@@ -352,12 +379,14 @@ test('route page China outline is scaled large enough for labels and horse route
 test('home preview city dots sit on geographic coordinates', async ({ page }) => {
   await gotoRoute(page, { path: '/', name: 'home-zh', locale: 'zh' });
 
-  const points = await page.locator('svg[role="img"] circle[stroke="#fffaf0"]').evaluateAll((nodes) =>
-    nodes.map((node) => ({
-      x: Number(node.getAttribute('cx')),
-      y: Number(node.getAttribute('cy')),
-    })),
-  );
+  const points = await page
+    .locator('svg[role="img"] circle[stroke="#fffaf0"]')
+    .evaluateAll((nodes) =>
+      nodes.map((node) => ({
+        x: Number(node.getAttribute('cx')),
+        y: Number(node.getAttribute('cy')),
+      })),
+    );
 
   expect(points).toHaveLength(sortedCities.length);
   for (const [index, actual] of points.entries()) {
@@ -395,7 +424,9 @@ test('home preview labels do not overlap each other', async ({ page }) => {
   const boxes = await getVisibleLabelBoxes(page, 'svg[role="img"] [data-route-city-label="true"]');
   for (let i = 0; i < boxes.length; i++) {
     for (let j = i + 1; j < boxes.length; j++) {
-      expect(boxesOverlap(boxes[i], boxes[j]), `${boxes[i].id} overlaps ${boxes[j].id}`).toBe(false);
+      expect(boxesOverlap(boxes[i], boxes[j]), `${boxes[i].id} overlaps ${boxes[j].id}`).toBe(
+        false,
+      );
     }
   }
 });
@@ -425,7 +456,9 @@ test('route page exposes a recenter control and zooms in on city click', async (
   // reaches React 19's delegated event handler on mobile viewports.
   await page.evaluate(() => {
     const btn = document.querySelector('button[aria-label="回到全图"]') as HTMLElement | null;
-    btn?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }));
+    btn?.dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true, composed: true }),
+    );
   });
   await expect.poll(scaleOf, { timeout: 4000 }).toBeLessThan(1.05);
 });
@@ -436,14 +469,19 @@ test('route page exposes a recenter control and zooms in on city click', async (
 // (hidden on lg+ via `lg:hidden`). On chromium-desktop only the desktop panel
 // is visible, so :visible filtering resolves each locator to exactly one element.
 
-test('route page renders expedition log + people + photo for a stop with data', async ({ page }) => {
+test('route page renders expedition log + people + photo for a stop with data', async ({
+  page,
+}) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   // Select 柳州 (order 5) — has expedition, 1 person, 1 photo.
-  await page.evaluate((i) =>
-    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
-      new MouseEvent('click', { bubbles: true, composed: true }),
-    ), 5);
+  await page.evaluate(
+    (i) =>
+      document
+        .querySelectorAll('main svg circle[fill="transparent"]')
+        [i].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true })),
+    5,
+  );
 
   const expeditionLog = page.locator('[data-expedition-log="true"]:visible').first();
   await expect(expeditionLog).toBeVisible();
@@ -457,10 +495,13 @@ test('route page photo thumbnail opens a lightbox dialog', async ({ page }) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   // Select 柳州 (order 5).
-  await page.evaluate((i) =>
-    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
-      new MouseEvent('click', { bubbles: true, composed: true }),
-    ), 5);
+  await page.evaluate(
+    (i) =>
+      document
+        .querySelectorAll('main svg circle[fill="transparent"]')
+        [i].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true })),
+    5,
+  );
 
   await page.locator('[data-photo-thumb="true"]:visible').first().click();
   await expect(page.getByRole('dialog')).toBeVisible();
@@ -471,10 +512,13 @@ test('route page falls back gracefully for a stop without expedition data', asyn
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   // Select 深圳 (order 0) — no expedition data; shows event.summary instead.
-  await page.evaluate((i) =>
-    document.querySelectorAll('main svg circle[fill="transparent"]')[i].dispatchEvent(
-      new MouseEvent('click', { bubbles: true, composed: true }),
-    ), 0);
+  await page.evaluate(
+    (i) =>
+      document
+        .querySelectorAll('main svg circle[fill="transparent"]')
+        [i].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true })),
+    0,
+  );
 
   await expect(page.locator('[data-expedition-log="true"]:visible')).toHaveCount(0);
   // Scope to the CityPanel <article> heading. On mobile the drawer peek bar also
@@ -491,9 +535,9 @@ test('route page falls back gracefully for a stop without expedition data', asyn
 // getClientRects() — same pattern as getVisibleLabelIds above.
 
 async function countVisibleCityGroups(page: Page, attrFilter: string): Promise<number> {
-  return page.locator(`[data-route-city="true"]${attrFilter}`).evaluateAll((nodes) =>
-    nodes.filter((n) => (n as Element).getClientRects().length > 0).length,
-  );
+  return page
+    .locator(`[data-route-city="true"]${attrFilter}`)
+    .evaluateAll((nodes) => nodes.filter((n) => (n as Element).getClientRects().length > 0).length);
 }
 
 async function visibleSegmentLayerOpacity(page: Page): Promise<string | null> {
@@ -525,7 +569,9 @@ test('en route page renders theme chips with English labels', async ({ page }) =
   await expect(page.locator('[data-theme-chip="industry"]')).toContainText('Industry');
 });
 
-test('selecting a theme highlights matches and dims the rest; origin stays lit; segments fade', async ({ page }) => {
+test('selecting a theme highlights matches and dims the rest; origin stays lit; segments fade', async ({
+  page,
+}) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   await page.locator('[data-theme-chip="science"]').click();
@@ -541,7 +587,9 @@ test('selecting a theme highlights matches and dims the rest; origin stays lit; 
   await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('0.2');
 });
 
-test('clicking the active theme again clears the lens and restores segment opacity', async ({ page }) => {
+test('clicking the active theme again clears the lens and restores segment opacity', async ({
+  page,
+}) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   const chip = page.locator('[data-theme-chip="science"]');

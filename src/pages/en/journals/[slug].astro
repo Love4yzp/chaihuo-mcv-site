@@ -1,12 +1,12 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import { Activity, Calendar, ExternalLink, MapPin } from 'lucide-react';
+import { loadLocalizedStops } from '@/features/route-map/stops-loader';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import journalsDict from '@/i18n/journals';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import { localizeJournal } from '@/lib/journals';
-import { loadLocalizedStops } from '@/features/route-map/stops-loader';
-import { ExternalLink, Calendar, MapPin, Activity } from 'lucide-react';
 
 export const prerender = true;
 

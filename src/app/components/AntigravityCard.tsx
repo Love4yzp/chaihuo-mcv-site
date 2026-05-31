@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react';
+import type React from 'react';
+import { useRef, useState } from 'react';
 
 interface AntigravityCardProps {
   children: React.ReactNode;
@@ -8,7 +9,7 @@ interface AntigravityCardProps {
 
 export default function AntigravityCard({
   children,
-  className = "p-6",
+  className = 'p-6',
   maxTilt = 10,
 }: AntigravityCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -20,11 +21,11 @@ export default function AntigravityCard({
     if (!cardRef.current) return;
     const card = cardRef.current;
     const box = card.getBoundingClientRect();
-    
+
     // Relative coordinates from card center (-1 to 1)
     const x = (e.clientX - box.left - box.width / 2) / (box.width / 2);
     const y = (e.clientY - box.top - box.height / 2) / (box.height / 2);
-    
+
     // Smooth tilt limit
     setRotate({
       x: -y * maxTilt,
@@ -47,10 +48,7 @@ export default function AntigravityCard({
   };
 
   return (
-    <div 
-      style={{ perspective: 1200 }} 
-      className="w-full inline-block"
-    >
+    <div style={{ perspective: 1200 }} className="w-full inline-block">
       <div
         ref={cardRef}
         onMouseMove={handleMouseMove}
@@ -71,7 +69,7 @@ export default function AntigravityCard({
         `}
       >
         {/* Anti-gravity inner hover light beams (Neon border glowing aura) */}
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none rounded-2xl transition-opacity duration-500"
           style={{
             opacity: isHovered ? 0.8 : 0,
@@ -80,7 +78,7 @@ export default function AntigravityCard({
         />
 
         {/* Dynamic Refractive Glare Sheet */}
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none transition-opacity duration-300 mix-blend-overlay"
           style={{
             opacity: isHovered ? 0.35 : 0,
@@ -89,10 +87,10 @@ export default function AntigravityCard({
         />
 
         {/* 3D Depth Inner Wrapper */}
-        <div 
-          style={{ 
+        <div
+          style={{
             transform: `translateZ(${isHovered ? '20px' : '0px'})`,
-            transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)' 
+            transition: 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
           }}
           className="relative z-10"
         >

@@ -1,14 +1,14 @@
 ---
 export const prerender = true;
 
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import DeconstructContent from '@/app/components/DeconstructContent';
 import { getCollection } from 'astro:content';
-import equipmentData from '@/data/equipment.json';
+import DeconstructContent from '@/app/components/DeconstructContent';
 import companionData from '@/data/companion.json';
+import equipmentData from '@/data/equipment.json';
+import deconstructDict from '@/i18n/deconstruct';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
-import deconstructDict from '@/i18n/deconstruct';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const locale = (Astro.currentLocale ?? 'en') as Locale;
 const t = deconstructDict[locale];
@@ -19,20 +19,21 @@ const companion = (() => {
 })();
 
 const notesCollection = await getCollection('notes');
-const notes = notesCollection.map(note => ({
+const notes = notesCollection.map((note) => ({
   date: note.data.date,
   title: locale === 'en' && note.data.title_en ? note.data.title_en : note.data.title,
-  description: locale === 'en' && note.data.description_en ? note.data.description_en : note.data.description,
+  description:
+    locale === 'en' && note.data.description_en ? note.data.description_en : note.data.description,
   image: note.data.image,
   tags: note.data.tags,
 }));
 
-const equipment = equipmentData.map(cat => {
+const equipment = equipmentData.map((cat) => {
   const locCat = localize(cat, ['title'], locale);
   return {
     icon: locCat.icon,
     title: locCat.title,
-    items: locCat.items.map(item => localize(item, ['name', 'spec'], locale)),
+    items: locCat.items.map((item) => localize(item, ['name', 'spec'], locale)),
   };
 });
 ---

@@ -1,21 +1,21 @@
 ---
 export const prerender = true;
 
-import BaseLayout from '@/layouts/BaseLayout.astro';
 import GuideContent from '@/app/components/GuideContent';
 import faqData from '@/data/faq.json';
+import guideDict from '@/i18n/guide';
 import type { Locale } from '@/i18n/index';
 import { localize } from '@/i18n/index';
-import guideDict from '@/i18n/guide';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 
 const locale = (Astro.currentLocale ?? 'zh') as Locale;
 const t = guideDict[locale];
 
-const faqGroups = faqData.map(g => {
+const faqGroups = faqData.map((g) => {
   const loc = localize(g, ['label'], locale);
   return {
     label: loc.label,
-    items: loc.items.map(item => localize(item, ['question', 'answer'], locale)),
+    items: loc.items.map((item) => localize(item, ['question', 'answer'], locale)),
   };
 });
 ---

@@ -75,7 +75,7 @@ const route: Record<Locale, Record<string, string>> = {
     'theme.industry': 'Industry',
     'theme.ariaGroup': 'Filter the map by theme',
     'map.recenter': 'Reset view',
-  }
+  },
 };
 
 export default route;

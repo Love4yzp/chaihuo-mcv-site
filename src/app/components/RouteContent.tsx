@@ -1,10 +1,10 @@
-import { useState, useMemo, useCallback } from "react";
-import { motion } from "motion/react";
-import { ChevronLeft, MapPin } from "lucide-react";
-import { ChinaRouteMap, CityPanel, ThemeFilter, countThemes } from "@/features/route-map";
-import type { RouteCity } from "@/features/route-map/types";
-import type { ThemeType } from "@/features/route-map/theme";
-import type { Locale } from "@/i18n/index";
+import { ChevronLeft, MapPin } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useCallback, useMemo, useState } from 'react';
+import { ChinaRouteMap, CityPanel, countThemes, ThemeFilter } from '@/features/route-map';
+import type { ThemeType } from '@/features/route-map/theme';
+import type { RouteCity } from '@/features/route-map/types';
+import type { Locale } from '@/i18n/index';
 
 interface SerializedJournal {
   slug: string;
@@ -22,26 +22,21 @@ interface Props {
 }
 
 export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
-  const sortedCities = useMemo(
-    () => [...cities].sort((a, b) => a.order - b.order),
-    [cities],
-  );
+  const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
 
   // Default to the latest visited city (visited === true and largest order)
   const lastVisited = useMemo(
-    () => [...sortedCities].reverse().find(c => c.visited) ?? null,
+    () => [...sortedCities].reverse().find((c) => c.visited) ?? null,
     [sortedCities],
   );
 
-  const [selectedCityKey, setSelectedCityKey] = useState<string | null>(
-    lastVisited?.label ?? null,
-  );
+  const [selectedCityKey, setSelectedCityKey] = useState<string | null>(lastVisited?.label ?? null);
 
   const [activeTheme, setActiveTheme] = useState<ThemeType | null>(null);
   const themeCounts = useMemo(() => countThemes(cities), [cities]);
 
   const selectedCity = useMemo(
-    () => cities.find(c => c.label === selectedCityKey) ?? null,
+    () => cities.find((c) => c.label === selectedCityKey) ?? null,
     [cities, selectedCityKey],
   );
 
@@ -60,8 +55,8 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
 
   // Drawer Animation Variants
   const drawerVariants = {
-    peek: { y: "calc(100% - 120px)" },
-    expanded: { y: 0 }
+    peek: { y: 'calc(100% - 120px)' },
+    expanded: { y: 0 },
   };
 
   return (
@@ -87,7 +82,12 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
             </a>
           </div>
           <div className="mt-4">
-            <ThemeFilter counts={themeCounts} active={activeTheme} onSelect={setActiveTheme} t={t} />
+            <ThemeFilter
+              counts={themeCounts}
+              active={activeTheme}
+              onSelect={setActiveTheme}
+              t={t}
+            />
           </div>
         </div>
 
@@ -131,11 +131,11 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
           </div>
 
           {/* Quick status chips row on mobile above drawer (optional fallback helper) */}
-          {sortedCities.filter(c => c.visited).length > 1 && (
+          {sortedCities.filter((c) => c.visited).length > 1 && (
             <div className="flex flex-wrap items-center gap-1.5 py-2 overflow-x-auto pb-4 max-w-full no-scrollbar">
               {sortedCities
-                .filter(c => c.visited)
-                .map(c => {
+                .filter((c) => c.visited)
+                .map((c) => {
                   const active = selectedCityKey === c.label;
                   return (
                     <button
@@ -173,16 +173,16 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
                 setIsDrawerExpanded(false);
               }
             }}
-            transition={{ type: "spring", damping: 25, stiffness: 220 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 220 }}
           >
             {/* Drawer Drag Handle bar (120px Peek height including padding) */}
-            <div 
+            <div
               className="w-full flex flex-col justify-between py-3 px-6 border-b border-[#e5dfd3]/40 cursor-pointer flex-shrink-0"
               onClick={() => setIsDrawerExpanded(!isDrawerExpanded)}
             >
               {/* Central pill handle */}
               <div className="w-12 h-1.5 bg-neutral-350/80 rounded-full mx-auto mb-3" />
-              
+
               {/* Peek Content Bar */}
               <div className="flex items-center justify-between w-full h-[60px]">
                 <div className="text-left">
@@ -194,7 +194,7 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
                     {getT('route.telemetry.altitude', 'ALTITUDE')}: {selectedCity.altitude}m
                   </p>
                 </div>
-                
+
                 {/* Status indicator chip */}
                 <div>
                   {selectedCity.isOrigin ? (

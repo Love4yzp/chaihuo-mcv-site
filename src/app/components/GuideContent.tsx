@@ -1,15 +1,23 @@
+import { ChevronDown, Mail, Sprout, Truck, Zap } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
-import { ChevronDown, Mail, Truck, Sprout, Zap } from 'lucide-react';
 import qrCoCreationImport from '@/assets/qr-co-creation.png';
 import qrEmpowermentImport from '@/assets/qr-empowerment.png';
 import type { Locale } from '@/i18n/index';
+import { defaultViewport, fadeUp, springTransition, stagger } from './motion';
 
-const qrCoCreation = typeof qrCoCreationImport === 'object' && qrCoCreationImport !== null && 'src' in qrCoCreationImport
-  ? (qrCoCreationImport as { src: string }).src : qrCoCreationImport as string;
-const qrEmpowerment = typeof qrEmpowermentImport === 'object' && qrEmpowermentImport !== null && 'src' in qrEmpowermentImport
-  ? (qrEmpowermentImport as { src: string }).src : qrEmpowermentImport as string;
+const qrCoCreation =
+  typeof qrCoCreationImport === 'object' &&
+  qrCoCreationImport !== null &&
+  'src' in qrCoCreationImport
+    ? (qrCoCreationImport as { src: string }).src
+    : (qrCoCreationImport as string);
+const qrEmpowerment =
+  typeof qrEmpowermentImport === 'object' &&
+  qrEmpowermentImport !== null &&
+  'src' in qrEmpowermentImport
+    ? (qrEmpowermentImport as { src: string }).src
+    : (qrEmpowermentImport as string);
 
 interface FaqGroup {
   label: string;
@@ -27,15 +35,10 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
 
   return (
     <div className="min-h-screen bg-white">
-
       {/* 标题区 */}
       <section className="pt-24 pb-12 px-6">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            variants={stagger(0.2)}
-            initial="hidden"
-            animate="visible"
-          >
+          <motion.div variants={stagger(0.2)} initial="hidden" animate="visible">
             <motion.p
               className="text-sm tracking-[0.3em] text-neutral-400 uppercase mb-3"
               variants={fadeUp}
@@ -97,9 +100,7 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                   <Truck className="w-6 h-6 text-brand-dark" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{t['ride.title']}</h3>
-                <p className="text-neutral-500 text-sm leading-relaxed mb-5">
-                  {t['ride.body']}
-                </p>
+                <p className="text-neutral-500 text-sm leading-relaxed mb-5">{t['ride.body']}</p>
 
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 text-sm">
@@ -151,7 +152,11 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                 </div>
 
                 <div className="flex flex-col items-center gap-2">
-                  <img src={qrCoCreation} alt={t['cocreate.qrLabel']} className="w-28 h-28 rounded-lg" />
+                  <img
+                    src={qrCoCreation}
+                    alt={t['cocreate.qrLabel']}
+                    className="w-28 h-28 rounded-lg"
+                  />
                   <span className="text-xs text-neutral-500">{t['cocreate.qrLabel']}</span>
                 </div>
               </div>
@@ -170,9 +175,7 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                   <Zap className="w-6 h-6 text-brand-dark" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{t['empower.title']}</h3>
-                <p className="text-neutral-500 text-sm leading-relaxed mb-5">
-                  {t['empower.body']}
-                </p>
+                <p className="text-neutral-500 text-sm leading-relaxed mb-5">{t['empower.body']}</p>
 
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 text-sm">
@@ -186,7 +189,11 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                 </div>
 
                 <div className="flex flex-col items-center gap-2">
-                  <img src={qrEmpowerment} alt={t['empower.qrLabel']} className="w-28 h-28 rounded-lg" />
+                  <img
+                    src={qrEmpowerment}
+                    alt={t['empower.qrLabel']}
+                    className="w-28 h-28 rounded-lg"
+                  />
                   <span className="text-xs text-neutral-500">{t['empower.qrLabel']}</span>
                 </div>
               </div>
@@ -203,12 +210,19 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
             className="bg-white rounded-xl p-6 md:p-8 text-center text-sm text-neutral-500 leading-relaxed"
           >
             <p>
-              <strong className="text-neutral-900">{t['apply.ride']}</strong>{t['apply.rideDetail']}
-              <a href="mailto:business@chaihuo.org" className="text-brand hover:text-brand-hover transition mx-1">business@chaihuo.org</a>
+              <strong className="text-neutral-900">{t['apply.ride']}</strong>
+              {t['apply.rideDetail']}
+              <a
+                href="mailto:business@chaihuo.org"
+                className="text-brand hover:text-brand-hover transition mx-1"
+              >
+                business@chaihuo.org
+              </a>
               {t['apply.rideSubject']}
             </p>
             <p className="mt-2">
-              <strong className="text-neutral-900">{t['apply.local']}</strong>{t['apply.localDetail']}
+              <strong className="text-neutral-900">{t['apply.local']}</strong>
+              {t['apply.localDetail']}
             </p>
           </motion.div>
         </div>
@@ -246,15 +260,20 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                     const key = `${group.label}-${faq.question}`;
                     const isOpen = openFAQs.has(key);
                     return (
-                      <div key={key} className="border border-neutral-300 rounded-lg overflow-hidden">
+                      <div
+                        key={key}
+                        className="border border-neutral-300 rounded-lg overflow-hidden"
+                      >
                         <button
                           type="button"
-                          onClick={() => setOpenFAQs(prev => {
-                            const next = new Set(prev);
-                            if (next.has(key)) next.delete(key);
-                            else next.add(key);
-                            return next;
-                          })}
+                          onClick={() =>
+                            setOpenFAQs((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(key)) next.delete(key);
+                              else next.add(key);
+                              return next;
+                            })
+                          }
                           className="w-full px-5 py-4 text-left flex items-center justify-between bg-white hover:bg-neutral-50 transition cursor-pointer"
                         >
                           <span className="font-semibold pr-4">{faq.question}</span>
@@ -274,7 +293,9 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                               className="overflow-hidden"
                             >
                               <div className="px-5 pb-5 pt-3 bg-neutral-50 border-t border-neutral-300">
-                                <p className="text-sm text-neutral-700 leading-relaxed">{faq.answer}</p>
+                                <p className="text-sm text-neutral-700 leading-relaxed">
+                                  {faq.answer}
+                                </p>
                               </div>
                             </motion.div>
                           )}

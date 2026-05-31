@@ -2,8 +2,8 @@ import type { Locale } from './index';
 
 const journals: Record<Locale, Record<string, string>> = {
   zh: {
-    'title': '旅途日记',
-    'description': '柴火基地车的旅途日记 — 城市、人物、设备，从每一站的真实记录长出来。',
+    title: '旅途日记',
+    description: '柴火基地车的旅途日记 — 城市、人物、设备，从每一站的真实记录长出来。',
     'hero.subtitle': 'Journals',
     'hero.title': '旅途日记',
     'hero.body': '一站一篇，记录路上真实发生的事',
@@ -23,11 +23,12 @@ const journals: Record<Locale, Record<string, string>> = {
     'meta.date': '日期',
     'meta.activities': '现场活动',
 
-    'back': '返回旅途日记',
+    back: '返回旅途日记',
   },
   en: {
-    'title': 'Travel Journals',
-    'description': 'Travel journals from the Chaihuo MCV — cities, people, equipment, grown from the real record of each stop.',
+    title: 'Travel Journals',
+    description:
+      'Travel journals from the Chaihuo MCV — cities, people, equipment, grown from the real record of each stop.',
     'hero.subtitle': 'Journals',
     'hero.title': 'Travel Journals',
     'hero.body': 'One entry per stop, documenting what actually happened on the road',
@@ -47,7 +48,7 @@ const journals: Record<Locale, Record<string, string>> = {
     'meta.date': 'Date',
     'meta.activities': 'On-site activities',
 
-    'back': 'Back to Journals',
+    back: 'Back to Journals',
   },
 };
 

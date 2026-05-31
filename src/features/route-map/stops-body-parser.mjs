@@ -45,7 +45,10 @@ function splitSections(markdown) {
     const h1m = line.match(/^#\s+(.+?)\s*$/);
     const h2m = line.match(/^##\s+(.+?)\s*$/);
     const h3m = line.match(/^###\s+(.+?)\s*$/);
-    if (h1m) { h1 = h1m[1]; continue; }
+    if (h1m) {
+      h1 = h1m[1];
+      continue;
+    }
     if (h2m) {
       current = { heading: h2m[1], level: 2, lines: [], subs: [] };
       sections.push(current);
@@ -66,7 +69,10 @@ function splitSections(markdown) {
 
 function firstParagraph(lines) {
   const text = lines.join('\n').trim();
-  const blocks = text.split(/\n{2,}/).map((b) => b.trim()).filter(Boolean);
+  const blocks = text
+    .split(/\n{2,}/)
+    .map((b) => b.trim())
+    .filter(Boolean);
   return blocks;
 }
 
@@ -113,7 +119,9 @@ export function parseStopBody(markdown, bodyLocale) {
   const expectedOrder = CANONICAL_ORDER.filter((h) => byHeading.has(h));
   for (let i = 0; i < expectedOrder.length; i++) {
     if (presentInOrder[i] !== expectedOrder[i]) {
-      throw new Error(`sections out of order: expected ${expectedOrder.join(' / ')}, got ${presentInOrder.join(' / ')}`);
+      throw new Error(
+        `sections out of order: expected ${expectedOrder.join(' / ')}, got ${presentInOrder.join(' / ')}`,
+      );
     }
   }
 
@@ -160,8 +168,12 @@ export function parseStopBody(markdown, bodyLocale) {
     let linkLabel;
     for (const b of blocks) {
       const linkm = b.match(/^\[(.+?)\]\((\S+?)\)$/);
-      if (linkm) { linkLabel = linkm[1]; link = linkm[2]; }
-      else if (!summary) { summary = b; }
+      if (linkm) {
+        linkLabel = linkm[1];
+        link = linkm[2];
+      } else if (!summary) {
+        summary = b;
+      }
     }
     if (summary) parts.event = { summary, link, linkLabel };
   }
@@ -172,7 +184,9 @@ export function parseStopBody(markdown, bodyLocale) {
     const want = [L.expWorld, L.expFire, L.expFrontier];
     const got = exp.subs.map((s) => s.heading);
     if (got.length !== 3 || got[0] !== want[0] || got[1] !== want[1] || got[2] !== want[2]) {
-      throw new Error(`${L.expedition} must have exactly 3 subs: ${want.join(' / ')}; got ${got.join(' / ')}`);
+      throw new Error(
+        `${L.expedition} must have exactly 3 subs: ${want.join(' / ')}; got ${got.join(' / ')}`,
+      );
     }
     parts.expedition = {
       world: firstParagraph(exp.subs[0].lines)[0] ?? '',

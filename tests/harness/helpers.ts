@@ -64,14 +64,19 @@ export async function gotoRoute(page: Page, route: HarnessRoute) {
   expect(response?.status(), `${route.path} should not fail HTTP status`).toBeLessThan(400);
   await expect(page.locator('body'), `${route.path} body should render`).toBeVisible();
   await expect(page.locator('main'), `${route.path} should expose main landmark`).toBeVisible();
-  await expect(page.getByRole('heading', { level: 1 }).first(), `${route.path} should expose an h1`).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1 }).first(),
+    `${route.path} should expose an h1`,
+  ).toBeVisible();
 }
 
 export async function expectNoHorizontalOverflow(page: Page, routeName: string) {
   const overflow = await page.evaluate(() =>
     Math.ceil(document.documentElement.scrollWidth - document.documentElement.clientWidth),
   );
-  expect(overflow, `${routeName} should not create horizontal page overflow`).toBeLessThanOrEqual(2);
+  expect(overflow, `${routeName} should not create horizontal page overflow`).toBeLessThanOrEqual(
+    2,
+  );
 }
 
 export async function expectPageSubstance(page: Page, routeName: string) {
@@ -91,7 +96,10 @@ export async function expectPageSubstance(page: Page, routeName: string) {
   });
 
   expect(metrics.textLength, `${routeName} should render meaningful text`).toBeGreaterThan(80);
-  expect(metrics.mainHeight, `${routeName} main content should occupy visible space`).toBeGreaterThan(240);
+  expect(
+    metrics.mainHeight,
+    `${routeName} main content should occupy visible space`,
+  ).toBeGreaterThan(240);
 }
 
 export async function attachPageScreenshot(page: Page, testInfo: TestInfo, routeName: string) {
@@ -103,7 +111,10 @@ export async function attachPageScreenshot(page: Page, testInfo: TestInfo, route
 }
 
 export async function expectNoVehicleCanvas(page: Page, routeName: string) {
-  await expect(page.locator('main canvas'), `${routeName} should not render model canvases`).toHaveCount(0);
+  await expect(
+    page.locator('main canvas'),
+    `${routeName} should not render model canvases`,
+  ).toHaveCount(0);
 }
 
 export async function settleForVisual(page: Page) {

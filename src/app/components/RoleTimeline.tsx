@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { fadeUp, stagger, springTransition, defaultViewport } from './motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { defaultViewport, fadeUp, springTransition, stagger } from './motion';
 
 interface Segment {
   id: string;
@@ -10,20 +10,20 @@ interface Segment {
   image: string;
   bio?: string;
   startDate: string;
-  endDate: string | null;        // null = ongoing
+  endDate: string | null; // null = ongoing
   handoffName: string | null;
   startLocation: string;
   endLocation: string | null;
 }
 
 interface RoleLane {
-  key: string;       // canonical zh role string used as join key
-  label: string;     // localized label
+  key: string; // canonical zh role string used as join key
+  label: string; // localized label
 }
 
 interface MonthMarker {
-  label: string;     // 'APR', 'MAY' ...
-  pct: number;       // 0-100
+  label: string; // 'APR', 'MAY' ...
+  pct: number; // 0-100
 }
 
 interface RoleTimelineProps {
@@ -66,7 +66,10 @@ export default function RoleTimeline({
   locale,
   t,
 }: RoleTimelineProps) {
-  const totalDays = useMemo(() => daysBetween(projectStart, projectEnd), [projectStart, projectEnd]);
+  const totalDays = useMemo(
+    () => daysBetween(projectStart, projectEnd),
+    [projectStart, projectEnd],
+  );
 
   // Today position. Computed on client to stay accurate; SSR uses projectStart as a placeholder.
   const [todayPct, setTodayPct] = useState<number | null>(null);
@@ -111,7 +114,7 @@ export default function RoleTimeline({
   const activeSegments = useMemo(() => {
     const roleIndex = new Map(roles.map((r, i) => [r.key, i] as const));
     return segments
-      .filter(s => s.endDate === null)
+      .filter((s) => s.endDate === null)
       .sort((a, b) => {
         const ai = roleIndex.get(a.role) ?? 99;
         const bi = roleIndex.get(b.role) ?? 99;
@@ -257,7 +260,8 @@ export default function RoleTimeline({
                                   className="absolute inset-y-2 left-full rounded-r-full"
                                   style={{
                                     width: `${Math.max(0, 100 - endPct)}%`,
-                                    background: 'linear-gradient(to right, rgb(243 210 48 / 0.5), rgb(243 210 48 / 0))',
+                                    background:
+                                      'linear-gradient(to right, rgb(243 210 48 / 0.5), rgb(243 210 48 / 0))',
                                   }}
                                 />
                               )}
@@ -313,7 +317,7 @@ export default function RoleTimeline({
               {t['timeline.currentlyAboard']}
             </motion.h3>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
-              {activeSegments.map(seg => (
+              {activeSegments.map((seg) => (
                 <motion.div
                   key={seg.id}
                   variants={fadeUp}
@@ -333,9 +337,7 @@ export default function RoleTimeline({
                   <h4 className="text-lg font-bold text-neutral-900 leading-tight mb-2 text-center">
                     {seg.name}
                   </h4>
-                  {seg.bio && (
-                    <p className="text-sm text-neutral-600 leading-relaxed">{seg.bio}</p>
-                  )}
+                  {seg.bio && <p className="text-sm text-neutral-600 leading-relaxed">{seg.bio}</p>}
                 </motion.div>
               ))}
             </div>

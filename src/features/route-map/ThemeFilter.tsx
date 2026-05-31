@@ -1,4 +1,4 @@
-import { GraduationCap, Wrench, Factory, type LucideIcon } from 'lucide-react';
+import { Factory, GraduationCap, type LucideIcon, Wrench } from 'lucide-react';
 import type { ThemeType } from './theme';
 import { THEME_ORDER } from './theme';
 

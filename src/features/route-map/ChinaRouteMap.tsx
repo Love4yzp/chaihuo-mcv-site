@@ -1,20 +1,19 @@
-import { Fragment, useState, useMemo, useRef, useEffect, type ReactElement } from "react";
-import { motion, AnimatePresence, useInView, useReducedMotion } from "motion/react";
-import { MapPin, Maximize2 } from "lucide-react";
-import type { RouteCity } from "./types";
-import type { ThemeType } from "./theme";
-import type { ProjectedCity } from "./types";
+import { MapPin, Maximize2 } from 'lucide-react';
+import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
+import { Fragment, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  MAP_WIDTH,
-  MAP_HEIGHT,
-  geoData,
-  pathGenerator,
-  projectCities,
-  placeLabels,
   buildCityLines,
+  geoData,
   horseRouteD,
-} from "./projection";
-import { useMapZoom } from "./useMapZoom";
+  MAP_HEIGHT,
+  MAP_WIDTH,
+  pathGenerator,
+  placeLabels,
+  projectCities,
+} from './projection';
+import type { ThemeType } from './theme';
+import type { ProjectedCity, RouteCity } from './types';
+import { useMapZoom } from './useMapZoom';
 
 export default function ChinaRouteMap({
   cities,
@@ -115,7 +114,8 @@ export default function ChinaRouteMap({
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.02] transition-opacity duration-500"
         style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, transparent 1px)',
+          backgroundImage:
+            'linear-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.35) 1px, transparent 1px)',
           backgroundSize: '32px 32px',
         }}
       />
@@ -174,14 +174,16 @@ export default function ChinaRouteMap({
                 const d = pathGenerator(feature);
                 if (!d) return null;
                 const provinceName = feature.properties?.name || '';
-                const isVisited = ['广东', '广西', '贵州', '四川'].some(p => provinceName.includes(p));
+                const isVisited = ['广东', '广西', '贵州', '四川'].some((p) =>
+                  provinceName.includes(p),
+                );
                 return (
                   <path
                     key={feature.properties?.adcode ?? feature.properties?.name}
                     d={d}
-                    fill={isVisited ? "#fdf6d2" : "#ffffff"}
-                    stroke={isVisited ? "#d4b423" : "#e3ded0"}
-                    strokeWidth={isVisited ? "1.2" : "0.75"}
+                    fill={isVisited ? '#fdf6d2' : '#ffffff'}
+                    stroke={isVisited ? '#d4b423' : '#e3ded0'}
+                    strokeWidth={isVisited ? '1.2' : '0.75'}
                     className="transition-colors duration-300 hover:fill-[#f8f6ee]"
                   />
                 );
@@ -209,7 +211,10 @@ export default function ChinaRouteMap({
               style={{ opacity: activeTheme ? 0.2 : 1, transition: 'opacity 0.3s ease' }}
             >
               {segments.map((seg, i) => {
-                const fromPt: [number, number] = [seg.from.cx, seg.from.cy - seg.from.elevationOffset];
+                const fromPt: [number, number] = [
+                  seg.from.cx,
+                  seg.from.cy - seg.from.elevationOffset,
+                ];
                 const toPt: [number, number] = [seg.to.cx, seg.to.cy - seg.to.elevationOffset];
 
                 const midX = (fromPt[0] + toPt[0]) / 2;
@@ -278,7 +283,11 @@ export default function ChinaRouteMap({
                       initial={{ pathLength: 0, opacity: 0 }}
                       animate={isInView ? { pathLength: 1, opacity: seg.visited ? 1 : 0.45 } : {}}
                       transition={{
-                        pathLength: { duration: seg.visited ? 0.5 : 0.4, ease: 'easeOut', delay: segDelay },
+                        pathLength: {
+                          duration: seg.visited ? 0.5 : 0.4,
+                          ease: 'easeOut',
+                          delay: segDelay,
+                        },
                         opacity: { duration: 0.2, delay: segDelay },
                       }}
                     />
@@ -298,7 +307,7 @@ export default function ChinaRouteMap({
                         transition={{
                           duration: 1.2,
                           repeat: Infinity,
-                          ease: "linear"
+                          ease: 'linear',
                         }}
                         style={{ pointerEvents: 'none' }}
                       />
@@ -383,7 +392,10 @@ export default function ChinaRouteMap({
                         repeat: Infinity,
                         repeatDelay: 0.4,
                       }}
-                      style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
+                      style={{
+                        transformOrigin: `${markerX}px ${markerY}px`,
+                        pointerEvents: 'none',
+                      }}
                     />
                   )}
 
@@ -399,8 +411,11 @@ export default function ChinaRouteMap({
                       initial={{ opacity: 0, scale: 0.6 }}
                       animate={{ opacity: 0.85, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ type: "spring", damping: 18, stiffness: 260 }}
-                      style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
+                      transition={{ type: 'spring', damping: 18, stiffness: 260 }}
+                      style={{
+                        transformOrigin: `${markerX}px ${markerY}px`,
+                        pointerEvents: 'none',
+                      }}
                     />
                   )}
 
@@ -415,8 +430,11 @@ export default function ChinaRouteMap({
                       strokeWidth="1.8"
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={isInView ? { opacity: 0.55, scale: 1 } : {}}
-                      transition={{ type: "spring", damping: 15, delay }}
-                      style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
+                      transition={{ type: 'spring', damping: 15, delay }}
+                      style={{
+                        transformOrigin: `${markerX}px ${markerY}px`,
+                        pointerEvents: 'none',
+                      }}
                     />
                   )}
 
@@ -431,7 +449,7 @@ export default function ChinaRouteMap({
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : { scale: 0 }}
                     transition={{
-                      type: "spring",
+                      type: 'spring',
                       damping: 15,
                       stiffness: 220,
                       delay,
@@ -450,12 +468,15 @@ export default function ChinaRouteMap({
                       initial={{ scale: 0 }}
                       animate={isInView ? { scale: 1 } : { scale: 0 }}
                       transition={{
-                        type: "spring",
+                        type: 'spring',
                         damping: 14,
                         stiffness: 260,
                         delay: delay + 0.12,
                       }}
-                      style={{ transformOrigin: `${markerX}px ${markerY}px`, pointerEvents: 'none' }}
+                      style={{
+                        transformOrigin: `${markerX}px ${markerY}px`,
+                        pointerEvents: 'none',
+                      }}
                     />
                   )}
 
@@ -491,7 +512,10 @@ export default function ChinaRouteMap({
             const isLatest = city.isLatest;
             const labelDimmed = cityThemeState(city).dimmed; // reuse the same lens logic
             return (
-              <g key={`label-${city.id}`} style={{ opacity: labelDimmed ? 0.25 : 1, transition: 'opacity 0.3s ease' }}>
+              <g
+                key={`label-${city.id}`}
+                style={{ opacity: labelDimmed ? 0.25 : 1, transition: 'opacity 0.3s ease' }}
+              >
                 <motion.text
                   data-route-city-label="true"
                   data-city-id={city.id}
@@ -526,14 +550,38 @@ export default function ChinaRouteMap({
                 initial={{ opacity: 0, y: 3 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 3 }}
-                transition={{ duration: 0.15, ease: "easeOut" }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
                 transform={`translate(${transform.x + transform.k * hoveredCity.cx}, ${transform.y + transform.k * (hoveredCity.cy - hoveredCity.elevationOffset) - 10})`}
                 style={{ pointerEvents: 'none' }}
               >
-                <rect x={-55} y={-24} width={110} height={18} rx={4} fill="#1a1a1a" stroke="#eab308" strokeWidth={0.6} />
-                <path d="M -3 -6 L 0 -3 L 3 -6 Z" fill="#1a1a1a" stroke="#eab308" strokeWidth={0.6} strokeLinecap="round" />
+                <rect
+                  x={-55}
+                  y={-24}
+                  width={110}
+                  height={18}
+                  rx={4}
+                  fill="#1a1a1a"
+                  stroke="#eab308"
+                  strokeWidth={0.6}
+                />
+                <path
+                  d="M -3 -6 L 0 -3 L 3 -6 Z"
+                  fill="#1a1a1a"
+                  stroke="#eab308"
+                  strokeWidth={0.6}
+                  strokeLinecap="round"
+                />
                 <path d="M -2.5 -6.1 L 2.5 -6.1" stroke="#1a1a1a" strokeWidth={0.8} />
-                <text x={0} y={-15} textAnchor="middle" dominantBaseline="middle" fill="#eab308" fontSize={8.5} fontWeight={700} letterSpacing={0.3}>
+                <text
+                  x={0}
+                  y={-15}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill="#eab308"
+                  fontSize={8.5}
+                  fontWeight={700}
+                  letterSpacing={0.3}
+                >
                   {hoveredCity.label}
                   {hoveredCity.event?.date && (
                     <tspan fill="#9ca3af" fontWeight={400} fontSize={7.5}>

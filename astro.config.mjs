@@ -1,7 +1,7 @@
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
 import node from '@astrojs/node';
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'server',
@@ -29,10 +29,17 @@ export default defineConfig({
     },
     optimizeDeps: {
       include: [
-        'react', 'react-dom', 'react/jsx-runtime',
-        'motion/react', 'lucide-react',
-        'astro/zod', 'react-slick', 'd3-geo',
-        'gsap', 'gsap/ScrollTrigger', 'gsap/ScrollToPlugin',
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'motion/react',
+        'lucide-react',
+        'astro/zod',
+        'react-slick',
+        'd3-geo',
+        'gsap',
+        'gsap/ScrollTrigger',
+        'gsap/ScrollToPlugin',
       ],
     },
     ssr: {

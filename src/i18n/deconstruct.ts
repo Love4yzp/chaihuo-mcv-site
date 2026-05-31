@@ -2,8 +2,9 @@ import type { Locale } from './index';
 
 const deconstruct: Record<Locale, Record<string, string>> = {
   zh: {
-    'title': '解构基地车',
-    'description': '深入了解普罗米修斯号——基于吉利远程超级VAN打造的移动 AI 实验室、改装手记与装备清单。',
+    title: '解构基地车',
+    description:
+      '深入了解普罗米修斯号——基于吉利远程超级VAN打造的移动 AI 实验室、改装手记与装备清单。',
     'hero.subtitle': 'Chaihuo Base Vehicle',
     'hero.title': '普罗米修斯号',
     'hero.body': '一台为荒野而生的移动AI实验室，从底盘到算力，每一处都为极限场景而设计。',
@@ -27,14 +28,15 @@ const deconstruct: Record<Locale, Record<string, string>> = {
     'cta.title': '想亲身体验普罗米修斯号？',
     'cta.body': '从跟车同行到在地合作，多种方式等你参与',
     'cta.button': '查看上车指南',
-
   },
   en: {
-    'title': 'Deconstruct',
-    'description': 'Discover Prometheus — a mobile AI lab built on the Geely Van, with modification logs and equipment list.',
+    title: 'Deconstruct',
+    description:
+      'Discover Prometheus — a mobile AI lab built on the Geely Van, with modification logs and equipment list.',
     'hero.subtitle': 'Chaihuo Base Vehicle',
     'hero.title': 'Prometheus',
-    'hero.body': 'A mobile AI lab born for the wilderness — every component, from chassis to computing power, is designed for extreme environments.',
+    'hero.body':
+      'A mobile AI lab born for the wilderness — every component, from chassis to computing power, is designed for extreme environments.',
 
     'specs.range': 'EV Range',
     'specs.height': 'Interior Height',
@@ -55,7 +57,6 @@ const deconstruct: Record<Locale, Record<string, string>> = {
     'cta.title': 'Want to experience Prometheus in person?',
     'cta.body': 'From riding along to local partnerships — many ways to participate',
     'cta.button': 'See How to Join',
-
   },
 };
 

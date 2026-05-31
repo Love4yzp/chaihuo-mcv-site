@@ -1,8 +1,8 @@
 import { defineCollection } from 'astro:content';
-import { glob, file } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { stopFrontmatterSchema } from './features/route-map/stops-schema';
 import { personFrontmatterSchema } from './features/route-map/people-schema';
+import { stopFrontmatterSchema } from './features/route-map/stops-schema';
 
 const notes = defineCollection({
   loader: glob({ base: './src/content/notes', pattern: '**/*.md' }),
@@ -55,12 +55,14 @@ const equipment = defineCollection({
     icon: z.string(),
     title: z.string(),
     title_en: z.string().optional(),
-    items: z.array(z.object({
-      name: z.string(),
-      name_en: z.string().optional(),
-      spec: z.string(),
-      spec_en: z.string().optional(),
-    })),
+    items: z.array(
+      z.object({
+        name: z.string(),
+        name_en: z.string().optional(),
+        spec: z.string(),
+        spec_en: z.string().optional(),
+      }),
+    ),
   }),
 });
 
@@ -84,12 +86,14 @@ const faq = defineCollection({
     id: z.string(),
     label: z.string(),
     label_en: z.string().optional(),
-    items: z.array(z.object({
-      question: z.string(),
-      question_en: z.string().optional(),
-      answer: z.string(),
-      answer_en: z.string().optional(),
-    })),
+    items: z.array(
+      z.object({
+        question: z.string(),
+        question_en: z.string().optional(),
+        answer: z.string(),
+        answer_en: z.string().optional(),
+      }),
+    ),
   }),
 });
 
@@ -129,4 +133,14 @@ const peopleMet = defineCollection({
   schema: personFrontmatterSchema,
 });
 
-export const collections = { notes, journals, equipment, team, faq, partners, heroes, stops, 'people-met': peopleMet };
+export const collections = {
+  notes,
+  journals,
+  equipment,
+  team,
+  faq,
+  partners,
+  heroes,
+  stops,
+  'people-met': peopleMet,
+};

@@ -1,9 +1,9 @@
 import { getCollection } from 'astro:content';
 import type { Locale } from '@/i18n/index';
-import type { StopRelationType, StopThemeType } from './stops-schema';
 // The parser is a pure .mjs file with full JSDoc @returns {BodyParts} types;
 // TypeScript resolves them via allowJs — no @ts-expect-error needed.
 import { parseStopBody } from './stops-body-parser.mjs';
+import type { StopRelationType, StopThemeType } from './stops-schema';
 
 export type ResolvedPerson = {
   id: string;
@@ -59,8 +59,16 @@ export async function loadLocalizedStops(requestedLocale: Locale): Promise<Stop[
   const peopleEntries = await getCollection('people-met');
 
   // Raw bodies for *.en.md siblings (excluded from collections) via import.meta.glob.
-  const enStopBodies = import.meta.glob('/src/content/stops/*.en.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
-  const enPersonBodies = import.meta.glob('/src/content/people/met/*.en.md', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+  const enStopBodies = import.meta.glob('/src/content/stops/*.en.md', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  }) as Record<string, string>;
+  const enPersonBodies = import.meta.glob('/src/content/people/met/*.en.md', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  }) as Record<string, string>;
 
   const stripFrontmatter = (raw: string) => raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '');
 
@@ -94,7 +102,10 @@ export async function loadLocalizedStops(requestedLocale: Locale): Promise<Stop[
     if (requestedLocale === 'en') {
       const enPath = `/src/content/stops/${String(fm.order).padStart(2, '0')}-${fm.id}.en.md`;
       const enRaw = enStopBodies[enPath];
-      if (enRaw) { bodyLocale = 'en'; bodyMarkdown = stripFrontmatter(enRaw); }
+      if (enRaw) {
+        bodyLocale = 'en';
+        bodyMarkdown = stripFrontmatter(enRaw);
+      }
     }
 
     const parts = parseStopBody(bodyMarkdown, bodyLocale);
@@ -111,7 +122,11 @@ export async function loadLocalizedStops(requestedLocale: Locale): Promise<Stop[
       };
     }
 
-    const photos = parts.photos?.map((p: { src: string; caption: string }) => ({ src: p.src, alt: p.caption, caption: p.caption }));
+    const photos = parts.photos?.map((p: { src: string; caption: string }) => ({
+      src: p.src,
+      alt: p.caption,
+      caption: p.caption,
+    }));
     const people = fm.people?.map(resolvePerson).filter((p): p is ResolvedPerson => p !== null);
 
     const stop: Stop = {

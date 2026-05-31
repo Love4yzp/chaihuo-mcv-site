@@ -5,10 +5,30 @@
     "title": "AI & 计算系统",
     "title_en": "AI & Computing",
     "items": [
-      { "name": "AI 推理服务器", "name_en": "AI Inference Server", "spec": "4×NVIDIA L40 · 80GB VRAM", "spec_en": "4×NVIDIA L40 · 80GB VRAM" },
-      { "name": "边缘工作站", "name_en": "Edge Workstation", "spec": "NVIDIA Jetson Orin · 64GB", "spec_en": "NVIDIA Jetson Orin · 64GB" },
-      { "name": "卫星通信", "name_en": "Satellite Comms", "spec": "Starlink Gen 3 · 低轨卫星", "spec_en": "Starlink Gen 3 · LEO Satellite" },
-      { "name": "散热系统", "name_en": "Cooling System", "spec": "液冷循环 · 45°C 环境运行", "spec_en": "Liquid cooling · Operates at 45°C" }
+      {
+        "name": "AI 推理服务器",
+        "name_en": "AI Inference Server",
+        "spec": "4×NVIDIA L40 · 80GB VRAM",
+        "spec_en": "4×NVIDIA L40 · 80GB VRAM"
+      },
+      {
+        "name": "边缘工作站",
+        "name_en": "Edge Workstation",
+        "spec": "NVIDIA Jetson Orin · 64GB",
+        "spec_en": "NVIDIA Jetson Orin · 64GB"
+      },
+      {
+        "name": "卫星通信",
+        "name_en": "Satellite Comms",
+        "spec": "Starlink Gen 3 · 低轨卫星",
+        "spec_en": "Starlink Gen 3 · LEO Satellite"
+      },
+      {
+        "name": "散热系统",
+        "name_en": "Cooling System",
+        "spec": "液冷循环 · 45°C 环境运行",
+        "spec_en": "Liquid cooling · Operates at 45°C"
+      }
     ]
   },
   {
@@ -17,10 +37,30 @@
     "title": "数字加工中心",
     "title_en": "Digital Fabrication",
     "items": [
-      { "name": "3D 打印机", "name_en": "3D Printer", "spec": "Bambu Lab X1C · 多色打印", "spec_en": "Bambu Lab X1C · Multi-color" },
-      { "name": "激光切割机", "name_en": "Laser Cutter", "spec": "xTool D1 Pro · 20W 模组", "spec_en": "xTool D1 Pro · 20W Module" },
-      { "name": "数控铣床", "name_en": "CNC Mill", "spec": "CNC 3018 Pro · 铝材加工", "spec_en": "CNC 3018 Pro · Aluminum" },
-      { "name": "电子工作台", "name_en": "Electronics Bench", "spec": "示波器 · 焊台 · 万用表", "spec_en": "Oscilloscope · Soldering · Multimeter" }
+      {
+        "name": "3D 打印机",
+        "name_en": "3D Printer",
+        "spec": "Bambu Lab X1C · 多色打印",
+        "spec_en": "Bambu Lab X1C · Multi-color"
+      },
+      {
+        "name": "激光切割机",
+        "name_en": "Laser Cutter",
+        "spec": "xTool D1 Pro · 20W 模组",
+        "spec_en": "xTool D1 Pro · 20W Module"
+      },
+      {
+        "name": "数控铣床",
+        "name_en": "CNC Mill",
+        "spec": "CNC 3018 Pro · 铝材加工",
+        "spec_en": "CNC 3018 Pro · Aluminum"
+      },
+      {
+        "name": "电子工作台",
+        "name_en": "Electronics Bench",
+        "spec": "示波器 · 焊台 · 万用表",
+        "spec_en": "Oscilloscope · Soldering · Multimeter"
+      }
     ]
   },
   {
@@ -29,10 +69,30 @@
     "title": "能源与生活",
     "title_en": "Power & Living",
     "items": [
-      { "name": "太阳能板", "name_en": "Solar Panels", "spec": "2×800W 可折叠 · JA Solar", "spec_en": "2×800W Foldable · JA Solar" },
-      { "name": "储能电池", "name_en": "Battery Bank", "spec": "LiFePO₄ 2000Ah · 磷酸铁锂", "spec_en": "LiFePO₄ 2000Ah" },
-      { "name": "逆变器", "name_en": "Inverter", "spec": "5kW 纯正弦波 · 离网/并网", "spec_en": "5kW Pure Sine · Off/On-grid" },
-      { "name": "净水系统", "name_en": "Water Purifier", "spec": "RO反渗透 · 200L水箱", "spec_en": "RO Filtration · 200L Tank" }
+      {
+        "name": "太阳能板",
+        "name_en": "Solar Panels",
+        "spec": "2×800W 可折叠 · JA Solar",
+        "spec_en": "2×800W Foldable · JA Solar"
+      },
+      {
+        "name": "储能电池",
+        "name_en": "Battery Bank",
+        "spec": "LiFePO₄ 2000Ah · 磷酸铁锂",
+        "spec_en": "LiFePO₄ 2000Ah"
+      },
+      {
+        "name": "逆变器",
+        "name_en": "Inverter",
+        "spec": "5kW 纯正弦波 · 离网/并网",
+        "spec_en": "5kW Pure Sine · Off/On-grid"
+      },
+      {
+        "name": "净水系统",
+        "name_en": "Water Purifier",
+        "spec": "RO反渗透 · 200L水箱",
+        "spec_en": "RO Filtration · 200L Tank"
+      }
     ]
   }
 ]

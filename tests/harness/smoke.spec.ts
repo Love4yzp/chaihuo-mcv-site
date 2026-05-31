@@ -29,8 +29,12 @@ test.describe('route smoke', () => {
       await expectPageSubstance(page, route.name);
 
       const lang = await page.locator('html').getAttribute('lang');
-      expect(lang, `${route.name} should set document language`).toBe(route.locale === 'zh' ? 'zh-CN' : 'en');
-      expect(runtimeErrors, `${route.name} should not emit runtime console/page errors`).toEqual([]);
+      expect(lang, `${route.name} should set document language`).toBe(
+        route.locale === 'zh' ? 'zh-CN' : 'en',
+      );
+      expect(runtimeErrors, `${route.name} should not emit runtime console/page errors`).toEqual(
+        [],
+      );
     });
   }
 

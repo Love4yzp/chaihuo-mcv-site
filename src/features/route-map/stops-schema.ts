@@ -20,10 +20,12 @@ export const stopFrontmatterSchema = z.object({
   relationType,
   themes: z.array(themeType),
 
-  event: z.object({
-    date: z.string(),
-    link: z.url().optional(),
-  }).optional(),
+  event: z
+    .object({
+      date: z.string(),
+      link: z.url().optional(),
+    })
+    .optional(),
 
   people: z.array(z.string().regex(/^[a-z0-9-]+$/)).optional(),
 });
