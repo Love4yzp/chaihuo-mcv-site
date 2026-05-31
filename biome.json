@@ -11,7 +11,8 @@
       "!.astro",
       "!pnpm-lock.yaml",
       "!src/data/china-provinces.json",
-      "!**/*.css"
+      "!**/*.css",
+      "!**/*.astro"
     ]
   },
   "formatter": {
@@ -25,8 +26,6 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "noUnusedImports": "off",
-        "noUnusedVariables": "off",
         "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "off"
       },
