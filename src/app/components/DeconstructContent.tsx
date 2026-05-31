@@ -1,6 +1,5 @@
-import { BatteryCharging, ChevronRight, Cpu, Factory } from 'lucide-react';
+import { BatteryCharging, ChevronRight, Cpu, Factory, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
-import type { ComponentType } from 'react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
 import { defaultViewport, fadeUp, springTransition, stagger } from './motion';
@@ -37,7 +36,7 @@ interface Props {
 
 // ─── Icon map ───
 
-const ICON_MAP: Record<string, ComponentType<any>> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   Cpu,
   Factory,
   BatteryCharging,

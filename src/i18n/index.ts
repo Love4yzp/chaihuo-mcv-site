@@ -18,7 +18,7 @@ export function t(dict: Record<string, string>, key: string): string {
  * For locale 'en', reads `field_en` falling back to `field`.
  * For locale 'zh', reads `field` directly.
  */
-export function localize<T extends Record<string, any>>(
+export function localize<T extends Record<string, unknown>>(
   obj: T,
   fields: string[],
   locale: Locale,
@@ -28,7 +28,7 @@ export function localize<T extends Record<string, any>>(
   for (const field of fields) {
     const enKey = `${field}_en`;
     if (enKey in obj && obj[enKey] != null && obj[enKey] !== '') {
-      (result as any)[field] = obj[enKey];
+      (result as Record<string, unknown>)[field] = obj[enKey];
     }
   }
   return result;

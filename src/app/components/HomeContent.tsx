@@ -4,7 +4,7 @@ import ReactSlick from 'react-slick';
 
 // Vite 8 CJS interop: default export is nested
 const Slider = (
-  'default' in ReactSlick ? (ReactSlick as any).default : ReactSlick
+  'default' in ReactSlick ? (ReactSlick as { default: typeof ReactSlick }).default : ReactSlick
 ) as typeof ReactSlick;
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';

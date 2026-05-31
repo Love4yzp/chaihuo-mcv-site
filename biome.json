@@ -29,11 +29,7 @@
         "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "off"
       },
-      "style": {
-        "noNonNullAssertion": "off"
-      },
       "suspicious": {
-        "noExplicitAny": "off",
         "noArrayIndexKey": "off"
       },
       "a11y": {
@@ -47,5 +43,16 @@
   },
   "javascript": {
     "formatter": { "quoteStyle": "single", "semicolons": "always" }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["tests/**"],
+      "linter": {
+        "rules": {
+          "style": { "noNonNullAssertion": "off" },
+          "suspicious": { "noExplicitAny": "off" }
+        }
+      }
+    }
+  ]
 }
