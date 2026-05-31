@@ -45,6 +45,7 @@ export default function MapLibreCanvas({ cities, selectedKey, onSelect, t }: Map
       });
 
       map.on('load', () => {
+        if (cancelled) return;
         for (const city of cities) {
           const el = document.createElement('button');
           el.type = 'button';
