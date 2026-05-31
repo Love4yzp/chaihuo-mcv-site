@@ -1,3 +1,4 @@
+import { type ReactNode } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import type { Locale } from '@/i18n/index';
@@ -9,7 +10,7 @@ interface ElementsContentProps {
 
 const SWATCHES: { name: string; className: string; text: string }[] = [
   { name: 'brand', className: 'bg-brand', text: 'text-brand-foreground' },
-  { name: 'brand-dark', className: 'bg-brand-dark', text: 'text-white' },
+  { name: 'brand-dark', className: 'bg-brand-dark', text: 'text-neutral-900' },
   { name: 'brand-hover', className: 'bg-brand-hover', text: 'text-brand-foreground' },
   { name: 'brand-light', className: 'bg-brand-light', text: 'text-neutral-900' },
   { name: 'surface', className: 'bg-surface', text: 'text-neutral-900' },
@@ -23,10 +24,10 @@ const SWATCHES: { name: string; className: string; text: string }[] = [
 ];
 
 const TYPE_SCALE: { tag: string; sample: string; cls: string }[] = [
-  { tag: 'h1 / text-3xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-3xl font-bold' },
-  { tag: 'h2 / text-2xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-2xl font-bold' },
-  { tag: 'h3 / text-xl 600', sample: '普罗米修斯号 · Prometheus', cls: 'text-xl font-semibold' },
-  { tag: 'body / text-base', sample: '正文示例 Body sample 0123456789', cls: 'text-base' },
+  { tag: 'h1 / text-3xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-3xl font-bold text-neutral-900' },
+  { tag: 'h2 / text-2xl 700', sample: '普罗米修斯号 · Prometheus', cls: 'text-2xl font-bold text-neutral-900' },
+  { tag: 'h3 / text-xl 600', sample: '普罗米修斯号 · Prometheus', cls: 'text-xl font-semibold text-neutral-900' },
+  { tag: 'body / text-base', sample: '正文示例 Body sample 0123456789', cls: 'text-base text-neutral-900' },
   { tag: 'small / text-sm', sample: '辅助文字 Caption sample', cls: 'text-sm text-neutral-500' },
 ];
 
@@ -37,7 +38,7 @@ const RADII: { name: string; cls: string }[] = [
   { name: 'rounded-xl', cls: 'rounded-xl' },
 ];
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mb-16">
       <h2 className="text-2xl font-bold mb-6 text-neutral-900">{title}</h2>
@@ -68,7 +69,7 @@ export default function ElementsContent({ t }: ElementsContentProps) {
             {TYPE_SCALE.map((row) => (
               <div key={row.tag} className="flex flex-col gap-1 border-b border-neutral-300 pb-4">
                 <span className="text-sm text-neutral-500">{row.tag}</span>
-                <span className={`${row.cls} text-neutral-900`}>{row.sample}</span>
+                <span className={row.cls}>{row.sample}</span>
               </div>
             ))}
           </div>
