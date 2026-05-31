@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { horseRouteGeoJson } from './horse-geo';
-import { buildMapStyle, buildRouteSource, CHINA_BOUNDS } from './map-style';
+import { buildMapStyle, buildRouteSource, CHINA_BOUNDS, MAP_BG } from './map-style';
 import type { ThemeType } from './theme';
 import type { RouteCity } from './types';
 
@@ -89,7 +89,8 @@ export default function MapLibreCanvas({ cities, selectedKey, onSelect, t }: Map
       {/* SSR / pre-WebGL placeholder skeleton */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[#ebdcb9] flex items-center justify-center text-neutral-500 text-sm pointer-events-none"
+        style={{ backgroundColor: MAP_BG }}
+        className="absolute inset-0 flex items-center justify-center text-neutral-500 text-sm pointer-events-none"
       >
         {t['route.map.loading'] ?? '地图加载中…'}
       </div>

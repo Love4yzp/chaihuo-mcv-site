@@ -9,6 +9,10 @@ export const CHINA_BOUNDS: [[number, number], [number, number]] = [
   [135.5, 53.8],
 ];
 
+// Map paper background. Single source of truth (MapLibre styles can't read CSS
+// vars, so the SSR skeleton imports this constant instead of hardcoding the hex).
+export const MAP_BG = '#ebdcb9';
+
 // Province silhouette source — reuse the already-filtered geoData (no _JD).
 export const provinceSource = {
   type: 'geojson' as const,
@@ -59,7 +63,7 @@ export function buildMapStyle(
       horse: { type: 'geojson', data: horse },
     },
     layers: [
-      { id: 'bg', type: 'background', paint: { 'background-color': '#ebdcb9' } },
+      { id: 'bg', type: 'background', paint: { 'background-color': MAP_BG } },
       {
         id: 'province-fill',
         type: 'fill',
