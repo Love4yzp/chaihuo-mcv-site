@@ -34,7 +34,10 @@ export function buildRouteSource(stops: Stop[]) {
       },
     });
   }
-  return { type: 'geojson' as const, data: { type: 'FeatureCollection', features } as FeatureCollection };
+  return {
+    type: 'geojson' as const,
+    data: { type: 'FeatureCollection', features } as FeatureCollection,
+  };
 }
 
 const PROVINCE_VISITED = ['广东', '广西', '贵州', '四川'];
@@ -43,7 +46,10 @@ const PROVINCE_VISITED = ['广东', '广西', '贵州', '四川'];
  * Tile-less MapLibre style: blank background + our own GeoJSON layers, styled
  * to read as the hand-drawn watercolor silhouette. No glyphs/sprite/tiles.
  */
-export function buildMapStyle(routeData: FeatureCollection, horse: Feature<LineString>): StyleSpecification {
+export function buildMapStyle(
+  routeData: FeatureCollection,
+  horse: Feature<LineString>,
+): StyleSpecification {
   return {
     version: 8,
     name: 'chaihuo-handdrawn',

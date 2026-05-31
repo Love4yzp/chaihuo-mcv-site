@@ -17,7 +17,8 @@ test('provinceSource is a non-empty GeoJSON FeatureCollection', () => {
 
 test('buildRouteSource makes one segment per adjacent pair, visited only when both ends visited', () => {
   const src = buildRouteSource(stops);
-  const feats = (src.data as unknown as { features: { properties: { visited: boolean } }[] }).features;
+  const feats = (src.data as unknown as { features: { properties: { visited: boolean } }[] })
+    .features;
   expect(feats.length).toBe(2); // 3 stops -> 2 segments
   expect(feats[0].properties.visited).toBe(true); // A->B both visited
   expect(feats[1].properties.visited).toBe(false); // B->C, C not visited
