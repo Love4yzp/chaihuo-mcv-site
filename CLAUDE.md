@@ -79,6 +79,16 @@ Schema validation runs at build time — type errors will fail the build.
 - **Color system** (60-30-10): Brand `brand` (#f3d230), surfaces `surface`/`surface-card`/`surface-dark`, neutrals `neutral-950`~`neutral-50`
 - **Use `text-brand`, `bg-surface`, `text-neutral-700` etc. — avoid hardcoded hex or Tailwind gray-xxx**
 
+## Design System
+
+设计规则分三档,详见 `docs/DESIGN.md`,可视化对照页 `/elements`(中)/ `/en/elements`(英)。**开发任何功能(尤其全新功能)前先对照这三档:**
+
+- **🔒 不可破(Invariants):** 颜色/字号/圆角/间距令牌(源:`src/styles/theme.css`)、60-30-10 配色、`prefers-reduced-motion` 与对比度无障碍底线、中英对等。永远用 `text-brand`/`bg-surface` 等令牌,不硬编码 hex、不用 gray-xxx。
+- **🧭 要领会延续(Principles):** 探险黄克制使用、远征探索叙事、手绘在地感(非塑料 SaaS 感)、高级克制动效、中文优先英文对等、内容即主体。给全新功能(如地图类)用——结构可不同,气质要一致。
+- **🎨 自由发挥(Open):** 已有模式(卡片/手风琴/时间线/轮播/地图 feature)仅作参考,新功能可大胆偏离,只要守住前两档。
+
+新功能开发流程:先列本次涉及的 🔒 令牌确保零硬编码 → 想清楚如何延续 🧭 → 复用或自由设计 🎨。
+
 ## Gotchas
 
 **CJS interop:** `react-slick` is CJS. Required workaround in `HomeContent.tsx`:
