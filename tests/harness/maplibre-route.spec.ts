@@ -2,12 +2,12 @@ import { expect, test } from '@playwright/test';
 import { installHarnessGuards } from './helpers';
 import { loadStops } from './lib/load-stops';
 
-test.describe('maplibre /route-next', () => {
+test.describe('maplibre /route', () => {
   test('renders the MapLibre canvas and one marker per stop, click opens CityPanel', async ({
     page,
   }) => {
     await installHarnessGuards(page);
-    await page.goto('/route-next', { waitUntil: 'domcontentloaded' });
+    await page.goto('/route', { waitUntil: 'domcontentloaded' });
 
     // RouteContent renders MapLibreCanvas twice: once in the desktop split-screen layout
     // (`hidden lg:grid`) and once in the mobile layout (`lg:hidden`). The

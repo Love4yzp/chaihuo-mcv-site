@@ -99,6 +99,8 @@ export function buildMapStyle(
           'line-color': ['case', ['get', 'visited'], '#eab308', '#c9b78a'],
           'line-width': ['case', ['get', 'visited'], 3.5, 2],
           'line-dasharray': ['case', ['get', 'visited'], ['literal', [1, 0]], ['literal', [2, 2]]],
+          'line-opacity': 1,
+          'line-opacity-transition': { duration: 300 },
         },
         layout: { 'line-cap': 'round', 'line-join': 'round' },
       },

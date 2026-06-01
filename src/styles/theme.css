@@ -292,4 +292,20 @@
 .mlc-marker--visited .mlc-dot {
   background: var(--brand);
 }
+.mlc-marker .mlc-dot {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mlc-marker--match .mlc-dot {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 5px var(--brand);
+}
+.mlc-marker--dimmed {
+  opacity: 0.3;
+  filter: grayscale(1);
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+.mlc-marker--selected .mlc-dot {
+  transform: scale(1.5);
+  background: var(--brand);
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--brand-dark);
+}
 
