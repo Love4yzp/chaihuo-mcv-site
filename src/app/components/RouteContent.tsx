@@ -1,13 +1,7 @@
 import { ChevronLeft, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  ChinaRouteMap,
-  CityPanel,
-  countThemes,
-  MapLibreCanvas,
-  ThemeFilter,
-} from '@/features/route-map';
+import { CityPanel, countThemes, MapLibreCanvas, ThemeFilter } from '@/features/route-map';
 import type { ThemeType } from '@/features/route-map/theme';
 import type { RouteCity } from '@/features/route-map/types';
 import type { Locale } from '@/i18n/index';
@@ -25,16 +19,9 @@ interface Props {
   journals: SerializedJournal[];
   locale?: Locale;
   t: Record<string, string>;
-  mapEngine?: 'svg' | 'maplibre';
 }
 
-export default function RouteContent({
-  cities,
-  journals,
-  locale = 'zh',
-  t,
-  mapEngine = 'svg',
-}: Props) {
+export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
   const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
 
   // Default to the latest visited city (visited === true and largest order)
@@ -72,8 +59,6 @@ export default function RouteContent({
     expanded: { y: 0 },
   };
 
-  const MapComponent = mapEngine === 'maplibre' ? MapLibreCanvas : ChinaRouteMap;
-
   return (
     <div className="min-h-screen bg-neutral-50 pt-24 pb-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col h-full">
@@ -107,10 +92,10 @@ export default function RouteContent({
         </div>
 
         {/* Responsive Grid Layout */}
-        {/* Desktop Split Screen Layout: Left 65% map, Right 35% panel */}
-        <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch h-[calc(100vh-200px)]">
-          <div className="lg:col-span-8 h-full min-h-[550px]">
-            <MapComponent
+        {/* Desktop: full-canvas map with a floating CityPanel card */}
+        <div className="hidden lg:block relative h-[calc(100vh-200px)]">
+          <div className="absolute inset-0">
+            <MapLibreCanvas
               cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}
@@ -118,7 +103,7 @@ export default function RouteContent({
               t={t}
             />
           </div>
-          <div className="lg:col-span-4 h-full overflow-y-auto pr-1">
+          <div className="absolute top-4 right-4 bottom-4 w-[380px] overflow-y-auto rounded-2xl bg-surface-card shadow-xl pointer-events-auto">
             <CityPanel
               city={selectedCity}
               cities={sortedCities}
@@ -136,7 +121,7 @@ export default function RouteContent({
         {/* Mobile Layout: Top Map (45vh), Bottom Custom Drawer */}
         <div className="lg:hidden flex flex-col gap-4">
           <div className="w-full h-[45vh] min-h-[300px]">
-            <MapComponent
+            <MapLibreCanvas
               cities={cities}
               selectedKey={selectedCityKey}
               onSelect={handleCitySelect}

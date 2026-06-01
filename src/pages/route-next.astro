@@ -28,5 +28,5 @@ const journals = rawJournals.map((j) => {
 ---
 
 <BaseLayout title={t['route.pageTitle']} description={t['route.pageDesc']}>
-  <RouteContent client:load mapEngine="maplibre" cities={cities} journals={journals} locale={locale} t={t} />
+  <RouteContent client:load cities={cities} journals={journals} locale={locale} t={t} />
 </BaseLayout>
