@@ -18,13 +18,45 @@ function parsePathPoints(d: string): [number, number][] {
   return pts;
 }
 
+// Target lng/lat box (well inside China) to CONTAIN the horse motif — the raw
+// inverted path overshoots China's borders, so we fit it here. Tweak to taste.
+const HORSE_TARGET = { minLng: 80, minLat: 22, maxLng: 128, maxLat: 50 };
+
+/** Uniformly scale + translate coords to fit (centered, undistorted) inside `box`. */
+function fitInto(
+  coords: [number, number][],
+  box: { minLng: number; minLat: number; maxLng: number; maxLat: number },
+): [number, number][] {
+  if (coords.length === 0) return coords;
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+  for (const [x, y] of coords) {
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const w = maxX - minX || 1;
+  const h = maxY - minY || 1;
+  const tw = box.maxLng - box.minLng;
+  const th = box.maxLat - box.minLat;
+  const scale = Math.min(tw / w, th / h); // uniform → no distortion
+  const offX = box.minLng + (tw - w * scale) / 2 - minX * scale;
+  const offY = box.minLat + (th - h * scale) / 2 - minY * scale;
+  return coords.map(([x, y]) => [x * scale + offX, y * scale + offY]);
+}
+
 export function horseRouteGeoJson(): Feature<LineString> {
   const svgPoints = parsePathPoints(horseRouteD);
-  const coordinates: [number, number][] = [];
+  const inverted: [number, number][] = [];
   for (const [x, y] of svgPoints) {
     const lngLat = projection.invert?.([x + HORSE_OFFSET_X, y + HORSE_OFFSET_Y]);
-    if (lngLat) coordinates.push([lngLat[0], lngLat[1]]);
+    if (lngLat) inverted.push([lngLat[0], lngLat[1]]);
   }
+  // Constrain the motif inside China (no clip — fit by scale+translate).
+  const coordinates = fitInto(inverted, HORSE_TARGET);
   return {
     type: 'Feature',
     properties: { kind: 'horse' },
