@@ -9,12 +9,9 @@ test.describe('maplibre /route', () => {
     await installHarnessGuards(page);
     await page.goto('/route', { waitUntil: 'domcontentloaded' });
 
-    // RouteContent renders MapLibreCanvas twice: once in the desktop split-screen layout
-    // (`hidden lg:grid`) and once in the mobile layout (`lg:hidden`). The
-    // data-maplibre-canvas container is `absolute inset-0` and reports h=0 in
-    // getBoundingClientRect even when visible — only the maplibregl-canvas element
-    // itself has reliable dimensions. Poll until a canvas with positive dimensions
-    // appears (covers both viewport sizes).
+    // RouteContent renders MapLibreCanvas twice: the desktop full-canvas hero
+    // (`hidden lg:block`, h-screen) and the mobile layout (`lg:hidden`, 45vh).
+    // Poll until a canvas with positive dimensions appears (covers both viewports).
     await expect
       .poll(
         () =>
@@ -54,6 +51,12 @@ test.describe('maplibre /route', () => {
     await expect(canvas).toBeAttached();
     const canvasWidth = await canvas.getAttribute('width');
     expect(Number(canvasWidth)).toBeGreaterThan(0);
+
+    // Regression guard: the map container must NOT collapse to height 0. MapLibre
+    // adds `.maplibregl-map` (position:relative) to the container, which would defeat
+    // an `absolute inset-0` box → 0 height → invisible map. Assert real rendered height.
+    const canvasBox = await canvas.boundingBox();
+    expect(canvasBox?.height ?? 0).toBeGreaterThan(200);
 
     // One HTML marker button per stop.
     // Scope to the visible map container to avoid double-counting both instances.

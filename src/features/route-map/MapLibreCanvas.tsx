@@ -5,17 +5,26 @@ import { buildMapStyle, buildRouteSource, CHINA_BOUNDS, MAP_BG } from './map-sty
 import type { ThemeType } from './theme';
 import type { RouteCity } from './types';
 
+interface FitPadding {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
+
 interface MapLibreCanvasProps {
   cities: RouteCity[];
   selectedKey: string | null;
   onSelect: (key: string) => void;
   t: Record<string, string>;
   activeTheme?: ThemeType | null;
+  // Inset for fitBounds/easeTo so the route/horse stay clear of floating
+  // overlays (top bar + right CityPanel card on desktop). Defaults to a modest
+  // all-round inset (suitable for the small mobile map with no overlays).
+  fitPadding?: FitPadding;
 }
 
-// Leave room on the right for the floating CityPanel card so the route/horse
-// stay centered in the visible (uncovered) area.
-const FIT_PADDING = { top: 40, bottom: 40, left: 40, right: 420 };
+const DEFAULT_FIT_PADDING: FitPadding = { top: 40, bottom: 40, left: 40, right: 40 };
 
 export default function MapLibreCanvas({
   cities,
@@ -23,10 +32,14 @@ export default function MapLibreCanvas({
   onSelect,
   t,
   activeTheme = null,
+  fitPadding = DEFAULT_FIT_PADDING,
 }: MapLibreCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
+  // Read latest fitPadding without re-initializing the map / churning effect deps.
+  const fitPaddingRef = useRef(fitPadding);
+  fitPaddingRef.current = fitPadding;
   // biome-ignore lint/suspicious/noExplicitAny: maplibre map instance resolved at runtime via dynamic import
   const mapRef = useRef<any>(null);
   const markerElsRef = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -53,7 +66,7 @@ export default function MapLibreCanvas({
         container: containerRef.current,
         style,
         bounds: CHINA_BOUNDS,
-        fitBoundsOptions: { padding: FIT_PADDING },
+        fitBoundsOptions: { padding: fitPaddingRef.current },
         maxBounds: CHINA_BOUNDS,
         attributionControl: false,
         dragRotate: false,
@@ -138,7 +151,7 @@ export default function MapLibreCanvas({
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       mapRef.current.easeTo({
         center: [city.lng, city.lat],
-        padding: FIT_PADDING,
+        padding: fitPaddingRef.current,
         duration: reduce ? 0 : 500,
         essential: true,
       });
@@ -154,7 +167,9 @@ export default function MapLibreCanvas({
       >
         {t['route.map.loading'] ?? '地图加载中…'}
       </div>
-      <div ref={containerRef} data-maplibre-canvas="true" className="absolute inset-0" />
+      {/* relative + h-full, NOT absolute inset-0: MapLibre adds .maplibregl-map which
+          forces position:relative, collapsing an absolute-inset-0 box to height 0. */}
+      <div ref={containerRef} data-maplibre-canvas="true" className="relative w-full h-full" />
     </div>
   );
 }
