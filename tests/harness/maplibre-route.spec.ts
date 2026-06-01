@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { installHarnessGuards } from './helpers';
+import { loadStops } from './lib/load-stops';
 
 test.describe('maplibre /route-next', () => {
   test('renders the MapLibre canvas and one marker per stop, click opens CityPanel', async ({
@@ -54,12 +55,13 @@ test.describe('maplibre /route-next', () => {
     const canvasWidth = await canvas.getAttribute('width');
     expect(Number(canvasWidth)).toBeGreaterThan(0);
 
-    // One HTML marker button per stop (the route currently has 9 stops).
+    // One HTML marker button per stop.
     // Scope to the visible map container to avoid double-counting both instances.
     // The canvas is at nth(visibleIdx); its container is at the same index.
     const mapContainer = page.locator('[data-maplibre-canvas="true"]').nth(visibleIdx);
     const markers = mapContainer.locator('.mlc-marker');
-    await expect(markers).toHaveCount(9);
+    const stopCount = (await loadStops()).length;
+    await expect(markers).toHaveCount(stopCount);
 
     // Clicking a marker selects that city and the CityPanel (an <article>) shows it.
     // force: true is required because the MapLibre GL container div can intercept
