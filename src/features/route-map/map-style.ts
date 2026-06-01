@@ -19,23 +19,45 @@ export const provinceSource = {
   data: geoData as unknown as FeatureCollection,
 };
 
-/** One LineString per adjacent stop pair; visited iff BOTH endpoints visited. */
+/** Catmull-Rom spline sample between p1→p2 using neighbours p0,p3 (smooth corners). */
+function catmullRom(
+  p0: [number, number],
+  p1: [number, number],
+  p2: [number, number],
+  p3: [number, number],
+  steps: number,
+): [number, number][] {
+  const out: [number, number][] = [];
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps;
+    const t2 = t * t;
+    const t3 = t2 * t;
+    const calc = (a: number, b: number, c: number, d: number) =>
+      0.5 *
+      (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
+    out.push([calc(p0[0], p1[0], p2[0], p3[0]), calc(p0[1], p1[1], p2[1], p3[1])]);
+  }
+  return out;
+}
+
+/**
+ * One SMOOTHED LineString per adjacent stop pair (Catmull-Rom through the stops
+ * so corners flow instead of kinking); visited iff BOTH endpoints visited.
+ * Per-pair features preserve the solid(visited)/dashed(planned) paint split.
+ */
 export function buildRouteSource(stops: Stop[]) {
   const sorted = [...stops].sort((a, b) => a.order - b.order);
+  const pts = sorted.map((s) => [s.lng, s.lat] as [number, number]);
   const features: Feature<LineString>[] = [];
   for (let i = 0; i < sorted.length - 1; i++) {
-    const from = sorted[i];
-    const to = sorted[i + 1];
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? pts[i + 1];
     features.push({
       type: 'Feature',
-      properties: { visited: from.visited && to.visited },
-      geometry: {
-        type: 'LineString',
-        coordinates: [
-          [from.lng, from.lat],
-          [to.lng, to.lat],
-        ],
-      },
+      properties: { visited: sorted[i].visited && sorted[i + 1].visited },
+      geometry: { type: 'LineString', coordinates: catmullRom(p0, p1, p2, p3, 14) },
     });
   }
   return {
