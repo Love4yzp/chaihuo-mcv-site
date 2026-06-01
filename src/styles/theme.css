@@ -309,3 +309,16 @@
   box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px var(--brand-dark);
 }
 
+
+/* ─── 地图纸纹叠层 (paper-grain + warm vignette over the MapLibre canvas) ─── */
+.mlc-texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='pg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23pg)' opacity='0.5'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 78% 78% at 50% 46%, transparent 58%, rgba(60, 45, 15, 0.16) 100%);
+  background-size: 140px 140px, cover;
+}

@@ -170,6 +170,8 @@ export default function MapLibreCanvas({
       {/* relative + h-full, NOT absolute inset-0: MapLibre adds .maplibregl-map which
           forces position:relative, collapsing an absolute-inset-0 box to height 0. */}
       <div ref={containerRef} data-maplibre-canvas="true" className="relative w-full h-full" />
+      {/* Paper-grain + warm vignette over the map (click-through). Texture only. */}
+      <div className="mlc-texture" aria-hidden="true" />
     </div>
   );
 }
