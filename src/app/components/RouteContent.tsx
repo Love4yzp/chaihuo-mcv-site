@@ -69,24 +69,25 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
 
   return (
     <div className="relative bg-neutral-50 min-h-screen lg:h-screen lg:min-h-0 lg:overflow-hidden">
-      {/* ── Single header: mobile = static band; desktop (lg) = floating top bar over the map ── */}
-      <header className="relative z-20 pt-24 px-4 sm:px-6 pb-5 border-b border-neutral-350/20 lg:border-0 lg:absolute lg:inset-x-0 lg:top-0 lg:px-8 lg:pt-20 lg:pb-4 lg:pointer-events-none lg:bg-gradient-to-b lg:from-neutral-50/95 lg:via-neutral-50/70 lg:to-transparent">
-        <div className="flex items-start justify-between gap-4 lg:max-w-[calc(100%-420px)] lg:pointer-events-auto">
+      {/* ── Header control panel: a glass card grouping title + back + theme chips.
+          Mobile: in-flow card at top. Desktop (lg): floats top-left over the map. ── */}
+      <header className="relative z-20 mt-20 mx-4 mb-2 rounded-2xl border border-neutral-200/70 bg-surface-card/85 backdrop-blur-md shadow-lg p-4 sm:mx-6 lg:absolute lg:top-24 lg:left-6 lg:mx-0 lg:mt-0 lg:mb-0 lg:w-[360px]">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-neutral-900 tracking-tight">
+            <h1 className="text-xl md:text-2xl font-extrabold text-neutral-900 tracking-tight">
               {pageTitle}
             </h1>
-            <p className="text-sm text-neutral-500 mt-1 font-medium">{pageDesc}</p>
+            <p className="text-xs text-neutral-500 mt-1 font-medium leading-relaxed">{pageDesc}</p>
           </div>
           <a
             href={backHref}
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 shadow-sm hover:bg-neutral-50 px-4 py-2 rounded-full transition-all duration-200 cursor-pointer"
+            className="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-white border border-neutral-200 shadow-sm hover:bg-neutral-50 px-3 py-1.5 rounded-full transition-colors duration-200 cursor-pointer"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5" />
             <span>{getT('route.action.backHome', '返回首页')}</span>
           </a>
         </div>
-        <div className="mt-4 lg:mt-3 lg:max-w-[calc(100%-420px)] lg:pointer-events-auto">
+        <div className="mt-3">
           <ThemeFilter counts={themeCounts} active={activeTheme} onSelect={setActiveTheme} t={t} />
         </div>
       </header>
