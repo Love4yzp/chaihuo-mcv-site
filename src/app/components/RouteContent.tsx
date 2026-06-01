@@ -23,7 +23,7 @@ interface Props {
 
 // Desktop: full-viewport map. Keep the route/horse clear of the top bar (nav +
 // title/chips ≈ 150) and the right CityPanel card (380 + margin ≈ 420).
-const DESKTOP_FIT_PADDING = { top: 150, bottom: 48, left: 48, right: 420 };
+const DESKTOP_FIT_PADDING = { top: 40, bottom: 48, left: 48, right: 420 };
 
 export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
   const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
@@ -68,16 +68,17 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
   const backHref = locale === 'zh' ? '/' : '/en';
 
   return (
-    <div className="relative bg-neutral-50 min-h-screen lg:h-screen lg:min-h-0 lg:overflow-hidden">
-      {/* ── Header control panel: a glass card grouping title + back + theme chips.
-          Mobile: in-flow card at top. Desktop (lg): floats top-left over the map. ── */}
-      <header className="relative z-20 mt-20 mx-4 mb-2 rounded-2xl border border-neutral-200/70 bg-surface-card/85 backdrop-blur-md shadow-lg p-4 sm:mx-6 lg:absolute lg:top-24 lg:left-6 lg:mx-0 lg:mt-0 lg:mb-0 lg:w-[360px]">
-        <div className="flex items-start justify-between gap-3">
-          <div>
+    <div className="flex flex-col bg-neutral-50 min-h-screen lg:h-screen lg:overflow-hidden">
+      {/* ── Top bar: full-width app-style header, sits below the fixed global nav ── */}
+      <header className="relative z-30 shrink-0 pt-24 px-4 sm:px-6 lg:px-8 pb-3 bg-surface-card/90 backdrop-blur-md border-b border-neutral-200/70">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-baseline gap-3 flex-wrap min-w-0">
             <h1 className="text-xl md:text-2xl font-extrabold text-neutral-900 tracking-tight">
               {pageTitle}
             </h1>
-            <p className="text-xs text-neutral-500 mt-1 font-medium leading-relaxed">{pageDesc}</p>
+            <p className="hidden sm:block text-xs md:text-sm text-neutral-500 font-medium">
+              {pageDesc}
+            </p>
           </div>
           <a
             href={backHref}
@@ -92,57 +93,59 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
         </div>
       </header>
 
-      {/* ── Map: mobile = in-flow 45vh below header; desktop = full-viewport behind header ── */}
-      <div className="w-full h-[45vh] min-h-[300px] mt-4 lg:mt-0 lg:absolute lg:inset-0 lg:h-auto lg:min-h-0 lg:z-0">
-        <MapLibreCanvas
-          cities={cities}
-          selectedKey={selectedCityKey}
-          onSelect={handleCitySelect}
-          activeTheme={activeTheme}
-          fitPadding={DESKTOP_FIT_PADDING}
-          t={t}
-        />
-      </div>
-
-      {/* ── Desktop: floating CityPanel card (mobile uses the bottom drawer below) ── */}
-      <div className="hidden lg:block lg:absolute lg:top-36 lg:right-6 lg:bottom-6 lg:z-20 lg:w-[380px] lg:overflow-y-auto lg:rounded-2xl lg:bg-surface-card lg:shadow-xl">
-        <CityPanel
-          city={selectedCity}
-          cities={sortedCities}
-          totalLegs={sortedCities.length - 1}
-          isLatest={selectedCity?.label === lastVisited?.label}
-          t={t}
-          locale={locale}
-          hero={false}
-          onSelectCity={handleCitySelect}
-          journals={journals}
-        />
-      </div>
-
-      {/* ── Mobile: visited-city chip row above the drawer ── */}
-      {sortedCities.filter((c) => c.visited).length > 1 && (
-        <div className="lg:hidden flex flex-wrap items-center gap-1.5 px-4 sm:px-6 py-2 overflow-x-auto pb-4 max-w-full no-scrollbar">
-          {sortedCities
-            .filter((c) => c.visited)
-            .map((c) => {
-              const active = selectedCityKey === c.label;
-              return (
-                <button
-                  type="button"
-                  key={`${c.id}-${c.order}`}
-                  onClick={() => handleCitySelect(c.label)}
-                  className={`text-[11px] px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap ${
-                    active
-                      ? 'bg-neutral-900 text-white border-neutral-900 font-semibold'
-                      : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-900'
-                  }`}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
+      {/* ── Map area: fills the remaining viewport; CityPanel floats right on desktop ── */}
+      <div className="relative lg:flex-1 lg:min-h-0">
+        <div className="w-full h-[45vh] min-h-[300px] lg:absolute lg:inset-0 lg:h-auto lg:min-h-0 lg:z-0">
+          <MapLibreCanvas
+            cities={cities}
+            selectedKey={selectedCityKey}
+            onSelect={handleCitySelect}
+            activeTheme={activeTheme}
+            fitPadding={DESKTOP_FIT_PADDING}
+            t={t}
+          />
         </div>
-      )}
+
+        {/* ── Desktop: floating CityPanel card (mobile uses the bottom drawer below) ── */}
+        <div className="hidden lg:block lg:absolute lg:top-4 lg:right-4 lg:bottom-4 lg:z-20 lg:w-[380px] lg:overflow-y-auto lg:rounded-2xl lg:bg-surface-card lg:shadow-xl">
+          <CityPanel
+            city={selectedCity}
+            cities={sortedCities}
+            totalLegs={sortedCities.length - 1}
+            isLatest={selectedCity?.label === lastVisited?.label}
+            t={t}
+            locale={locale}
+            hero={false}
+            onSelectCity={handleCitySelect}
+            journals={journals}
+          />
+        </div>
+
+        {/* ── Mobile: visited-city chip row above the drawer ── */}
+        {sortedCities.filter((c) => c.visited).length > 1 && (
+          <div className="lg:hidden flex flex-wrap items-center gap-1.5 px-4 sm:px-6 py-2 overflow-x-auto pb-4 max-w-full no-scrollbar">
+            {sortedCities
+              .filter((c) => c.visited)
+              .map((c) => {
+                const active = selectedCityKey === c.label;
+                return (
+                  <button
+                    type="button"
+                    key={`${c.id}-${c.order}`}
+                    onClick={() => handleCitySelect(c.label)}
+                    className={`text-[11px] px-3 py-1 rounded-full border transition-colors duration-200 cursor-pointer whitespace-nowrap ${
+                      active
+                        ? 'bg-neutral-900 text-white border-neutral-900 font-semibold'
+                        : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-900'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                );
+              })}
+          </div>
+        )}
+      </div>
 
       {/* ── Mobile: bottom drawer (desktop uses the floating card above) ── */}
       {selectedCity && (
