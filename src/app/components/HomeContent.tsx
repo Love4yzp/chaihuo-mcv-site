@@ -156,7 +156,7 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
             animate="visible"
           >
             <motion.h1
-              className="text-5xl md:text-7xl lg:text-8xl mb-6 leading-tight"
+              className="font-display text-5xl md:text-7xl lg:text-8xl mb-6 leading-tight"
               variants={fadeLeft}
               transition={springTransition}
             >
@@ -164,7 +164,7 @@ export default function HomeContent({ cities, heroImages, timeline, locale = 'zh
               <div className="text-brand font-bold text-4xl md:text-6xl mt-2">
                 {t['hero.slogan']}
               </div>
-              <div className="text-base md:text-lg text-neutral-300 mt-3 font-normal">
+              <div className="text-base md:text-lg text-neutral-300 mt-3 font-normal font-sans">
                 {t['hero.subtitle']}
               </div>
             </motion.h1>

@@ -1,0 +1,35 @@
+/* Self-hosted webfonts — no CDN (fast/unblocked in China). See docs/DESIGN.md 排版档. */
+
+/* 中文展示体 — 得意黑 Smiley Sans (Hero 中文; 已子集到 hero 字形) */
+@font-face {
+  font-family: 'Smiley Sans';
+  src: url('/fonts/SmileySans-hero-subset.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 拉丁展示体 — Space Grotesk (Hero 英文/数字) */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/fonts/space-grotesk-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 等宽 — IBM Plex Mono (遥测/日期/log) */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('/fonts/ibm-plex-mono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}

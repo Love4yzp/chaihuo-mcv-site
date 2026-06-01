@@ -37,7 +37,18 @@
 | h3 | `text-xl` | 600 | 1.4 | — |
 | h4 / label / button | `text-base` | 500 | 1.5 | — |
 
-> 字体来源:`src/styles/fonts.css` / `src/styles/index.css`(若 `fonts.css` 为空,字体由 `index.css` 或系统栈提供——改字体时在此登记)。
+**字体系统(自托管 woff2,无 CDN;源 `src/styles/fonts.css` + `public/fonts/`):**
+
+| 角色 | 字体 | Tailwind 类 | 用在 |
+|---|---|---|---|
+| 中文展示 | 得意黑 Smiley Sans(hero 子集) | — | Hero 大标题中文 |
+| 拉丁展示 | Space Grotesk | `font-display` | Hero 英文/数字 |
+| 正文 + 普通标题 | 系统中文栈(苹方/雅黑) | `font-sans`(默认) | 全站正文、h2/h3 |
+| 等宽 | IBM Plex Mono | `font-mono` | 遥测/日期/log |
+
+- Hero 用 `font-display`:一条 stack 按字形分流(拉丁→Space Grotesk,中文→得意黑)。
+- 得意黑**只用于 hero** 且**子集化**(只打包 hero 文案的字)。改 hero 文案后需重新子集 `public/fonts/SmileySans-hero-subset.woff2`(`pyftsubset --text="<hero 中文>" --flavor=woff2`)。
+- 永远用 `font-display`/`font-mono` 等令牌,不要直接写 font-family。
 
 ### 圆角
 
