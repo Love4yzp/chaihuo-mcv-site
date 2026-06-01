@@ -109,7 +109,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
         <div className="max-w-5xl mx-auto">
           <motion.div variants={stagger(0.1)} initial="hidden" animate="visible">
             <motion.p
-              className="text-xs font-semibold tracking-[0.3em] text-neutral-400 uppercase mb-3"
+              className="text-xs font-semibold tracking-[0.3em] text-neutral-500 uppercase mb-3"
               variants={fadeUp}
               transition={springTransition}
             >
@@ -134,12 +134,12 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       </section>
 
       {/* Filter and Count Bar */}
-      <section className="py-6 px-6 bg-white border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
+      <section className="py-6 px-6 bg-surface-card border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           {/* Controls: Dropdown + Chips */}
           <div className="flex flex-wrap items-center gap-4">
             {/* City Dropdown */}
-            <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors group cursor-pointer">
+            <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-300 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors duration-200 group cursor-pointer focus-within:ring-2 focus-within:ring-brand focus-within:border-brand">
               <MapPin className="w-4 h-4 text-neutral-500 mr-2" />
               <select
                 value={activeCity}
@@ -173,10 +173,10 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                   type="button"
                   key={status.key}
                   onClick={() => handleStatusChange(status.key)}
-                  className={`px-4 py-1 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                  className={`px-4 py-1 rounded-md text-xs font-semibold transition-colors duration-200 cursor-pointer ${
                     activeStatus === status.key
                       ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-600 hover:text-neutral-900'
+                      : 'text-neutral-700 hover:text-neutral-900'
                   }`}
                 >
                   {status.label}
@@ -191,12 +191,12 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
               {locale === 'en' ? 'All' : '全部'} {journals.length}
             </span>
             <span className="text-neutral-300">•</span>
-            <span className="text-emerald-600">
+            <span className="text-brand-dark">
               {locale === 'en' ? 'Published' : '已发布'}{' '}
               {journals.filter((j) => j.status === 'published').length}
             </span>
             <span className="text-neutral-300">•</span>
-            <span className="text-amber-600">
+            <span className="text-neutral-500">
               {locale === 'en' ? 'In progress' : '整理中'}{' '}
               {journals.filter((j) => j.status === 'placeholder').length}
             </span>
@@ -223,10 +223,10 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                     <motion.div key={entry.slug} variants={fadeUp} className="group">
                       <a
                         href={localePath(`/journals/${entry.slug}`, locale)}
-                        className="block bg-white rounded-xl overflow-hidden shadow-xs hover:shadow-lg hover:border-brand/80 border border-neutral-300 transition-all duration-300"
+                        className="block bg-surface-card rounded-xl overflow-hidden shadow-xs hover:shadow-lg hover:border-brand/80 border border-neutral-300 transition-[box-shadow,border-color] duration-300"
                       >
                         {/* Cover Image */}
-                        <div className="aspect-[16/10] bg-neutral-100 overflow-hidden relative border-b border-neutral-200">
+                        <div className="aspect-[16/10] bg-neutral-100 overflow-hidden relative border-b border-neutral-300">
                           {entry.coverImage ? (
                             <img
                               src={entry.coverImage}
@@ -235,8 +235,8 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                               loading="lazy"
                             />
                           ) : (
-                            <div className="w-full h-full flex flex-col justify-between bg-gradient-to-br from-neutral-800 to-neutral-950 p-5 text-white">
-                              <span className="text-[11px] tracking-[0.25em] font-semibold text-neutral-400 uppercase">
+                            <div className="w-full h-full flex flex-col justify-between bg-gradient-to-br from-neutral-900 to-neutral-950 p-5 text-white">
+                              <span className="text-[11px] tracking-[0.25em] font-semibold text-neutral-500 uppercase font-mono">
                                 {entry.date}
                               </span>
                               <span className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-none">
@@ -247,12 +247,12 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                         </div>
 
                         {/* Card Info */}
-                        <div className="p-5 flex flex-col h-44 justify-between">
+                        <div className="p-5 flex flex-col min-h-44 justify-between">
                           <div>
                             <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-neutral-500">
-                              <span>{entry.date}</span>
+                              <span className="font-mono">{entry.date}</span>
                               <span>•</span>
-                              <span className="text-neutral-600">{entry.cityLabel}</span>
+                              <span className="text-neutral-700">{entry.cityLabel}</span>
                             </div>
                             <h3 className="text-base font-bold text-neutral-900 group-hover:text-brand-dark transition-colors line-clamp-2 leading-snug mb-2">
                               {entry.title}
@@ -261,7 +261,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                               {entry.excerpt}
                             </p>
                           </div>
-                          <div className="flex items-center gap-1 text-xs font-semibold text-neutral-600 group-hover:text-neutral-900 transition-colors mt-3">
+                          <div className="flex items-center gap-1 text-xs font-semibold text-neutral-700 group-hover:text-neutral-900 transition-colors duration-200 mt-3">
                             <span>{t['card.read']}</span>
                             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                           </div>
@@ -277,23 +277,31 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                     <motion.div
                       key={entry.slug}
                       variants={fadeUp}
-                      className="relative group"
+                      className="relative group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      tabIndex={0}
+                      aria-label={
+                        locale === 'en'
+                          ? `${entry.cityLabel} expedition telemetry`
+                          : `${entry.cityLabel} 探险数据`
+                      }
                       onMouseEnter={() => setHoveredCardId(entry.slug)}
                       onMouseLeave={() => setHoveredCardId(null)}
+                      onFocus={() => setHoveredCardId(entry.slug)}
+                      onBlur={() => setHoveredCardId(null)}
                     >
-                      <div className="block bg-surface text-neutral-700 rounded-xl border border-dashed border-neutral-300 p-5 shadow-none h-44 flex flex-col justify-between overflow-hidden">
+                      <div className="block bg-surface text-neutral-700 rounded-xl border border-dashed border-neutral-300 p-5 shadow-none min-h-44 flex flex-col justify-between overflow-hidden">
                         {/* Top: date / city / status chip */}
                         <div>
                           <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-neutral-500">
                             <span>{entry.date}</span>
                             <span>•</span>
-                            <span className="text-neutral-600">{entry.cityLabel}</span>
+                            <span className="text-neutral-700">{entry.cityLabel}</span>
                           </div>
                           <div className="flex items-center justify-between gap-2 mb-2">
-                            <h3 className="text-base font-semibold text-neutral-800 line-clamp-1 leading-snug">
+                            <h3 className="text-base font-semibold text-neutral-900 line-clamp-1 leading-snug">
                               {entry.title}
                             </h3>
-                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-neutral-500 bg-neutral-100 border border-neutral-200">
+                            <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold text-neutral-500 bg-neutral-100 border border-neutral-300">
                               <Clock className="w-3 h-3" />
                               {t['card.placeholder.label']}
                             </span>
@@ -314,9 +322,9 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                             transition={{ duration: 0.15, ease: 'easeOut' }}
-                            className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-3 w-80 bg-neutral-950/95 backdrop-blur-md border border-neutral-800 rounded-xl p-4 shadow-2xl pointer-events-none text-white"
+                            className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-3 w-80 max-w-[calc(100vw-2rem)] bg-neutral-950/95 backdrop-blur-md border border-neutral-900 rounded-xl p-4 shadow-2xl pointer-events-none text-white"
                           >
-                            <h4 className="text-xs font-black tracking-widest text-brand mb-3 uppercase flex items-center gap-1.5 border-b border-neutral-800 pb-2">
+                            <h4 className="text-xs font-black tracking-widest text-brand mb-3 uppercase flex items-center gap-1.5 border-b border-neutral-900 pb-2">
                               <Compass className="w-3.5 h-3.5 text-brand" />
                               {entry.cityLabel} • {locale === 'en' ? 'TELEMETRY' : '探险数据'}
                             </h4>
@@ -324,12 +332,12 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                             <div className="space-y-3">
                               {/* Altitude */}
                               <div className="flex items-start gap-2.5">
-                                <Mountain className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+                                <Mountain className="w-4 h-4 text-neutral-500 shrink-0 mt-0.5" />
                                 <div>
                                   <p className="text-[10px] font-bold text-neutral-500 tracking-wider uppercase leading-none">
                                     {locale === 'en' ? 'ALTITUDE' : '海拔高度'}
                                   </p>
-                                  <p className="text-xs font-semibold text-neutral-200 mt-1">
+                                  <p className="text-xs font-semibold text-neutral-100 mt-1 font-mono">
                                     {telemetry.altitude} m
                                   </p>
                                 </div>
@@ -337,12 +345,12 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
 
                               {/* Terrain */}
                               <div className="flex items-start gap-2.5">
-                                <Compass className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+                                <Compass className="w-4 h-4 text-neutral-500 shrink-0 mt-0.5" />
                                 <div>
                                   <p className="text-[10px] font-bold text-neutral-500 tracking-wider uppercase leading-none">
                                     {locale === 'en' ? 'TERRAIN' : '地形阶梯'}
                                   </p>
-                                  <p className="text-xs font-semibold text-neutral-200 mt-1">
+                                  <p className="text-xs font-semibold text-neutral-100 mt-1">
                                     {telemetry.terrain}
                                   </p>
                                 </div>
@@ -355,7 +363,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
                                   <p className="text-[10px] font-bold text-brand tracking-wider uppercase leading-none">
                                     {locale === 'en' ? 'EXPEDITION CHALLENGE' : '旅途技术挑战'}
                                   </p>
-                                  <p className="text-xs font-medium text-neutral-200 mt-1 leading-relaxed">
+                                  <p className="text-xs font-medium text-neutral-100 mt-1 leading-relaxed">
                                     {telemetry.challenge}
                                   </p>
                                 </div>
@@ -373,8 +381,8 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
               })}
             </motion.div>
           ) : (
-            <div className="text-center py-24 bg-white border border-neutral-300 rounded-2xl shadow-xs">
-              <Compass className="w-12 h-12 text-neutral-300 mx-auto mb-4 animate-spin [animation-duration:10s]" />
+            <div className="text-center py-24 bg-surface-card border border-neutral-300 rounded-2xl shadow-xs">
+              <Compass className="w-12 h-12 text-neutral-300 mx-auto mb-4 animate-spin [animation-duration:10s] motion-reduce:animate-none" />
               <h3 className="text-xl font-bold text-neutral-900 mb-2">{t['empty.title']}</h3>
               <p className="text-sm text-neutral-500 max-w-sm mx-auto">{t['empty.subtitle']}</p>
             </div>

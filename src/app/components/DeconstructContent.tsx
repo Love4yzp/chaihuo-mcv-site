@@ -1,4 +1,11 @@
-import { BatteryCharging, ChevronRight, Cpu, Factory, type LucideIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  BatteryCharging,
+  ChevronRight,
+  Cpu,
+  Factory,
+  type LucideIcon,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import type { Locale } from '@/i18n/index';
 import { localePath } from '@/i18n/index';
@@ -105,7 +112,7 @@ export default function DeconstructContent({
                 key={spec.label}
                 variants={fadeUp}
                 transition={springTransition}
-                className="bg-white rounded-lg p-4 text-center shadow-sm"
+                className="bg-surface-card rounded-lg p-4 text-center shadow-sm"
               >
                 <div className="text-xl font-bold text-neutral-900">{spec.value}</div>
                 <div className="text-xs text-neutral-500 mt-1">{spec.label}</div>
@@ -153,7 +160,7 @@ export default function DeconstructContent({
             {notes.map((note) => (
               <motion.div
                 key={note.title}
-                className="bg-white rounded-xl overflow-hidden shadow-sm"
+                className="bg-surface-card rounded-xl overflow-hidden shadow-sm"
                 variants={fadeUp}
                 transition={springTransition}
               >
@@ -161,10 +168,29 @@ export default function DeconstructContent({
                   <img src={note.image} alt={note.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
-                  <h3 className="text-sm font-semibold text-neutral-900 mb-1 line-clamp-1">
+                  <h3 className="text-sm font-semibold text-neutral-900 mb-1.5 line-clamp-1">
                     {note.title}
                   </h3>
-                  <time className="text-xs text-neutral-400 font-mono">{note.date}</time>
+                  {note.description && (
+                    <p className="text-xs text-neutral-700 leading-relaxed line-clamp-2 mb-3">
+                      {note.description}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between gap-2">
+                    <time className="text-xs text-neutral-500 font-mono shrink-0">{note.date}</time>
+                    {note.tags && note.tags.length > 0 && (
+                      <div className="flex flex-wrap justify-end gap-1">
+                        {note.tags.slice(0, 2).map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10px] font-medium text-neutral-500 bg-neutral-100 px-2 py-0.5 rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -221,7 +247,7 @@ export default function DeconstructContent({
               return (
                 <motion.div
                   key={category.title}
-                  className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="bg-surface-card rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
                   variants={fadeUp}
                   transition={springTransition}
                   whileHover={{ y: -4 }}
@@ -267,7 +293,7 @@ export default function DeconstructContent({
               viewport={defaultViewport}
               transition={springTransition}
             >
-              <p className="text-sm tracking-[0.3em] text-neutral-400 uppercase mb-3">
+              <p className="text-sm tracking-[0.3em] text-neutral-500 uppercase mb-3">
                 {t['companion.eyebrow']}
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-neutral-900">
@@ -281,7 +307,7 @@ export default function DeconstructContent({
               whileInView="visible"
               viewport={defaultViewport}
               transition={springTransition}
-              className="flex flex-col md:flex-row items-center gap-6 rounded-xl border border-neutral-200 bg-white p-6"
+              className="flex flex-col md:flex-row items-center gap-6 rounded-xl border border-neutral-300 bg-surface-card p-6"
             >
               <div className="relative w-28 h-28 md:w-36 md:h-36 shrink-0 overflow-hidden rounded-xl bg-neutral-900">
                 <img
@@ -295,7 +321,7 @@ export default function DeconstructContent({
                   {companion.name}
                 </h3>
                 {companion.bio && (
-                  <p className="text-sm text-neutral-600 leading-relaxed">{companion.bio}</p>
+                  <p className="text-sm text-neutral-700 leading-relaxed">{companion.bio}</p>
                 )}
               </div>
             </motion.div>
@@ -304,7 +330,7 @@ export default function DeconstructContent({
       )}
 
       {/* 底部 CTA */}
-      <section className="py-16 px-6 bg-white border-t border-neutral-200">
+      <section className="py-16 px-6 bg-surface-card border-t border-neutral-300">
         <div className="max-w-2xl mx-auto text-center">
           <h3 className="text-2xl font-bold text-neutral-900 mb-3">{t['cta.title']}</h3>
           <p className="text-neutral-500 mb-6">{t['cta.body']}</p>
@@ -313,15 +339,7 @@ export default function DeconstructContent({
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M3 8h10M9 4l4 4-4 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </a>
         </div>
       </section>

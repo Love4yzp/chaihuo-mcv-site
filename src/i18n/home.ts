@@ -14,6 +14,8 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': '敬请期待',
     'hero.joinAction': '加入行动',
     'hero.aboutAction': '了解我们',
+    'carousel.prevAria': '上一张',
+    'carousel.nextAria': '下一张',
 
     'status.current': '位于 {city}',
     'status.days': '已出发 {days} 天',
@@ -82,6 +84,8 @@ const home: Record<Locale, Record<string, string>> = {
     'hero.comingSoon': 'Coming soon',
     'hero.joinAction': 'Get Involved',
     'hero.aboutAction': 'About Us',
+    'carousel.prevAria': 'Previous slide',
+    'carousel.nextAria': 'Next slide',
 
     'status.current': 'Now in {city}',
     'status.days': 'On the road · {days} days',

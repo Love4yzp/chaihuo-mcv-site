@@ -16,6 +16,7 @@ const guide: Record<Locale, Record<string, string>> = {
     'ride.role1': '技术担当 1-2人',
     'ride.role2': '媒体担当 1-2人',
     'ride.apply': '发送邮件报名',
+    'ride.applySubject': '柴火基地车同行申请',
 
     'cocreate.title': '在地共创',
     'cocreate.body': '与基地车在当地联合举办工作坊、主题分享会，共同推动可持续发展创新落地。',
@@ -55,6 +56,7 @@ const guide: Record<Locale, Record<string, string>> = {
     'ride.role1': 'Tech crew: 1–2 people',
     'ride.role2': 'Media crew: 1–2 people',
     'ride.apply': 'Apply via Email',
+    'ride.applySubject': 'Chaihuo MCV Ride-Along Application',
 
     'cocreate.title': 'Local Co-Creation',
     'cocreate.body':

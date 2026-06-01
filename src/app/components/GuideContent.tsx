@@ -34,13 +34,13 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
   const [openFAQs, setOpenFAQs] = useState<Set<string>>(new Set());
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface-card">
       {/* 标题区 */}
       <section className="pt-24 pb-12 px-6">
         <div className="max-w-6xl mx-auto">
           <motion.div variants={stagger(0.2)} initial="hidden" animate="visible">
             <motion.p
-              className="text-sm tracking-[0.3em] text-neutral-400 uppercase mb-3"
+              className="text-sm tracking-[0.3em] text-neutral-500 uppercase mb-3"
               variants={fadeUp}
               transition={springTransition}
             >
@@ -92,9 +92,8 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
               variants={fadeUp}
               transition={springTransition}
               whileHover={{ y: -4 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="bg-surface-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="h-1.5 bg-brand" />
               <div className="p-8">
                 <div className="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center mb-5">
                   <Truck className="w-6 h-6 text-brand-dark" />
@@ -114,8 +113,8 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                 </div>
 
                 <a
-                  href="mailto:business@chaihuo.org?subject=柴火基地车同行申请"
-                  className="inline-flex items-center gap-2 w-full justify-center py-3 rounded-lg bg-brand text-brand-foreground font-medium hover:bg-brand-hover transition-colors cursor-pointer text-sm"
+                  href={`mailto:business@chaihuo.org?subject=${encodeURIComponent(t['ride.applySubject'])}`}
+                  className="inline-flex items-center gap-2 w-full justify-center py-3 rounded-lg bg-brand text-brand-foreground font-medium hover:bg-brand-hover transition-colors duration-200 cursor-pointer text-sm"
                 >
                   <Mail className="w-4 h-4" />
                   {t['ride.apply']}
@@ -128,9 +127,8 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
               variants={fadeUp}
               transition={springTransition}
               whileHover={{ y: -4 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="bg-surface-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="h-1.5 bg-brand" />
               <div className="p-8">
                 <div className="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center mb-5">
                   <Sprout className="w-6 h-6 text-brand-dark" />
@@ -167,9 +165,8 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
               variants={fadeUp}
               transition={springTransition}
               whileHover={{ y: -4 }}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              className="bg-surface-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="h-1.5 bg-brand" />
               <div className="p-8">
                 <div className="w-12 h-12 bg-brand/10 rounded-xl flex items-center justify-center mb-5">
                   <Zap className="w-6 h-6 text-brand-dark" />
@@ -207,14 +204,14 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
             whileInView="visible"
             viewport={defaultViewport}
             transition={springTransition}
-            className="bg-white rounded-xl p-6 md:p-8 text-center text-sm text-neutral-500 leading-relaxed"
+            className="bg-surface-card rounded-xl p-6 md:p-8 text-center text-sm text-neutral-500 leading-relaxed"
           >
             <p>
               <strong className="text-neutral-900">{t['apply.ride']}</strong>
               {t['apply.rideDetail']}
               <a
                 href="mailto:business@chaihuo.org"
-                className="text-brand hover:text-brand-hover transition mx-1"
+                className="text-brand hover:text-brand-hover transition-colors duration-200 mx-1"
               >
                 business@chaihuo.org
               </a>
@@ -229,7 +226,7 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
       </section>
 
       {/* FAQ Section — 分组展示 */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-surface-card">
         <div className="max-w-4xl mx-auto">
           <motion.div
             variants={fadeUp}
@@ -250,15 +247,17 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
             viewport={defaultViewport}
             className="space-y-10"
           >
-            {faqGroups.map((group) => (
+            {faqGroups.map((group, gi) => (
               <motion.div key={group.label} variants={fadeUp} transition={springTransition}>
                 <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider mb-4 pl-1">
                   {group.label}
                 </h3>
                 <div className="space-y-2">
-                  {group.items.map((faq) => {
+                  {group.items.map((faq, ii) => {
                     const key = `${group.label}-${faq.question}`;
                     const isOpen = openFAQs.has(key);
+                    const btnId = `faq-btn-${gi}-${ii}`;
+                    const panelId = `faq-panel-${gi}-${ii}`;
                     return (
                       <div
                         key={key}
@@ -266,6 +265,9 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                       >
                         <button
                           type="button"
+                          id={btnId}
+                          aria-expanded={isOpen}
+                          aria-controls={panelId}
                           onClick={() =>
                             setOpenFAQs((prev) => {
                               const next = new Set(prev);
@@ -274,7 +276,7 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                               return next;
                             })
                           }
-                          className="w-full px-5 py-4 text-left flex items-center justify-between bg-white hover:bg-neutral-50 transition cursor-pointer"
+                          className="w-full px-5 py-4 text-left flex items-center justify-between bg-surface-card hover:bg-neutral-50 transition-colors duration-200 cursor-pointer"
                         >
                           <span className="font-semibold pr-4">{faq.question}</span>
                           <ChevronDown
@@ -286,6 +288,9 @@ export default function GuideContent({ faqGroups, t }: GuideContentProps) {
                         <AnimatePresence initial={false}>
                           {isOpen && (
                             <motion.div
+                              id={panelId}
+                              role="region"
+                              aria-labelledby={btnId}
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}

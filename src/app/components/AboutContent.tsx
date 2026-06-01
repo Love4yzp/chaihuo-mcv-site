@@ -1,7 +1,7 @@
 import gsap from 'gsap';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronDown, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '@/i18n/index';
@@ -114,20 +114,23 @@ function YearSpotlight({
   const jumpToSection = (year: string) => {
     const el = document.getElementById(`year-section-${year}`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const prefersReduced =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'center' });
     }
   };
 
   return (
     <div
       ref={containerRef}
-      className="bg-neutral-50/50 border-y border-neutral-200/60 py-20 px-6 md:px-[10%] lg:px-[12%] relative scroll-mt-20"
+      className="bg-neutral-50/50 border-y border-neutral-300/60 py-20 px-6 md:px-[10%] lg:px-[12%] relative scroll-mt-20"
     >
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
           {/* Left column - Sticky Year Tracker (Desktop Only) */}
           <div className="hidden lg:block w-[28%] shrink-0">
-            <div className="sticky top-32 h-[50vh] flex flex-col justify-center pl-6 border-l-2 border-neutral-200/80 relative">
+            <div className="sticky top-32 h-[50vh] flex flex-col justify-center pl-6 border-l-2 border-neutral-300/80 relative">
               {/* Glowing Active Track Indicator */}
               <div
                 className="absolute left-[-2px] w-[2px] bg-brand h-12 transition-all duration-300"
@@ -145,7 +148,7 @@ function YearSpotlight({
                       type="button"
                       key={item.year}
                       onClick={() => jumpToSection(item.year)}
-                      className="w-full text-left focus:outline-none block cursor-pointer group"
+                      className="w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-md block cursor-pointer group"
                     >
                       <div className="flex items-center gap-3">
                         <span
@@ -171,7 +174,7 @@ function YearSpotlight({
               return (
                 <div key={item.year} id={`year-section-${item.year}`} className="scroll-mt-36">
                   {/* Year Header (Mobile Sticky, Desktop Clean Title) */}
-                  <div className="sticky lg:relative top-16 lg:top-0 bg-neutral-50/95 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-3.5 lg:py-0 mb-4 z-20 border-b border-neutral-200/50 lg:border-none flex items-center justify-between gap-4">
+                  <div className="sticky lg:relative top-16 lg:top-0 bg-neutral-50/95 lg:bg-transparent backdrop-blur-md lg:backdrop-blur-none py-3.5 lg:py-0 mb-4 z-20 border-b border-neutral-300/50 lg:border-none flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className="lg:hidden text-2xl font-black text-brand tracking-tight">
                         {item.year}
@@ -182,7 +185,7 @@ function YearSpotlight({
                         </span>
                       )}
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 bg-neutral-200/60 px-2.5 py-0.5 rounded-md">
+                    <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-500 bg-neutral-100 px-2.5 py-0.5 rounded-md">
                       <Sparkles className="w-2.5 h-2.5 text-brand" />
                       {t['panorama.highlight'] || 'Milestone'}
                     </span>
@@ -206,23 +209,23 @@ function YearSpotlight({
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true, amount: 0.15 }}
                           transition={{ type: 'spring', damping: 20, stiffness: 260 }}
-                          className={`flex flex-col p-6 rounded-2xl border border-neutral-200/60 bg-white/70 backdrop-blur-md shadow-sm hover:shadow-[0_15px_30px_rgba(243,210,48,0.05)] hover:border-brand/40 transition-all duration-300 ${
+                          className={`flex flex-col p-6 rounded-2xl border border-neutral-300/60 bg-surface-card/70 backdrop-blur-md shadow-sm hover:shadow-lg hover:border-brand/40 transition-[box-shadow,border-color] duration-300 ${
                             isLongText || item.events.length === 1 ? 'md:col-span-2' : ''
                           }`}
                         >
                           <div className="flex items-center gap-2 mb-3">
-                            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse motion-reduce:animate-none" />
                             <span className="text-xs font-mono font-bold text-brand-dark tracking-widest uppercase">
                               {ev.month}
                             </span>
                           </div>
 
-                          <p className="text-sm md:text-base text-neutral-850 leading-relaxed font-semibold">
+                          <p className="text-sm md:text-base text-neutral-900 leading-relaxed font-semibold">
                             {locale === 'en' && ev.en ? ev.en : ev.text}
                           </p>
 
                           {locale === 'zh' && ev.en && (
-                            <p className="text-xs text-neutral-400 font-normal mt-2 leading-relaxed">
+                            <p className="text-xs text-neutral-500 font-normal mt-2 leading-relaxed">
                               {ev.en}
                             </p>
                           )}
@@ -237,11 +240,11 @@ function YearSpotlight({
         </div>
 
         {/* Collapsible Chronicle Drawer for Minor Years */}
-        <div className="mt-20 border-t border-neutral-200/60 pt-12 text-center">
+        <div className="mt-20 border-t border-neutral-300/60 pt-12 text-center">
           <button
             type="button"
             onClick={() => setShowFullHistory(!showFullHistory)}
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-white border border-neutral-200 hover:border-brand hover:bg-brand-light text-neutral-800 font-bold transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-surface-card border border-neutral-300 hover:border-brand hover:bg-brand-light text-neutral-900 font-bold transition-[background-color,border-color,box-shadow] duration-300 shadow-md hover:shadow-lg cursor-pointer text-sm"
           >
             <span>
               {showFullHistory
@@ -266,14 +269,14 @@ function YearSpotlight({
                 transition={{ duration: 0.45, ease: 'easeInOut' }}
                 className="overflow-hidden mt-8 max-w-2xl mx-auto"
               >
-                <div className="relative pl-6 border-l border-neutral-250 space-y-6 text-left py-4">
+                <div className="relative pl-6 border-l border-neutral-300 space-y-6 text-left py-4">
                   {items.map((item) => (
                     <div key={item.year} className="relative group">
                       {/* Highlighted indicator for milestone years */}
                       <span
                         className={`absolute left-[-29px] top-1.5 w-2.5 h-2.5 rounded-full border transition-all duration-300 ${
                           item.isHighlight
-                            ? 'bg-brand border-brand/50 scale-125 shadow-[0_0_8px_rgba(243,210,48,0.6)] animate-pulse'
+                            ? 'bg-brand border-brand/50 scale-125 shadow-[0_0_8px_var(--brand)] animate-pulse motion-reduce:animate-none'
                             : 'bg-neutral-300 border-white group-hover:bg-brand group-hover:scale-105'
                         }`}
                       />
@@ -282,7 +285,7 @@ function YearSpotlight({
                           className={`text-base font-black shrink-0 select-none transition-colors duration-200 ${
                             item.isHighlight
                               ? 'text-brand font-extrabold'
-                              : 'text-neutral-400 group-hover:text-brand'
+                              : 'text-neutral-500 group-hover:text-brand'
                           }`}
                         >
                           {item.year}
@@ -291,7 +294,7 @@ function YearSpotlight({
                           {item.events.map((ev) => (
                             <p
                               key={`${ev.month}-${ev.text}`}
-                              className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-850 font-bold' : 'text-neutral-600 font-medium'}`}
+                              className={`text-xs leading-relaxed font-semibold ${item.isHighlight ? 'text-neutral-900 font-bold' : 'text-neutral-700 font-medium'}`}
                             >
                               <span className="text-brand-dark font-mono mr-1.5 uppercase font-bold">
                                 {ev.month}
@@ -369,14 +372,14 @@ export default function AboutContent({
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface-card">
       {/* Hero — 左右分栏：信息 | 图片 */}
       <section className="relative min-h-[480px] md:min-h-[560px] flex flex-col md:flex-row">
         {/* Left — 信息区 */}
         <div className="flex-1 flex flex-col justify-center pt-28 md:pt-32 pb-10 md:pb-12 px-6 md:pl-[12%] md:pr-12">
           <motion.div variants={stagger(0.12)} initial="hidden" animate="visible">
             <motion.p
-              className="text-xs tracking-[0.3em] text-neutral-400 uppercase mb-3"
+              className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-3"
               variants={fadeUp}
               transition={springTransition}
             >
@@ -410,7 +413,7 @@ export default function AboutContent({
                 className="w-full flex"
               >
                 <AntigravityCard
-                  className="p-5 flex flex-col justify-center items-start w-full bg-white/75 shadow-[0_15px_30px_rgba(0,0,0,0.02)]"
+                  className="p-5 flex flex-col justify-center items-start w-full bg-surface-card/75 shadow-lg"
                   maxTilt={12}
                 >
                   <div className="text-3xl font-black text-brand leading-none tracking-tight">
@@ -432,7 +435,7 @@ export default function AboutContent({
             alt={t['hero.image.alt']}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent w-24" />
+          <div className="absolute inset-0 bg-gradient-to-r from-surface-card via-surface-card/40 to-transparent w-24" />
         </div>
       </section>
 
@@ -447,7 +450,7 @@ export default function AboutContent({
           whileInView="visible"
           viewport={defaultViewport}
           transition={springTransition}
-          className="text-xs uppercase tracking-[0.2em] text-neutral-400 mb-12 text-center"
+          className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-12 text-center"
         >
           {t['partners.label']}
         </motion.p>
@@ -464,16 +467,16 @@ export default function AboutContent({
               variants={fadeUp}
               transition={{ type: 'spring', damping: 16, stiffness: 220 }}
               whileHover={{ y: -6, scale: 1.04 }}
-              className="flex flex-col items-center justify-center py-6 px-4 w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(16.666%-20px)] rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-md hover:border-brand/40 shadow-sm hover:shadow-[0_15px_35px_rgba(243,210,48,0.06)] transition-all duration-300 relative overflow-hidden group cursor-pointer"
+              className="flex flex-col items-center justify-center py-6 px-4 w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(16.666%-20px)] rounded-2xl border border-neutral-300 bg-surface-card/70 backdrop-blur-md hover:border-brand/40 shadow-sm hover:shadow-lg transition-[box-shadow,border-color] duration-300 relative overflow-hidden group"
             >
               {/* Internal Holographic Light Aura on hover */}
               <div className="absolute inset-0 bg-gradient-to-tr from-brand/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-              <span className="text-lg font-bold text-neutral-400 group-hover:text-neutral-900 transition-colors duration-200 cursor-pointer">
+              <span className="text-lg font-bold text-neutral-500 group-hover:text-neutral-900 transition-colors duration-200">
                 {partner.name}
               </span>
               {partner.description && (
-                <span className="text-xs text-neutral-400 group-hover:text-neutral-500 mt-1.5 text-center transition-colors duration-200">
+                <span className="text-xs text-neutral-500 group-hover:text-neutral-700 mt-1.5 text-center transition-colors duration-200">
                   {partner.description}
                 </span>
               )}
@@ -483,7 +486,7 @@ export default function AboutContent({
       </section>
 
       {/* 愿景收尾 */}
-      <section className="py-20 px-6 md:px-[12%] bg-white">
+      <section className="py-20 px-6 md:px-[12%] bg-surface-card">
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -496,12 +499,12 @@ export default function AboutContent({
           <p className="text-xl md:text-2xl text-neutral-700 leading-relaxed font-light italic">
             {t['vision.quote']}
           </p>
-          <p className="mt-6 text-sm text-neutral-400">{t['vision.author']}</p>
+          <p className="mt-6 text-sm text-neutral-500">{t['vision.author']}</p>
         </motion.div>
       </section>
 
       {/* 底部 CTA */}
-      <section className="py-16 px-6 md:px-[12%] bg-neutral-50 border-t border-neutral-200">
+      <section className="py-16 px-6 md:px-[12%] bg-neutral-50 border-t border-neutral-300">
         <div className="max-w-2xl mx-auto text-center">
           <h3 className="text-2xl font-bold text-neutral-900 mb-3">{t['cta.title']}</h3>
           <p className="text-neutral-500 mb-6">{t['cta.body']}</p>
@@ -510,15 +513,7 @@ export default function AboutContent({
             className="inline-flex items-center gap-2 bg-brand text-brand-foreground px-8 py-3 rounded-full hover:bg-brand-hover transition-colors duration-200 cursor-pointer font-medium"
           >
             {t['cta.button']}
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path
-                d="M3 8h10M9 4l4 4-4 4"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </a>
         </div>
       </section>
