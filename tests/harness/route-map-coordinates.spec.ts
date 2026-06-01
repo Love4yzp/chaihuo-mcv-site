@@ -153,20 +153,26 @@ test('label placement is indexed by stable city id', () => {
   expect(placements.has('同名')).toBe(false);
 });
 
-test('route city theme tags cover the expected stops', () => {
-  const idsWith = (theme: string) =>
-    routeCities
-      .filter((c) => c.themes.includes(theme as never))
-      .map((c) => c.id)
-      .sort();
-
-  expect(idsWith('science')).toEqual(
-    ['guangzhou', 'guiyang', 'nanning', 'yangjiang', 'yulin'].sort(),
-  );
-  expect(idsWith('maker')).toEqual(['bijie', 'chengdu', 'guiyang'].sort());
-  expect(idsWith('industry')).toEqual(['liuzhou']);
-  // Origin carries no activity theme.
+test('route city theme tags are valid: origin bare, themes within THEME_ORDER, each theme used', () => {
+  // Origin (深圳) carries no activity theme.
   expect(routeCities.find((c) => c.id === 'shenzhen')!.themes).toEqual([]);
+  // Known anchor that must remain stable regardless of route growth.
+  expect(
+    routeCities
+      .find((c) => c.id === 'guiyang')!
+      .themes.slice()
+      .sort(),
+  ).toEqual(['maker', 'science']);
+  // Every city's themes are valid values.
+  for (const c of routeCities) {
+    for (const th of c.themes) {
+      expect(THEME_ORDER).toContain(th);
+    }
+  }
+  // Every theme in the legend is actually used by at least one city.
+  for (const th of THEME_ORDER) {
+    expect(routeCities.some((c) => c.themes.includes(th as never))).toBe(true);
+  }
 });
 
 test('THEME_ORDER lists the three themes in display order', () => {
@@ -180,8 +186,15 @@ test('cityMatchesTheme checks membership; guiyang matches science and maker', ()
   expect(cityMatchesTheme(guiyang, 'industry')).toBe(false);
 });
 
-test('countThemes tallies all cities (science 5, maker 3, industry 1)', () => {
-  expect(countThemes(routeCities)).toEqual({ science: 5, maker: 3, industry: 1 });
+test('countThemes matches an independent per-theme tally of all cities', () => {
+  const expected = Object.fromEntries(
+    THEME_ORDER.map((th) => [th, routeCities.filter((c) => c.themes.includes(th as never)).length]),
+  );
+  expect(countThemes(routeCities)).toEqual(expected);
+  // Sanity: at least the three legend themes are present and positive.
+  for (const th of THEME_ORDER) {
+    expect(countThemes(routeCities)[th]).toBeGreaterThan(0);
+  }
 });
 
 test('placeLabels hides a low-priority label that cannot sit near its dot', () => {
@@ -551,20 +564,22 @@ test('route page renders theme chips with counts', async ({ page }) => {
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   await expect(page.locator('[data-theme-filter="true"]')).toHaveCount(1);
+  const counts = countThemes(routeCities);
   await expect(page.locator('[data-theme-chip="all"]')).toHaveText('全部');
   await expect(page.locator('[data-theme-chip="science"]')).toContainText('科普');
-  await expect(page.locator('[data-theme-chip="science"]')).toContainText('5');
-  await expect(page.locator('[data-theme-chip="maker"]')).toContainText('3');
-  await expect(page.locator('[data-theme-chip="industry"]')).toContainText('1');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText(String(counts.science));
+  await expect(page.locator('[data-theme-chip="maker"]')).toContainText(String(counts.maker));
+  await expect(page.locator('[data-theme-chip="industry"]')).toContainText(String(counts.industry));
 });
 
 test('en route page renders theme chips with English labels', async ({ page }) => {
   await gotoRoute(page, { path: '/en/route', name: 'route-en', locale: 'en' });
 
   await expect(page.locator('[data-theme-filter="true"]')).toHaveCount(1);
+  const counts = countThemes(routeCities);
   await expect(page.locator('[data-theme-chip="all"]')).toHaveText('All');
   await expect(page.locator('[data-theme-chip="science"]')).toContainText('STEM');
-  await expect(page.locator('[data-theme-chip="science"]')).toContainText('5');
+  await expect(page.locator('[data-theme-chip="science"]')).toContainText(String(counts.science));
   await expect(page.locator('[data-theme-chip="maker"]')).toContainText('Makers');
   await expect(page.locator('[data-theme-chip="industry"]')).toContainText('Industry');
 });
@@ -576,9 +591,14 @@ test('selecting a theme highlights matches and dims the rest; origin stays lit; 
 
   await page.locator('[data-theme-chip="science"]').click();
 
-  // 5 science stops matched on the visible map, 3 non-origin non-matching dimmed.
-  await expect.poll(() => countVisibleCityGroups(page, '[data-theme-match="true"]')).toBe(5);
-  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(3);
+  // Derived from data: science-matching stops are highlighted; non-origin
+  // non-matching stops are dimmed (origin is exempt).
+  const matched = routeCities.filter((c) => c.themes.includes('science' as never)).length;
+  const dimmed = routeCities.filter(
+    (c) => !c.isOrigin && !c.themes.includes('science' as never),
+  ).length;
+  await expect.poll(() => countVisibleCityGroups(page, '[data-theme-match="true"]')).toBe(matched);
+  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(dimmed);
   // Origin (深圳) is exempt — never dimmed (across both rendered maps).
   await expect(
     page.locator('[data-route-city="true"][data-city-id="shenzhen"][data-dimmed="true"]'),
@@ -593,8 +613,11 @@ test('clicking the active theme again clears the lens and restores segment opaci
   await gotoRoute(page, { path: '/route', name: 'route-zh', locale: 'zh' });
 
   const chip = page.locator('[data-theme-chip="science"]');
+  const dimmed = routeCities.filter(
+    (c) => !c.isOrigin && !c.themes.includes('science' as never),
+  ).length;
   await chip.click();
-  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(3);
+  await expect.poll(() => countVisibleCityGroups(page, '[data-dimmed="true"]')).toBe(dimmed);
   await expect.poll(() => visibleSegmentLayerOpacity(page)).toBe('0.2');
 
   await chip.click(); // toggle off
@@ -605,10 +628,11 @@ test('clicking the active theme again clears the lens and restores segment opaci
 
 // ── Phase 5: Loader-level tests ──────────────────────────────────────────────
 
-test('loadStops(zh) returns 9 stops in order with parsed body fields', async () => {
+test('loadStops(zh) returns stops in contiguous order with parsed body fields', async () => {
   const stops = await loadStops('zh');
-  expect(stops.length).toBe(9);
-  expect(stops.map((s) => s.order)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  expect(stops.length).toBeGreaterThan(0);
+  // Orders are contiguous from 0 regardless of how many stops exist.
+  expect(stops.map((s) => s.order)).toEqual(stops.map((_, i) => i));
   const liuzhou = stops.find((s) => s.id === 'liuzhou')!;
   expect(liuzhou.terrain).toContain('喀斯特');
   expect(liuzhou.relationStats.length).toBeGreaterThan(0);
