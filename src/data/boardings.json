@@ -35,6 +35,22 @@
       "location": "成都",
       "location_en": "Chengdu"
     },
+    "disembarkedAt": {
+      "date": "2026-06-01",
+      "location": "成都",
+      "location_en": "Chengdu",
+      "handoffTo": "kuang-zhonglun"
+    }
+  },
+  {
+    "id": "b7",
+    "crewId": "kuang-zhonglun",
+    "role": "技术担当",
+    "boardedAt": {
+      "date": "2026-06-01",
+      "location": "成都",
+      "location_en": "Chengdu"
+    },
     "disembarkedAt": null
   },
   {
@@ -75,6 +91,22 @@
     "role": "媒体担当",
     "boardedAt": {
       "date": "2026-05-11",
+      "location": "成都",
+      "location_en": "Chengdu"
+    },
+    "disembarkedAt": {
+      "date": "2026-06-01",
+      "location": "成都",
+      "location_en": "Chengdu",
+      "handoffTo": "haonan"
+    }
+  },
+  {
+    "id": "b8",
+    "crewId": "haonan",
+    "role": "媒体担当",
+    "boardedAt": {
+      "date": "2026-06-01",
       "location": "成都",
       "location_en": "Chengdu"
     },
