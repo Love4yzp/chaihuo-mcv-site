@@ -121,3 +121,19 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 - Interactive elements must have `cursor-pointer` and `transition-colors duration-200`
 - Navigation and Footer receive `locale` prop; internal links use `localePath()` helper
 - `src/app/components/ui/` — shadcn/ui components — **do not modify manually**
+
+## Current Status
+
+### Active Branches
+
+- None
+
+### Completed Features
+
+- Home hero carousel has three background slides, including the snow mountain MCV image.
+
+## Changelog
+
+| Date | Branch | Description |
+| --- | --- | --- |
+| 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
