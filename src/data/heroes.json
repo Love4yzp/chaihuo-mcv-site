@@ -10,5 +10,11 @@
     "image": "/heroes/karst-guangxi.webp",
     "alt": "基地车扎营喀斯特田野 — 广西柳江三都",
     "alt_en": "MCV camped beside karst farmland — Sandu Town, Liujiang, Guangxi"
+  },
+  {
+    "id": "snow-mountain-mcv",
+    "image": "/heroes/snow-mountain-mcv.webp",
+    "alt": "基地车停靠雪山脚下 — 高原日照",
+    "alt_en": "MCV parked below sunlit snow mountains — Tibetan Plateau"
   }
 ]
