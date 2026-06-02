@@ -18,11 +18,29 @@ import { fadeUp, springTransition, stagger } from './motion';
 interface Props {
   cities: RouteCity[];
   journals: LocalizedJournal[];
+  yuqueJournals?: YuqueJournalCard[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function JournalsContent({ cities, journals, locale = 'zh', t }: Props) {
+interface YuqueJournalCard {
+  id: string;
+  slug: string;
+  title: string;
+  date: string | null;
+  city: string;
+  href: string;
+  updatedAt: string | null;
+  coverImage: string | null;
+}
+
+export default function JournalsContent({
+  cities,
+  journals,
+  yuqueJournals = [],
+  locale = 'zh',
+  t,
+}: Props) {
   // Read search parameters for initial filters
   const [activeCity, setActiveCity] = useState<string>('all');
   const [activeStatus, setActiveStatus] = useState<string>('all');
@@ -74,7 +92,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
         params.set('status', status);
       }
       const newSearch = params.toString();
-      const newUrl = `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`;
+      const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}`;
       window.history.pushState(null, '', newUrl);
     }
   };
@@ -85,6 +103,19 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
     const statusMatch = activeStatus === 'all' || j.status === activeStatus;
     return cityMatch && statusMatch;
   });
+  const hasYuqueJournals = yuqueJournals.length > 0;
+  const filteredYuqueJournals = yuqueJournals.filter((j) => {
+    const cityMatch = activeCity === 'all' || j.city === activeCity;
+    const statusMatch = activeStatus === 'all' || activeStatus === 'published';
+    return cityMatch && statusMatch;
+  });
+  const totalCount = hasYuqueJournals ? yuqueJournals.length : journals.length;
+  const publishedCount = hasYuqueJournals
+    ? yuqueJournals.length
+    : journals.filter((j) => j.status === 'published').length;
+  const placeholderCount = hasYuqueJournals
+    ? 0
+    : journals.filter((j) => j.status === 'placeholder').length;
 
   // Unique cities referenced in the cities prop
   const citiesList = Array.from(new Map(cities.map((city) => [city.id, city.label]))).map(
@@ -188,17 +219,15 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
           {/* Status Count Summary Bar */}
           <div className="text-xs text-neutral-500 font-semibold self-start md:self-auto flex items-center gap-2">
             <span>
-              {locale === 'en' ? 'All' : '全部'} {journals.length}
+              {locale === 'en' ? 'All' : '全部'} {totalCount}
             </span>
             <span className="text-neutral-300">•</span>
             <span className="text-brand-dark">
-              {locale === 'en' ? 'Published' : '已发布'}{' '}
-              {journals.filter((j) => j.status === 'published').length}
+              {locale === 'en' ? 'Published' : '已发布'} {publishedCount}
             </span>
             <span className="text-neutral-300">•</span>
             <span className="text-neutral-500">
-              {locale === 'en' ? 'In progress' : '整理中'}{' '}
-              {journals.filter((j) => j.status === 'placeholder').length}
+              {locale === 'en' ? 'In progress' : '整理中'} {placeholderCount}
             </span>
           </div>
         </div>
@@ -207,7 +236,59 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       {/* Cards Grid */}
       <section className="py-16 px-6">
         <div className="max-w-5xl mx-auto">
-          {filteredJournals.length > 0 ? (
+          {hasYuqueJournals ? (
+            filteredYuqueJournals.length > 0 ? (
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                variants={stagger(0.08)}
+                initial="hidden"
+                animate="visible"
+              >
+                {filteredYuqueJournals.map((entry) => (
+                  <motion.div key={entry.id} variants={fadeUp} className="group">
+                    <a
+                      href={entry.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block bg-surface-card rounded-lg overflow-hidden shadow-xs hover:shadow-lg hover:border-neutral-400 border border-neutral-300 transition-[box-shadow,border-color,transform] duration-300 hover:-translate-y-0.5"
+                    >
+                      <div className="aspect-[16/9] bg-neutral-100 overflow-hidden border-b border-neutral-300">
+                        {entry.coverImage ? (
+                          <img
+                            src={entry.coverImage}
+                            alt={entry.title}
+                            className="w-full h-full object-cover group-hover:scale-[1.025] transition-transform duration-500"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-end bg-neutral-200 p-5">
+                            <span className="text-xs font-semibold text-neutral-500">
+                              {entry.date ?? entry.slug}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="px-5 py-4">
+                        <h3 className="text-base font-bold text-neutral-900 line-clamp-1 leading-snug">
+                          {entry.title}
+                        </h3>
+                        <p className="text-sm text-neutral-500 mt-3">
+                          {formatYuqueUpdatedAt(entry.updatedAt, locale)}
+                        </p>
+                      </div>
+                    </a>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <div className="text-center py-24 bg-surface-card border border-neutral-300 rounded-2xl shadow-xs">
+                <Compass className="w-12 h-12 text-neutral-300 mx-auto mb-4 animate-spin [animation-duration:10s] motion-reduce:animate-none" />
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">{t['empty.title']}</h3>
+                <p className="text-sm text-neutral-500 max-w-sm mx-auto">{t['empty.subtitle']}</p>
+              </div>
+            )
+          ) : filteredJournals.length > 0 ? (
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               variants={stagger(0.08)}
@@ -391,4 +472,17 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       </section>
     </div>
   );
+}
+
+function formatYuqueUpdatedAt(value: string | null, locale: Locale) {
+  if (!value) return locale === 'en' ? 'Updated recently' : '最近更新';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return locale === 'en' ? 'Updated recently' : '最近更新';
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
 }

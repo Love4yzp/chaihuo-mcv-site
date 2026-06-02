@@ -7,6 +7,7 @@ import type { Locale } from '@/i18n/index';
 import journalsDict from '@/i18n/journals';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getAllJournals, localizeJournal } from '@/lib/journals';
+import yuqueJournalsData from '@/data/yuque-journals.json';
 
 const locale = (Astro.currentLocale ?? 'en') as Locale;
 const t = journalsDict[locale];
@@ -22,5 +23,12 @@ const localizedJournals = journalsCollection.map((entry) => localizeJournal(entr
 ---
 
 <BaseLayout title={t['title']} description={t['description']}>
-  <JournalsContent client:load cities={cities} journals={localizedJournals} locale={locale} t={t} />
+  <JournalsContent
+    client:load
+    cities={cities}
+    journals={localizedJournals}
+    yuqueJournals={yuqueJournalsData.journals}
+    locale={locale}
+    t={t}
+  />
 </BaseLayout>
