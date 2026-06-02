@@ -164,77 +164,74 @@ export default function JournalsContent({
         </div>
       </section>
 
-      {/* Filter and Count Bar */}
-      <section className="py-6 px-6 bg-surface-card border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-          {/* Controls: Dropdown + Chips */}
-          <div className="flex flex-wrap items-center gap-4">
-            {/* City Dropdown */}
-            <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-300 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors duration-200 group cursor-pointer focus-within:ring-2 focus-within:ring-brand focus-within:border-brand">
-              <MapPin className="w-4 h-4 text-neutral-500 mr-2" />
-              <select
-                value={activeCity}
-                onChange={(e) => handleCityChange(e.target.value)}
-                aria-label={
-                  t['filter.cityAria'] ??
-                  (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')
-                }
-                className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
-              >
-                <option value="all">{t['filter.all']}</option>
-                {citiesList.map((city) => (
-                  <option key={city.id} value={city.id}>
-                    {city.label}
-                  </option>
+      {!hasYuqueJournals && (
+        <section className="py-6 px-6 bg-surface-card border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-300 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors duration-200 group cursor-pointer focus-within:ring-2 focus-within:ring-brand focus-within:border-brand">
+                <MapPin className="w-4 h-4 text-neutral-500 mr-2" />
+                <select
+                  value={activeCity}
+                  onChange={(e) => handleCityChange(e.target.value)}
+                  aria-label={
+                    t['filter.cityAria'] ??
+                    (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')
+                  }
+                  className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
+                >
+                  <option value="all">{t['filter.all']}</option>
+                  {citiesList.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 bg-neutral-100 p-1 rounded-lg border border-neutral-300">
+                {[
+                  { key: 'all', label: t['filter.all'] },
+                  { key: 'published', label: t['filter.published'] },
+                  { key: 'placeholder', label: t['filter.placeholder'] },
+                ].map((status) => (
+                  <button
+                    type="button"
+                    key={status.key}
+                    onClick={() => handleStatusChange(status.key)}
+                    className={`px-4 py-1 rounded-md text-xs font-semibold transition-colors duration-200 cursor-pointer ${
+                      activeStatus === status.key
+                        ? 'bg-neutral-900 text-white shadow-xs'
+                        : 'text-neutral-700 hover:text-neutral-900'
+                    }`}
+                  >
+                    {status.label}
+                  </button>
                 ))}
-              </select>
-              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500">
-                <ChevronDown className="w-4 h-4" />
               </div>
             </div>
 
-            {/* Status Chips */}
-            <div className="flex items-center gap-2 bg-neutral-100 p-1 rounded-lg border border-neutral-300">
-              {[
-                { key: 'all', label: t['filter.all'] },
-                { key: 'published', label: t['filter.published'] },
-                { key: 'placeholder', label: t['filter.placeholder'] },
-              ].map((status) => (
-                <button
-                  type="button"
-                  key={status.key}
-                  onClick={() => handleStatusChange(status.key)}
-                  className={`px-4 py-1 rounded-md text-xs font-semibold transition-colors duration-200 cursor-pointer ${
-                    activeStatus === status.key
-                      ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-700 hover:text-neutral-900'
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
+            <div className="text-xs text-neutral-500 font-semibold self-start md:self-auto flex items-center gap-2">
+              <span>
+                {locale === 'en' ? 'All' : '全部'} {totalCount}
+              </span>
+              <span className="text-neutral-300">•</span>
+              <span className="text-brand-dark">
+                {locale === 'en' ? 'Published' : '已发布'} {publishedCount}
+              </span>
+              <span className="text-neutral-300">•</span>
+              <span className="text-neutral-500">
+                {locale === 'en' ? 'In progress' : '整理中'} {placeholderCount}
+              </span>
             </div>
           </div>
-
-          {/* Status Count Summary Bar */}
-          <div className="text-xs text-neutral-500 font-semibold self-start md:self-auto flex items-center gap-2">
-            <span>
-              {locale === 'en' ? 'All' : '全部'} {totalCount}
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="text-brand-dark">
-              {locale === 'en' ? 'Published' : '已发布'} {publishedCount}
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="text-neutral-500">
-              {locale === 'en' ? 'In progress' : '整理中'} {placeholderCount}
-            </span>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Cards Grid */}
-      <section className="py-16 px-6">
+      <section className={`${hasYuqueJournals ? 'pt-8 pb-16' : 'py-16'} px-6`}>
         <div className="max-w-5xl mx-auto">
           {hasYuqueJournals ? (
             filteredYuqueJournals.length > 0 ? (
@@ -271,10 +268,10 @@ export default function JournalsContent({
                       </div>
                       <div className="px-5 py-4">
                         <h3 className="text-base font-bold text-neutral-900 line-clamp-1 leading-snug">
-                          {entry.title}
+                          {formatYuqueCardTitle(entry.title)}
                         </h3>
                         <p className="text-sm text-neutral-500 mt-3">
-                          {formatYuqueUpdatedAt(entry.updatedAt, locale)}
+                          {formatYuqueJournalDate(entry.date, locale)}
                         </p>
                       </div>
                     </a>
@@ -474,15 +471,20 @@ export default function JournalsContent({
   );
 }
 
-function formatYuqueUpdatedAt(value: string | null, locale: Locale) {
-  if (!value) return locale === 'en' ? 'Updated recently' : '最近更新';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return locale === 'en' ? 'Updated recently' : '最近更新';
-  return new Intl.DateTimeFormat(locale === 'en' ? 'en-US' : 'zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(date);
+function formatYuqueCardTitle(title: string) {
+  const parts = title
+    .split(/[|｜]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return parts.length >= 3 ? parts.slice(2).join(' | ') : title;
+}
+
+function formatYuqueJournalDate(value: string | null, locale: Locale) {
+  if (!value) return locale === 'en' ? 'No date' : '暂无日期';
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return value;
+
+  return `${match[1]}.${match[2]}.${match[3]}`;
 }
