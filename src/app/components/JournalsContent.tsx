@@ -18,11 +18,29 @@ import { fadeUp, springTransition, stagger } from './motion';
 interface Props {
   cities: RouteCity[];
   journals: LocalizedJournal[];
+  yuqueJournals?: YuqueJournalCard[];
   locale?: Locale;
   t: Record<string, string>;
 }
 
-export default function JournalsContent({ cities, journals, locale = 'zh', t }: Props) {
+interface YuqueJournalCard {
+  id: string;
+  slug: string;
+  title: string;
+  date: string | null;
+  city: string;
+  href: string;
+  updatedAt: string | null;
+  coverImage: string | null;
+}
+
+export default function JournalsContent({
+  cities,
+  journals,
+  yuqueJournals = [],
+  locale = 'zh',
+  t,
+}: Props) {
   // Read search parameters for initial filters
   const [activeCity, setActiveCity] = useState<string>('all');
   const [activeStatus, setActiveStatus] = useState<string>('all');
@@ -74,7 +92,7 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
         params.set('status', status);
       }
       const newSearch = params.toString();
-      const newUrl = `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`;
+      const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}`;
       window.history.pushState(null, '', newUrl);
     }
   };
@@ -85,6 +103,19 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
     const statusMatch = activeStatus === 'all' || j.status === activeStatus;
     return cityMatch && statusMatch;
   });
+  const hasYuqueJournals = yuqueJournals.length > 0;
+  const filteredYuqueJournals = yuqueJournals.filter((j) => {
+    const cityMatch = activeCity === 'all' || j.city === activeCity;
+    const statusMatch = activeStatus === 'all' || activeStatus === 'published';
+    return cityMatch && statusMatch;
+  });
+  const totalCount = hasYuqueJournals ? yuqueJournals.length : journals.length;
+  const publishedCount = hasYuqueJournals
+    ? yuqueJournals.length
+    : journals.filter((j) => j.status === 'published').length;
+  const placeholderCount = hasYuqueJournals
+    ? 0
+    : journals.filter((j) => j.status === 'placeholder').length;
 
   // Unique cities referenced in the cities prop
   const citiesList = Array.from(new Map(cities.map((city) => [city.id, city.label]))).map(
@@ -133,81 +164,128 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
         </div>
       </section>
 
-      {/* Filter and Count Bar */}
-      <section className="py-6 px-6 bg-surface-card border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
-          {/* Controls: Dropdown + Chips */}
-          <div className="flex flex-wrap items-center gap-4">
-            {/* City Dropdown */}
-            <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-300 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors duration-200 group cursor-pointer focus-within:ring-2 focus-within:ring-brand focus-within:border-brand">
-              <MapPin className="w-4 h-4 text-neutral-500 mr-2" />
-              <select
-                value={activeCity}
-                onChange={(e) => handleCityChange(e.target.value)}
-                aria-label={
-                  t['filter.cityAria'] ??
-                  (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')
-                }
-                className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
-              >
-                <option value="all">{t['filter.all']}</option>
-                {citiesList.map((city) => (
-                  <option key={city.id} value={city.id}>
-                    {city.label}
-                  </option>
+      {!hasYuqueJournals && (
+        <section className="py-6 px-6 bg-surface-card border-b border-neutral-300 sticky top-[64px] z-40 shadow-xs">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="relative flex items-center bg-neutral-100 hover:bg-neutral-300 border border-neutral-300 rounded-lg px-3 py-1.5 transition-colors duration-200 group cursor-pointer focus-within:ring-2 focus-within:ring-brand focus-within:border-brand">
+                <MapPin className="w-4 h-4 text-neutral-500 mr-2" />
+                <select
+                  value={activeCity}
+                  onChange={(e) => handleCityChange(e.target.value)}
+                  aria-label={
+                    t['filter.cityAria'] ??
+                    (locale === 'en' ? 'Filter journals by city' : '按城市筛选日志')
+                  }
+                  className="appearance-none bg-transparent pr-8 py-0.5 text-sm font-medium text-neutral-700 focus:outline-none cursor-pointer w-full"
+                >
+                  <option value="all">{t['filter.all']}</option>
+                  {citiesList.map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 bg-neutral-100 p-1 rounded-lg border border-neutral-300">
+                {[
+                  { key: 'all', label: t['filter.all'] },
+                  { key: 'published', label: t['filter.published'] },
+                  { key: 'placeholder', label: t['filter.placeholder'] },
+                ].map((status) => (
+                  <button
+                    type="button"
+                    key={status.key}
+                    onClick={() => handleStatusChange(status.key)}
+                    className={`px-4 py-1 rounded-md text-xs font-semibold transition-colors duration-200 cursor-pointer ${
+                      activeStatus === status.key
+                        ? 'bg-neutral-900 text-white shadow-xs'
+                        : 'text-neutral-700 hover:text-neutral-900'
+                    }`}
+                  >
+                    {status.label}
+                  </button>
                 ))}
-              </select>
-              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500">
-                <ChevronDown className="w-4 h-4" />
               </div>
             </div>
 
-            {/* Status Chips */}
-            <div className="flex items-center gap-2 bg-neutral-100 p-1 rounded-lg border border-neutral-300">
-              {[
-                { key: 'all', label: t['filter.all'] },
-                { key: 'published', label: t['filter.published'] },
-                { key: 'placeholder', label: t['filter.placeholder'] },
-              ].map((status) => (
-                <button
-                  type="button"
-                  key={status.key}
-                  onClick={() => handleStatusChange(status.key)}
-                  className={`px-4 py-1 rounded-md text-xs font-semibold transition-colors duration-200 cursor-pointer ${
-                    activeStatus === status.key
-                      ? 'bg-neutral-900 text-white shadow-xs'
-                      : 'text-neutral-700 hover:text-neutral-900'
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
+            <div className="text-xs text-neutral-500 font-semibold self-start md:self-auto flex items-center gap-2">
+              <span>
+                {locale === 'en' ? 'All' : '全部'} {totalCount}
+              </span>
+              <span className="text-neutral-300">•</span>
+              <span className="text-brand-dark">
+                {locale === 'en' ? 'Published' : '已发布'} {publishedCount}
+              </span>
+              <span className="text-neutral-300">•</span>
+              <span className="text-neutral-500">
+                {locale === 'en' ? 'In progress' : '整理中'} {placeholderCount}
+              </span>
             </div>
           </div>
-
-          {/* Status Count Summary Bar */}
-          <div className="text-xs text-neutral-500 font-semibold self-start md:self-auto flex items-center gap-2">
-            <span>
-              {locale === 'en' ? 'All' : '全部'} {journals.length}
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="text-brand-dark">
-              {locale === 'en' ? 'Published' : '已发布'}{' '}
-              {journals.filter((j) => j.status === 'published').length}
-            </span>
-            <span className="text-neutral-300">•</span>
-            <span className="text-neutral-500">
-              {locale === 'en' ? 'In progress' : '整理中'}{' '}
-              {journals.filter((j) => j.status === 'placeholder').length}
-            </span>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Cards Grid */}
-      <section className="py-16 px-6">
+      <section className={`${hasYuqueJournals ? 'pt-8 pb-16' : 'py-16'} px-6`}>
         <div className="max-w-5xl mx-auto">
-          {filteredJournals.length > 0 ? (
+          {hasYuqueJournals ? (
+            filteredYuqueJournals.length > 0 ? (
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                variants={stagger(0.08)}
+                initial="hidden"
+                animate="visible"
+              >
+                {filteredYuqueJournals.map((entry) => (
+                  <motion.div key={entry.id} variants={fadeUp} className="group">
+                    <a
+                      href={entry.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block bg-surface-card rounded-lg overflow-hidden shadow-xs hover:shadow-lg hover:border-neutral-400 border border-neutral-300 transition-[box-shadow,border-color,transform] duration-300 hover:-translate-y-0.5"
+                    >
+                      <div className="aspect-[16/9] bg-neutral-100 overflow-hidden border-b border-neutral-300">
+                        {entry.coverImage ? (
+                          <img
+                            src={entry.coverImage}
+                            alt={entry.title}
+                            className="w-full h-full object-cover group-hover:scale-[1.025] transition-transform duration-500"
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-end bg-neutral-200 p-5">
+                            <span className="text-xs font-semibold text-neutral-500">
+                              {entry.date ?? entry.slug}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="px-5 py-4">
+                        <h3 className="text-base font-bold text-neutral-900 line-clamp-1 leading-snug">
+                          {formatYuqueCardTitle(entry.title)}
+                        </h3>
+                        <p className="text-sm text-neutral-500 mt-3">
+                          {formatYuqueJournalDate(entry.date, locale)}
+                        </p>
+                      </div>
+                    </a>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <div className="text-center py-24 bg-surface-card border border-neutral-300 rounded-2xl shadow-xs">
+                <Compass className="w-12 h-12 text-neutral-300 mx-auto mb-4 animate-spin [animation-duration:10s] motion-reduce:animate-none" />
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">{t['empty.title']}</h3>
+                <p className="text-sm text-neutral-500 max-w-sm mx-auto">{t['empty.subtitle']}</p>
+              </div>
+            )
+          ) : filteredJournals.length > 0 ? (
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               variants={stagger(0.08)}
@@ -391,4 +469,22 @@ export default function JournalsContent({ cities, journals, locale = 'zh', t }: 
       </section>
     </div>
   );
+}
+
+function formatYuqueCardTitle(title: string) {
+  const parts = title
+    .split(/[|｜]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return parts.length >= 3 ? parts.slice(2).join(' | ') : title;
+}
+
+function formatYuqueJournalDate(value: string | null, locale: Locale) {
+  if (!value) return locale === 'en' ? 'No date' : '暂无日期';
+
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return value;
+
+  return `${match[1]}.${match[2]}.${match[3]}`;
 }
