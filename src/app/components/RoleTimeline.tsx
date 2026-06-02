@@ -238,6 +238,10 @@ export default function RoleTimeline({
                           const endPct = Math.max(endPctRaw, startPct + 0.5);
                           const widthPct = endPct - startPct;
                           const isOngoing = !seg.endDate;
+                          const futureFadeWidthPct =
+                            isOngoing && todayPct !== null && widthPct > 0
+                              ? (Math.max(0, 100 - endPct) / widthPct) * 100
+                              : 0;
 
                           return (
                             <div
@@ -259,7 +263,7 @@ export default function RoleTimeline({
                                 <div
                                   className="absolute inset-y-2 left-full rounded-r-full"
                                   style={{
-                                    width: `${Math.max(0, 100 - endPct)}%`,
+                                    width: `${futureFadeWidthPct}%`,
                                     background:
                                       'linear-gradient(to right, rgb(243 210 48 / 0.5), rgb(243 210 48 / 0))',
                                   }}
