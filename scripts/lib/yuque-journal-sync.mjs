@@ -55,7 +55,8 @@ export function normalizeYuqueToc(toc, { namespace }) {
       href: `${YUQUE_ORIGIN}/${namespace}/${entry.url}`,
       updatedAt: entry.updated_at ?? entry.content_updated_at ?? null,
       coverImage: entry.cover ?? null,
-    }));
+    }))
+    .sort(compareJournalEntries);
 }
 
 export function extractCoverFromDocHtml(html) {
@@ -72,6 +73,18 @@ export function imageExtensionFromUrl(url) {
   const ext = match?.[1]?.toLowerCase();
   if (ext === 'png' || ext === 'jpeg' || ext === 'jpg' || ext === 'webp') return ext;
   return 'jpg';
+}
+
+function compareJournalEntries(left, right) {
+  const leftTime = timestampForSort(left);
+  const rightTime = timestampForSort(right);
+  return rightTime - leftTime;
+}
+
+function timestampForSort(entry) {
+  const value = entry.date ?? entry.updatedAt ?? '';
+  const time = Date.parse(value);
+  return Number.isNaN(time) ? 0 : time;
 }
 
 function decodeHtmlEntities(value) {
