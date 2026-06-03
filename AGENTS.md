@@ -28,7 +28,7 @@ No unit test framework or linter is configured. Use `pnpm check` as the main non
 
 **Stack:** Astro 6 + React 19 (Islands) + TypeScript + Tailwind CSS 4 + shadcn/ui (Radix) + Framer Motion
 
-**Deployment:** Node.js standalone via `@astrojs/node` adapter. Docker (`Dockerfile` + `docker-compose.yml`). GitHub push triggers deploy.
+**Deployment:** Node.js standalone via `@astrojs/node` adapter. Docker (`Dockerfile` + `docker-compose.yml`). GitHub push triggers Jenkins deploy through repository webhook job `chaihuo-chaihuo-mcv-site`.
 
 **Routing:** Astro file-based routing in `src/pages/`. Chinese is default (no prefix), English under `/en/`:
 - `/` `/en/` → Home (hero carousel, video modal, China route map SVG, mobile lab cards)
@@ -112,6 +112,12 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 **改装手记 "查看全部":** Links to external Yuque page: `https://www.yuque.com/chaihuo-mcv/home`.
 
+**Yuque journal sync:** `Sync Yuque Journals` GitHub Actions workflow syncs all visible Yuque `DOC` entries from `https://www.yuque.com/mouseart/mcv` every 10 minutes and on `main` pushes. It commits `src/data/yuque-journals.json` and `public/yuque-journals/*` changes back to `main`, which then triggers Jenkins deploy.
+
+**Production deployment debugging:** Production is served through Tengine/CDN and Jenkins, not Cloudflare Workers. If production is stale, check GitHub webhook deliveries for the Jenkins queue item, then inspect Jenkins job `chaihuo-chaihuo-mcv-site`. See `docs/deployment-yuque-sync.md`.
+
+**Docker pnpm version:** Docker pins `pnpm@11.5.0`. Do not use `pnpm@latest` in Docker because pnpm lockfile validation can change across versions. If `pnpm-workspace.yaml` overrides change, regenerate and verify the lockfile with `corepack pnpm@11.5.0 install --lockfile-only --no-frozen-lockfile` and `corepack pnpm@11.5.0 install --frozen-lockfile --lockfile-only`.
+
 ## Conventions
 
 - Content is in Simplified Chinese with English translations via i18n system
@@ -132,10 +138,12 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 - Home hero carousel has three background slides, including the snow mountain MCV image.
 - Yuque journal sync includes the latest visible DOC entries and runs on main pushes plus the 10-minute schedule.
+- Production deployment runbook documents the Yuque sync, Jenkins webhook, and pnpm lockfile debugging path.
 
 ## Changelog
 
 | Date | Branch | Description |
 | --- | --- | --- |
+| 2026-06-03 | main | Fixed Yuque journal sync deployment, aligned pnpm lockfile for Docker builds, and documented the production debugging runbook. |
 | 2026-06-03 | dev | Synced the latest Yuque journal card, added coverage for unknown-city DOC sync, and merged into main. |
 | 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
