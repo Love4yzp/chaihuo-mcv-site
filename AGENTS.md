@@ -131,9 +131,11 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 ### Completed Features
 
 - Home hero carousel has three background slides, including the snow mountain MCV image.
+- Yuque journal sync includes the latest visible DOC entries and runs on main pushes plus the 10-minute schedule.
 
 ## Changelog
 
 | Date | Branch | Description |
 | --- | --- | --- |
+| 2026-06-03 | dev | Synced the latest Yuque journal card, added coverage for unknown-city DOC sync, and merged into main. |
 | 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
