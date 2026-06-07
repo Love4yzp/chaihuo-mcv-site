@@ -40,16 +40,20 @@ async function main() {
       namespace,
       url: bookUrl,
       syncedAt: new Date().toISOString(),
-      intervalMinutes: 10,
+      intervalMinutes: 1440,
     },
     journals: withCovers,
   };
 
   await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeJsonIfChanged(outputPath, payload);
-  console.log(
-    `Synced ${withCovers.length} Yuque journal cards to ${path.relative(root, outputPath)}.`,
-  );
+  const wrote = await writeJsonIfMateriallyChanged(outputPath, payload);
+  if (wrote) {
+    console.log(
+      `Synced ${withCovers.length} Yuque journal cards to ${path.relative(root, outputPath)}.`,
+    );
+  } else {
+    console.log(`Yuque journal cards are already up to date (${withCovers.length} cards).`);
+  }
 }
 
 async function fetchCover(url) {
@@ -130,15 +134,35 @@ async function mapWithConcurrency(items, concurrency, worker) {
   return results;
 }
 
-async function writeJsonIfChanged(filePath, payload) {
+async function writeJsonIfMateriallyChanged(filePath, payload) {
   const text = `${JSON.stringify(payload, null, 2)}\n`;
   try {
     const existing = await readFile(filePath, 'utf8');
-    if (existing === text) return;
+    const existingPayload = JSON.parse(existing);
+    if (!hasMaterialChange(existingPayload, payload)) return false;
   } catch (error) {
-    if (error.code !== 'ENOENT') throw error;
+    if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error;
   }
   await writeFile(filePath, text, 'utf8');
+  return true;
+}
+
+function hasMaterialChange(existingPayload, nextPayload) {
+  const existingComparable = comparablePayload(existingPayload);
+  const nextComparable = comparablePayload(nextPayload);
+  return JSON.stringify(existingComparable) !== JSON.stringify(nextComparable);
+}
+
+function comparablePayload(payload) {
+  return {
+    source: {
+      name: payload.source?.name ?? null,
+      namespace: payload.source?.namespace ?? null,
+      url: payload.source?.url ?? null,
+      intervalMinutes: payload.source?.intervalMinutes ?? null,
+    },
+    journals: payload.journals ?? [],
+  };
 }
 
 async function fileExists(filePath) {
