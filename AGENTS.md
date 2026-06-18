@@ -139,11 +139,13 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 - Home hero carousel has three background slides, including the snow mountain MCV image.
 - Yuque journal sync includes the latest visible DOC entries and runs on main pushes plus the 10-minute schedule.
 - Production deployment runbook documents the Yuque sync, Jenkins webhook, and pnpm lockfile debugging path.
+- Route map now extends through Lhasa, Golmud, Mangya, Ruoqiang, Korla, Aksu, and Shihezi, with completed route segments shown as solid lines and map pan/zoom gestures enabled.
 
 ## Changelog
 
 | Date | Branch | Description |
 | --- | --- | --- |
+| 2026-06-18 | dev | Extended the route map through Shihezi, added a hidden Korla return route point, and enabled map pan/zoom gestures before merging into main. |
 | 2026-06-03 | main | Fixed Yuque journal sync deployment, aligned pnpm lockfile for Docker builds, and documented the production debugging runbook. |
 | 2026-06-03 | dev | Synced the latest Yuque journal card, added coverage for unknown-city DOC sync, and merged into main. |
 | 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
