@@ -25,6 +25,12 @@ interface MapLibreCanvasProps {
 }
 
 const DEFAULT_FIT_PADDING: FitPadding = { top: 40, bottom: 40, left: 40, right: 40 };
+const INTERACTION_BOUNDS: [[number, number], [number, number]] = [
+  [66, 13],
+  [142, 58],
+];
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 7;
 
 export default function MapLibreCanvas({
   cities,
@@ -67,7 +73,9 @@ export default function MapLibreCanvas({
         style,
         bounds: CHINA_BOUNDS,
         fitBoundsOptions: { padding: fitPaddingRef.current },
-        maxBounds: CHINA_BOUNDS,
+        maxBounds: INTERACTION_BOUNDS,
+        minZoom: MIN_ZOOM,
+        maxZoom: MAX_ZOOM,
         attributionControl: false,
         scrollZoom: true,
         dragPan: true,
@@ -85,6 +93,7 @@ export default function MapLibreCanvas({
       map.doubleClickZoom.enable();
       map.touchZoomRotate.enable();
       map.touchZoomRotate.disableRotation();
+      map.getCanvas().style.touchAction = 'none';
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
       map.on('load', () => {
