@@ -69,10 +69,22 @@ export default function MapLibreCanvas({
         fitBoundsOptions: { padding: fitPaddingRef.current },
         maxBounds: CHINA_BOUNDS,
         attributionControl: false,
+        scrollZoom: true,
+        dragPan: true,
+        doubleClickZoom: true,
+        touchZoomRotate: true,
+        keyboard: true,
+        cooperativeGestures: false,
         dragRotate: false,
         pitchWithRotate: false,
+        touchPitch: false,
       });
       mapRef.current = map;
+      map.scrollZoom.enable();
+      map.dragPan.enable();
+      map.doubleClickZoom.enable();
+      map.touchZoomRotate.enable();
+      map.touchZoomRotate.disableRotation();
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
       map.on('load', () => {
