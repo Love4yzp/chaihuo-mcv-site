@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { useCallback, useMemo, useState } from 'react';
 import { CityPanel, countThemes, MapLibreCanvas, ThemeFilter } from '@/features/route-map';
 import type { ThemeType } from '@/features/route-map/theme';
-import type { RouteCity } from '@/features/route-map/types';
+import { isRouteOnlyCity, type RouteCity } from '@/features/route-map/types';
 import type { Locale } from '@/i18n/index';
 
 interface SerializedJournal {
@@ -27,21 +27,25 @@ const DESKTOP_FIT_PADDING = { top: 150, bottom: 48, left: 48, right: 420 };
 
 export default function RouteContent({ cities, journals, locale = 'zh', t }: Props) {
   const sortedCities = useMemo(() => [...cities].sort((a, b) => a.order - b.order), [cities]);
+  const visibleCities = useMemo(
+    () => sortedCities.filter((c) => !isRouteOnlyCity(c)),
+    [sortedCities],
+  );
 
   // Default to the latest visited city (visited === true and largest order)
   const lastVisited = useMemo(
-    () => [...sortedCities].reverse().find((c) => c.visited) ?? null,
-    [sortedCities],
+    () => [...visibleCities].reverse().find((c) => c.visited) ?? null,
+    [visibleCities],
   );
 
   const [selectedCityKey, setSelectedCityKey] = useState<string | null>(lastVisited?.label ?? null);
 
   const [activeTheme, setActiveTheme] = useState<ThemeType | null>(null);
-  const themeCounts = useMemo(() => countThemes(cities), [cities]);
+  const themeCounts = useMemo(() => countThemes(visibleCities), [visibleCities]);
 
   const selectedCity = useMemo(
-    () => cities.find((c) => c.label === selectedCityKey) ?? null,
-    [cities, selectedCityKey],
+    () => visibleCities.find((c) => c.label === selectedCityKey) ?? null,
+    [visibleCities, selectedCityKey],
   );
 
   // Mobile Drawer expanded state
@@ -108,8 +112,8 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
       <div className="hidden lg:block lg:absolute lg:top-36 lg:right-6 lg:bottom-6 lg:z-20 lg:w-[380px] lg:overflow-y-auto lg:rounded-2xl lg:bg-surface-card lg:shadow-xl">
         <CityPanel
           city={selectedCity}
-          cities={sortedCities}
-          totalLegs={sortedCities.length - 1}
+          cities={visibleCities}
+          totalLegs={visibleCities.length - 1}
           isLatest={selectedCity?.label === lastVisited?.label}
           t={t}
           locale={locale}
@@ -120,9 +124,9 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
       </div>
 
       {/* ── Mobile: visited-city chip row above the drawer ── */}
-      {sortedCities.filter((c) => c.visited).length > 1 && (
+      {visibleCities.filter((c) => c.visited).length > 1 && (
         <div className="lg:hidden flex flex-wrap items-center gap-1.5 px-4 sm:px-6 py-2 overflow-x-auto pb-4 max-w-full no-scrollbar">
-          {sortedCities
+          {visibleCities
             .filter((c) => c.visited)
             .map((c) => {
               const active = selectedCityKey === c.label;
@@ -222,8 +226,8 @@ export default function RouteContent({ cities, journals, locale = 'zh', t }: Pro
           <div className="flex-1 overflow-y-auto px-4 py-4 pb-12">
             <CityPanel
               city={selectedCity}
-              cities={sortedCities}
-              totalLegs={sortedCities.length - 1}
+              cities={visibleCities}
+              totalLegs={visibleCities.length - 1}
               isLatest={selectedCity.label === lastVisited?.label}
               t={t}
               locale={locale}

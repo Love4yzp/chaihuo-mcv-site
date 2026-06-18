@@ -9,6 +9,7 @@ export const stopFrontmatterSchema = z.object({
   visited: z.boolean(),
   isOrigin: z.boolean().optional(),
   anchor: z.boolean().optional(),
+  routeOnly: z.boolean().optional(),
 
   label: z.string(),
   label_en: z.string().optional(),

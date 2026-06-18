@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { horseRouteGeoJson } from './horse-geo';
 import { buildMapStyle, buildRouteSource, CHINA_BOUNDS, MAP_BG } from './map-style';
 import type { ThemeType } from './theme';
-import type { RouteCity } from './types';
+import { isRouteOnlyCity, type RouteCity } from './types';
 
 interface FitPadding {
   top: number;
@@ -99,6 +99,7 @@ export default function MapLibreCanvas({
       map.on('load', () => {
         if (cancelled) return;
         for (const city of cities) {
+          if (isRouteOnlyCity(city)) continue;
           const el = document.createElement('button');
           el.type = 'button';
           el.className = city.visited ? 'mlc-marker mlc-marker--visited' : 'mlc-marker';
@@ -143,6 +144,7 @@ export default function MapLibreCanvas({
     if (!ready) return;
     const map = mapRef.current;
     for (const city of cities) {
+      if (isRouteOnlyCity(city)) continue;
       const el = markerElsRef.current.get(city.label);
       if (!el) continue;
       const matched = !!activeTheme && !city.isOrigin && city.themes.includes(activeTheme);

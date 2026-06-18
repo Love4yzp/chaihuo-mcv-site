@@ -2,7 +2,7 @@ import { geoMercator, geoPath } from 'd3-geo';
 import type { FeatureCollection, MultiPolygon, Polygon } from 'geojson';
 import chinaGeoJson from '@/data/china-provinces.json' with { type: 'json' };
 import { MAP_HEIGHT, MAP_SCALE_DENOMINATOR, MAP_TRANSLATE_Y_OFFSET, MAP_WIDTH } from './constants';
-import type { ProjectedCity, RouteCity } from './types';
+import { isRouteOnlyCity, type ProjectedCity, type RouteCity } from './types';
 
 export { bboxAt, labelDims, placeLabels, rectsOverlap } from './label-layout';
 
@@ -73,10 +73,11 @@ export function getElevationOffset(altitude: string): number {
 // ─── label placement (auto, no manual offsets) ───
 export function projectCities(cities: RouteCity[]): ProjectedCity[] {
   const sorted = [...cities].sort((a, b) => a.order - b.order);
-  const lastVisited = [...sorted].reverse().find((c) => c.visited);
+  const lastVisited = [...sorted].reverse().find((c) => c.visited && !isRouteOnlyCity(c));
   return sorted.flatMap((c) => {
     const p = projection([c.lng, c.lat]);
     if (!p) return [];
+    const isRouteOnly = isRouteOnlyCity(c);
     const isLatest = !!lastVisited && c.label === lastVisited.label;
     return [
       {
@@ -85,7 +86,7 @@ export function projectCities(cities: RouteCity[]): ProjectedCity[] {
         cy: p[1],
         elevationOffset: getElevationOffset(c.altitude),
         isLatest,
-        showLabel: c.visited || !!c.isOrigin || !!c.anchor,
+        showLabel: !isRouteOnly && (c.visited || !!c.isOrigin || !!c.anchor),
         fontSize: isLatest ? 11 : c.visited ? 10.5 : 9,
       },
     ];
