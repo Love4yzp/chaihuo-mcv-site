@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { horseRouteGeoJson } from './horse-geo';
 import { buildMapStyle, buildRouteSource, CHINA_BOUNDS, MAP_BG } from './map-style';
 import type { ThemeType } from './theme';
-import type { RouteCity } from './types';
+import { isRouteOnlyCity, type RouteCity } from './types';
 
 interface FitPadding {
   top: number;
@@ -25,6 +25,12 @@ interface MapLibreCanvasProps {
 }
 
 const DEFAULT_FIT_PADDING: FitPadding = { top: 40, bottom: 40, left: 40, right: 40 };
+const INTERACTION_BOUNDS: [[number, number], [number, number]] = [
+  [66, 13],
+  [142, 58],
+];
+const MIN_ZOOM = 2;
+const MAX_ZOOM = 7;
 
 export default function MapLibreCanvas({
   cities,
@@ -67,17 +73,33 @@ export default function MapLibreCanvas({
         style,
         bounds: CHINA_BOUNDS,
         fitBoundsOptions: { padding: fitPaddingRef.current },
-        maxBounds: CHINA_BOUNDS,
+        maxBounds: INTERACTION_BOUNDS,
+        minZoom: MIN_ZOOM,
+        maxZoom: MAX_ZOOM,
         attributionControl: false,
+        scrollZoom: true,
+        dragPan: true,
+        doubleClickZoom: true,
+        touchZoomRotate: true,
+        keyboard: true,
+        cooperativeGestures: false,
         dragRotate: false,
         pitchWithRotate: false,
+        touchPitch: false,
       });
       mapRef.current = map;
+      map.scrollZoom.enable();
+      map.dragPan.enable();
+      map.doubleClickZoom.enable();
+      map.touchZoomRotate.enable();
+      map.touchZoomRotate.disableRotation();
+      map.getCanvas().style.touchAction = 'none';
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-left');
 
       map.on('load', () => {
         if (cancelled) return;
         for (const city of cities) {
+          if (isRouteOnlyCity(city)) continue;
           const el = document.createElement('button');
           el.type = 'button';
           el.className = city.visited ? 'mlc-marker mlc-marker--visited' : 'mlc-marker';
@@ -122,6 +144,7 @@ export default function MapLibreCanvas({
     if (!ready) return;
     const map = mapRef.current;
     for (const city of cities) {
+      if (isRouteOnlyCity(city)) continue;
       const el = markerElsRef.current.get(city.label);
       if (!el) continue;
       const matched = !!activeTheme && !city.isOrigin && city.themes.includes(activeTheme);

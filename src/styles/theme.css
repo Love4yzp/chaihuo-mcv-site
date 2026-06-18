@@ -269,6 +269,17 @@
 }
 
 /* ─── MapLibre HTML 城市标记 ─── */
+[data-maplibre-canvas="true"],
+[data-maplibre-canvas="true"] .maplibregl-canvas {
+  cursor: grab;
+  touch-action: none;
+}
+
+[data-maplibre-canvas="true"]:active,
+[data-maplibre-canvas="true"]:active .maplibregl-canvas {
+  cursor: grabbing;
+}
+
 .mlc-marker {
   display: inline-flex;
   align-items: center;

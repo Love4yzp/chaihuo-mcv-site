@@ -9,7 +9,7 @@ import {
   placeLabels,
   projectCities,
 } from './projection';
-import type { RouteCity } from './types';
+import { isRouteOnlyCity, type RouteCity } from './types';
 
 interface Props {
   cities: RouteCity[];
@@ -23,7 +23,10 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
   const segments = useMemo(() => buildCityLines(projected), [projected]);
 
   // Find current city (last visited)
-  const current = useMemo(() => [...projected].reverse().find((city) => city.visited), [projected]);
+  const current = useMemo(
+    () => [...projected].reverse().find((city) => city.visited && !isRouteOnlyCity(city)),
+    [projected],
+  );
 
   // Auto-calculated label offsets to prevent collision
   const labelOffsets = useMemo(() => placeLabels(projected), [projected]);
@@ -156,40 +159,47 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
       })}
 
       {/* 🔴 City Dots (Glowing for current, subtle for future) */}
-      {projected.map((city) => {
-        const x = round(city.cx);
-        const y = round(city.cy);
-        const isCurrent = current && city.label === current.label;
+      {projected
+        .filter((city) => !isRouteOnlyCity(city))
+        .map((city) => {
+          const x = round(city.cx);
+          const y = round(city.cy);
+          const isCurrent = current && city.label === current.label;
 
-        return (
-          <g key={city.label} opacity={city.visited ? 1 : 0.5}>
-            {city.isOrigin && (
-              <>
-                <circle cx={x} cy={y} r="12" fill="none" stroke="#f3d230" strokeWidth="2" />
-                <circle cx={x} cy={y} r="7" fill="none" stroke="#3a3328" strokeOpacity="0.25" />
-              </>
-            )}
-            {isCurrent && (
-              <motion.circle
+          return (
+            <g key={city.label} opacity={city.visited ? 1 : 0.5}>
+              {city.isOrigin && (
+                <>
+                  <circle cx={x} cy={y} r="12" fill="none" stroke="#f3d230" strokeWidth="2" />
+                  <circle cx={x} cy={y} r="7" fill="none" stroke="#3a3328" strokeOpacity="0.25" />
+                </>
+              )}
+              {isCurrent && (
+                <motion.circle
+                  cx={x}
+                  cy={y}
+                  fill="#f3d230"
+                  initial={{ r: 6, opacity: 0.5 }}
+                  animate={{ r: [6, 14], opacity: [0.5, 0] }}
+                  transition={{
+                    duration: 1.8,
+                    ease: 'easeOut',
+                    repeat: Infinity,
+                    repeatDelay: 0.4,
+                  }}
+                />
+              )}
+              <circle
                 cx={x}
                 cy={y}
-                fill="#f3d230"
-                initial={{ r: 6, opacity: 0.5 }}
-                animate={{ r: [6, 14], opacity: [0.5, 0] }}
-                transition={{ duration: 1.8, ease: 'easeOut', repeat: Infinity, repeatDelay: 0.4 }}
+                r={isCurrent ? 5.5 : 4}
+                fill={city.visited ? '#f3d230' : '#c2b8a0'}
+                stroke="#fffaf0"
+                strokeWidth="1.6"
               />
-            )}
-            <circle
-              cx={x}
-              cy={y}
-              r={isCurrent ? 5.5 : 4}
-              fill={city.visited ? '#f3d230' : '#c2b8a0'}
-              stroke="#fffaf0"
-              strokeWidth="1.6"
-            />
-          </g>
-        );
-      })}
+            </g>
+          );
+        })}
 
       {/* 🏷️ Smart Non-overlapping Labels */}
       {projected
