@@ -4,6 +4,10 @@ This document records the production update path for the travel journal page and
 
 ## Expected Flow
 
+For normal website updates, use this flow directly. Do not wait for or debug the
+Cloudflare Workers/Pages GitHub check, because it is not the production deploy
+path for `mcv.chaihuo.org`.
+
 1. Yuque book updates at `https://www.yuque.com/mouseart/mcv`.
 2. GitHub Actions workflow `Sync Yuque Journals` runs every 10 minutes and on `main` pushes.
 3. The workflow runs `node scripts/sync-yuque-journals.mjs`.
@@ -34,6 +38,10 @@ corepack pnpm@11.5.0 install --frozen-lockfile --lockfile-only
 
 - The production response currently comes from Tengine/CDN, not Cloudflare Workers.
 - Cloudflare Workers checks in GitHub are not the source of truth for production deploys.
+- A red Cloudflare Workers/Pages check on a GitHub commit can be ignored for
+  this site unless the hosting path changes. The production update source of
+  truth is the Jenkins job `chaihuo-chaihuo-mcv-site` triggered by the GitHub
+  webhook.
 
 ## Debug Checklist
 

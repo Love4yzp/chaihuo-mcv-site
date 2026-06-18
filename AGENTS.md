@@ -114,7 +114,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 **Yuque journal sync:** `Sync Yuque Journals` GitHub Actions workflow syncs all visible Yuque `DOC` entries from `https://www.yuque.com/mouseart/mcv` every 10 minutes and on `main` pushes. It commits `src/data/yuque-journals.json` and `public/yuque-journals/*` changes back to `main`, which then triggers Jenkins deploy.
 
-**Production deployment debugging:** Production is served through Tengine/CDN and Jenkins, not Cloudflare Workers. If production is stale, check GitHub webhook deliveries for the Jenkins queue item, then inspect Jenkins job `chaihuo-chaihuo-mcv-site`. See `docs/deployment-yuque-sync.md`.
+**Production deployment debugging:** Production is served through Tengine/CDN and Jenkins, not Cloudflare Workers. For normal updates, ignore GitHub's Cloudflare Workers/Pages check; it is an unrelated external status check and is not the source of truth for `mcv.chaihuo.org`. If production is stale, check GitHub webhook deliveries for the Jenkins queue item, then inspect Jenkins job `chaihuo-chaihuo-mcv-site`. See `docs/deployment-yuque-sync.md`.
 
 **Docker pnpm version:** Docker pins `pnpm@11.5.0`. Do not use `pnpm@latest` in Docker because pnpm lockfile validation can change across versions. If `pnpm-workspace.yaml` overrides change, regenerate and verify the lockfile with `corepack pnpm@11.5.0 install --lockfile-only --no-frozen-lockfile` and `corepack pnpm@11.5.0 install --frozen-lockfile --lockfile-only`.
 
