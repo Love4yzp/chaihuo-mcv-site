@@ -66,7 +66,15 @@ export function buildRouteSource(stops: Stop[]) {
   };
 }
 
-const PROVINCE_VISITED = ['广东', '广西', '贵州', '四川'];
+const PROVINCE_VISITED = [
+  '广东省',
+  '广西壮族自治区',
+  '贵州省',
+  '四川省',
+  '西藏自治区',
+  '青海省',
+  '新疆维吾尔自治区',
+];
 
 /**
  * Tile-less MapLibre style: blank background + our own GeoJSON layers, styled
@@ -94,7 +102,7 @@ export function buildMapStyle(
           'fill-color': [
             'case',
             ['in', ['get', 'name'], ['literal', PROVINCE_VISITED]],
-            '#fdf6d2',
+            '#fdf1b8',
             '#ffffff',
           ],
           'fill-opacity': 0.96,
