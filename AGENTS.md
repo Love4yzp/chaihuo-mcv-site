@@ -149,3 +149,4 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 | 2026-06-03 | main | Fixed Yuque journal sync deployment, aligned pnpm lockfile for Docker builds, and documented the production debugging runbook. |
 | 2026-06-03 | dev | Synced the latest Yuque journal card, added coverage for unknown-city DOC sync, and merged into main. |
 | 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
+| 2026-06-20 | fix/route-map-provinces | Updated route map visited provinces with full admin names, added Xizang/Qinghai/Xinjiang, adjusted fill color, and merged into main. |
