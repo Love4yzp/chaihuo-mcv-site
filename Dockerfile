@@ -16,14 +16,14 @@ RUN pnpm build
 # ── Production ──
 FROM base AS runtime
 COPY --from=build /app/dist ./dist
-# Copy node_modules then prune devDeps (avoids re-running prepare:simple-git-hooks)
 COPY --from=build /app/node_modules ./node_modules
 COPY package.json ./
-RUN pnpm prune --prod && pnpm store prune && rm -f pnpm-lock.yaml pnpm-workspace.yaml .npmrc
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV NODE_ENV=production
 
 EXPOSE 4321
-CMD ["node", "./dist/server/entry.mjs"]
+CMD node ./dist/server/entry.mjs
+
+
