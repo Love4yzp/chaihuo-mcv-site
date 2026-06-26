@@ -17,13 +17,11 @@ RUN pnpm build
 FROM base AS runtime
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/node_modules ./node_modules
-COPY package.json ./
+COPY package.json .
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV NODE_ENV=production
 
 EXPOSE 4321
-CMD node ./dist/server/entry.mjs
-
-
+CMD ["node", "./dist/server/entry.mjs"]
