@@ -5,7 +5,7 @@ WORKDIR /app
 # ── Install dependencies ──
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile && pnpm store prune
 
 # ── Build ──
 FROM base AS build
@@ -16,8 +16,9 @@ RUN pnpm build
 # ── Production ──
 FROM base AS runtime
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY package.json .
+# Install only production deps (no devDeps like biome) to reduce image size
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod && pnpm store prune && rm -f pnpm-lock.yaml pnpm-workspace.yaml .npmrc
 
 ENV HOST=0.0.0.0
 ENV PORT=4321
