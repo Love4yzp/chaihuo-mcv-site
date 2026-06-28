@@ -132,7 +132,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- None
+- `dev` — Add Urumqi (乌鲁木齐) as the latest visited route stop after Karamay.
 
 ### Completed Features
 
