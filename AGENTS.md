@@ -132,7 +132,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- `dev` — Add Urumqi (乌鲁木齐) as the latest visited route stop after Karamay.
+- None
 
 ### Completed Features
 
@@ -140,6 +140,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 - Yuque journal sync includes the latest visible DOC entries and runs on main pushes plus the 10-minute schedule.
 - Production deployment runbook documents the Yuque sync, Jenkins webhook, and pnpm lockfile debugging path.
 - Route map now extends through Lhasa, Golmud, Mangya, Ruoqiang, Korla, Aksu, and Shihezi, with completed route segments shown as solid lines and map pan/zoom gestures enabled.
+- Route map now extends from Karamay to Urumqi, with Urumqi highlighted as the latest visited stop.
 
 ## Changelog
 
@@ -151,3 +152,4 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 | 2026-06-02 | dev | Added the snow mountain MCV image as the third home hero carousel background and merged into main. |
 | 2026-06-20 | fix/route-map-provinces | Updated route map visited provinces with full admin names, added Xizang/Qinghai/Xinjiang, adjusted fill color, and merged into main. |
 | 2026-06-26 | feature/add-karamay | Added Karamay (克拉玛依) stop to route map (order 25, zh/en content), synced province fill colors in RoutePreview.tsx, and merged into main. |
+| 2026-06-28 | dev | Added Urumqi (乌鲁木齐) stop to the route map after Karamay, updated route copy to 27 cities, and merged into main. |
