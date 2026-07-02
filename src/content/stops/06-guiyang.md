@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 贵阳
 label_en: Guiyang
+province: 贵州省
 lng: 106.713
 lat: 26.578
 altitude: "1100"

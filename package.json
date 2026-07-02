@@ -12,6 +12,7 @@
     "format": "biome format --write .",
     "check:astro": "astro check",
     "check:content": "node scripts/validate-site.mjs",
+    "update:city": "node scripts/check-arrival.mjs",
     "harness": "pnpm run check && playwright test",
     "smoke": "playwright test tests/harness/smoke.spec.ts",
     "visual": "playwright test tests/harness/visual.spec.ts",

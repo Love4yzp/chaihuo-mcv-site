@@ -4,6 +4,7 @@ order: 2
 visited: true
 label: 阳江
 label_en: Yangjiang
+province: 广东省
 lng: 111.983
 lat: 21.858
 altitude: "8"

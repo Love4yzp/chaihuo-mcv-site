@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 南宁
 label_en: Nanning
+province: 广西壮族自治区
 lng: 108.366
 lat: 22.817
 altitude: "75"

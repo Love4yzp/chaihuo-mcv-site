@@ -5,6 +5,7 @@ visited: true
 isOrigin: true
 label: 深圳
 label_en: Shenzhen
+province: 广东省
 lng: 114.057
 lat: 22.543
 altitude: "4"

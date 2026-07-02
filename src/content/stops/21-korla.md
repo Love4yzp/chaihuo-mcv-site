@@ -4,6 +4,7 @@ order: 21
 visited: true
 label: 库尔勒
 label_en: Korla
+province: 新疆维吾尔自治区
 lng: 86.174
 lat: 41.725
 altitude: "930"

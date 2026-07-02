@@ -4,6 +4,7 @@ order: 13
 visited: true
 label: 芒康
 label_en: Markam
+province: 西藏自治区
 lng: 98.593
 lat: 29.680
 altitude: "3870"

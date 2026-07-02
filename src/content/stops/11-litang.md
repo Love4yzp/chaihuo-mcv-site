@@ -4,6 +4,7 @@ order: 11
 visited: true
 label: 理塘
 label_en: Litang
+province: 四川省
 lng: 100.270
 lat: 29.996
 altitude: "3990"

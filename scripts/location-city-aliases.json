@@ -1,0 +1,44 @@
+{
+  "乌鲁木齐": {
+    "id": "urumqi",
+    "label": "乌鲁木齐",
+    "label_en": "Urumqi",
+    "province": "新疆维吾尔自治区"
+  },
+  "昌吉": {
+    "id": "changji",
+    "label": "昌吉",
+    "label_en": "Changji",
+    "province": "新疆维吾尔自治区"
+  },
+  "阜康": {
+    "id": "fukang",
+    "label": "阜康",
+    "label_en": "Fukang",
+    "province": "新疆维吾尔自治区"
+  },
+  "吐鲁番": {
+    "id": "turpan",
+    "label": "吐鲁番",
+    "label_en": "Turpan",
+    "province": "新疆维吾尔自治区"
+  },
+  "哈密": {
+    "id": "hami",
+    "label": "哈密",
+    "label_en": "Hami",
+    "province": "新疆维吾尔自治区"
+  },
+  "奎屯": {
+    "id": "kuitun",
+    "label": "奎屯",
+    "label_en": "Kuitun",
+    "province": "新疆维吾尔自治区"
+  },
+  "伊宁": {
+    "id": "yining",
+    "label": "伊宁",
+    "label_en": "Yining",
+    "province": "新疆维吾尔自治区"
+  }
+}

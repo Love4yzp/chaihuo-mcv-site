@@ -4,6 +4,7 @@ order: 10
 visited: true
 label: 塔公
 label_en: Tagong
+province: 四川省
 lng: 101.511
 lat: 30.272
 altitude: "3730"

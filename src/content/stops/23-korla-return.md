@@ -5,6 +5,7 @@ visited: true
 routeOnly: true
 label: 库尔勒折返点
 label_en: Korla Return
+province: 新疆维吾尔自治区
 lng: 86.174
 lat: 41.725
 altitude: "930"

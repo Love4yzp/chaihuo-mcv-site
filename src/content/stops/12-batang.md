@@ -4,6 +4,7 @@ order: 12
 visited: true
 label: 巴塘
 label_en: Batang
+province: 四川省
 lng: 99.108
 lat: 30.004
 altitude: "2580"

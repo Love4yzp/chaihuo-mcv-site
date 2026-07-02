@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 成都
 label_en: Chengdu
+province: 四川省
 lng: 104.066
 lat: 30.572
 altitude: "500"

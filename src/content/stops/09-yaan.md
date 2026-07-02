@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 雅安
 label_en: Ya'an
+province: 四川省
 lng: 103.001
 lat: 29.987
 altitude: "620"

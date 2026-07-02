@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 毕节
 label_en: Bijie
+province: 贵州省
 lng: 105.285
 lat: 27.302
 altitude: "1510"

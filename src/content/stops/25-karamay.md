@@ -4,6 +4,7 @@ order: 25
 visited: true
 label: 克拉玛依
 label_en: Karamay
+province: 新疆维吾尔自治区
 lng: 84.873
 lat: 45.595
 altitude: "400"

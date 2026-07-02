@@ -4,6 +4,7 @@ order: 3
 visited: true
 label: 玉林
 label_en: Yulin
+province: 广西壮族自治区
 lng: 110.181
 lat: 22.654
 altitude: "80"

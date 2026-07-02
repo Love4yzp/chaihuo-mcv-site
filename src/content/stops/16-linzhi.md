@@ -4,6 +4,7 @@ order: 16
 visited: true
 label: 林芝
 label_en: Nyingchi
+province: 西藏自治区
 lng: 94.362
 lat: 29.649
 altitude: "2990"

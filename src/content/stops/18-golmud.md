@@ -4,6 +4,7 @@ order: 18
 visited: true
 label: 格尔木
 label_en: Golmud
+province: 青海省
 lng: 94.928
 lat: 36.407
 altitude: "2800"

@@ -4,6 +4,7 @@ order: 20
 visited: true
 label: 若羌
 label_en: Ruoqiang
+province: 新疆维吾尔自治区
 lng: 88.168
 lat: 39.023
 altitude: "890"

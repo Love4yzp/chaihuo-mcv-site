@@ -4,6 +4,7 @@ order: 1
 visited: true
 label: 广州
 label_en: Guangzhou
+province: 广东省
 lng: 113.264
 lat: 23.13
 altitude: "11"

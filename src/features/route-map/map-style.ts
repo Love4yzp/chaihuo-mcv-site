@@ -2,6 +2,7 @@ import type { Feature, FeatureCollection, LineString } from 'geojson';
 import type { StyleSpecification } from 'maplibre-gl';
 import { geoData } from './projection';
 import type { Stop } from './stops-loader';
+import { PROVINCE_VISITED } from './visited-provinces';
 
 // Mainland-China framing; keeps the whole national outline (never tight-crop).
 export const CHINA_BOUNDS: [[number, number], [number, number]] = [
@@ -65,16 +66,6 @@ export function buildRouteSource(stops: Stop[]) {
     data: { type: 'FeatureCollection', features } as FeatureCollection,
   };
 }
-
-const PROVINCE_VISITED = [
-  '广东省',
-  '广西壮族自治区',
-  '贵州省',
-  '四川省',
-  '西藏自治区',
-  '青海省',
-  '新疆维吾尔自治区',
-];
 
 /**
  * Tile-less MapLibre style: blank background + our own GeoJSON layers, styled

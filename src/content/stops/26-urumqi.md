@@ -4,6 +4,7 @@ order: 26
 visited: true
 label: 乌鲁木齐
 label_en: Urumqi
+province: 新疆维吾尔自治区
 lng: 87.617
 lat: 43.826
 altitude: "800"

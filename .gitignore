@@ -33,6 +33,7 @@ harness-artifacts/
 # Local diagnostics
 scratch/
 .pnpm-store/
+Deepseek/
 
 # Editor metadata (per editor; not per-repo)
 .obsidian/

@@ -4,6 +4,7 @@ order: 24
 visited: true
 label: 石河子
 label_en: Shihezi
+province: 新疆维吾尔自治区
 lng: 86.041
 lat: 44.306
 altitude: "450"

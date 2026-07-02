@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 柳州
 label_en: Liuzhou
+province: 广西壮族自治区
 lng: 109.412
 lat: 24.327
 altitude: "90"

@@ -4,6 +4,7 @@ order: 19
 visited: true
 label: 茫崖
 label_en: Mangya
+province: 青海省
 lng: 90.856
 lat: 38.247
 altitude: "2940"

@@ -5,6 +5,7 @@ visited: true
 anchor: true
 label: 拉萨
 label_en: Lhasa
+province: 西藏自治区
 lng: 91.140
 lat: 29.645
 altitude: "3650"

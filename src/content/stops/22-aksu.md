@@ -4,6 +4,7 @@ order: 22
 visited: true
 label: 阿克苏
 label_en: Aksu
+province: 新疆维吾尔自治区
 lng: 80.263
 lat: 41.168
 altitude: "1110"

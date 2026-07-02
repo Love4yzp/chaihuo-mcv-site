@@ -4,6 +4,7 @@ order: 15
 visited: true
 label: 波密
 label_en: Bomi
+province: 西藏自治区
 lng: 95.771
 lat: 29.860
 altitude: "2750"

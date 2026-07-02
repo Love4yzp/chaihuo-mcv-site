@@ -13,6 +13,7 @@ export const stopFrontmatterSchema = z.object({
 
   label: z.string(),
   label_en: z.string().optional(),
+  province: z.string().optional(),
 
   lng: z.number().gte(-180).lte(180),
   lat: z.number().gte(-90).lte(90),

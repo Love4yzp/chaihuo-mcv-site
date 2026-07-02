@@ -10,6 +10,7 @@ import {
   projectCities,
 } from './projection';
 import { isRouteOnlyCity, type RouteCity } from './types';
+import { PROVINCE_VISITED } from './visited-provinces';
 
 interface Props {
   cities: RouteCity[];
@@ -84,15 +85,6 @@ export default function RoutePreview({ cities, ariaLabel }: Props) {
           const d = pathGenerator(feature);
           if (!d) return null;
           const provinceName = feature.properties?.name || '';
-          const PROVINCE_VISITED = [
-            '广东省',
-            '广西壮族自治区',
-            '贵州省',
-            '四川省',
-            '西藏自治区',
-            '青海省',
-            '新疆维吾尔自治区',
-          ];
           const isVisited = PROVINCE_VISITED.some((p) => provinceName.includes(p));
           return (
             <path

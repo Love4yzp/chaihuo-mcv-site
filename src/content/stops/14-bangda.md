@@ -4,6 +4,7 @@ order: 14
 visited: true
 label: 邦达
 label_en: Bangda
+province: 西藏自治区
 lng: 97.169
 lat: 30.054
 altitude: "4120"
