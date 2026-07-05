@@ -16,5 +16,17 @@
     "image": "/heroes/snow-mountain-mcv.webp",
     "alt": "基地车停靠雪山脚下 — 高原日照",
     "alt_en": "MCV parked below sunlit snow mountains — Tibetan Plateau"
+  },
+  {
+    "id": "grassland-sunset-mcv",
+    "image": "/heroes/grassland-sunset-mcv.webp",
+    "alt": "夕阳下基地车驶过湖畔草原，车顶成员挥手",
+    "alt_en": "MCV crossing lakeside grassland at sunset with crew members waving from the roof"
+  },
+  {
+    "id": "road-sunset-mcv",
+    "image": "/heroes/road-sunset-mcv.webp",
+    "alt": "基地车与成员停靠在湖畔落日公路",
+    "alt_en": "MCV and crew stopped on a lakeside road at sunset"
   }
 ]
