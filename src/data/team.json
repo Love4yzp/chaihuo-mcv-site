@@ -74,8 +74,8 @@
     "name_en": "Ma Zhile",
     "role": "技术担当",
     "role_en": "Tech Lead",
-    "bio": "负责基地车技术系统支持与沿途技术协作。",
-    "bio_en": "Supporting the MCV's technical systems and on-the-road collaboration.",
+    "bio": "负责基地车技术系统的搭建与运维，为沿途创作提供稳定的技术支撑。",
+    "bio_en": "Responsible for building and maintaining the MCV's technical systems, providing reliable support for on-site creation.",
     "image": "/people/ma-zhile.webp"
   },
   {
@@ -84,8 +84,8 @@
     "name_en": "Zhou Yantong",
     "role": "媒体担当",
     "role_en": "Media Lead",
-    "bio": "负责记录和传播基地车沿途故事。",
-    "bio_en": "Documenting and sharing stories from the MCV's journey.",
+    "bio": "内容记录与传播支持，负责用影像和文字记录基地车沿途的故事与现场。",
+    "bio_en": "Content and communications support, documenting the MCV's journey and on-site stories through visuals and writing.",
     "image": "/people/zhou-yantong.webp"
   },
   {
@@ -94,8 +94,8 @@
     "name_en": "Ye Yu",
     "role": "领队",
     "role_en": "Team Lead",
-    "bio": "负责基地车行程协调与团队协作。",
-    "bio_en": "Coordinating the MCV's route and team collaboration.",
+    "bio": "柴火创客空间资深成员，负责基地车整体资源协调与团队支持。",
+    "bio_en": "Senior member of Chaihuo Makerspace, responsible for overall resource coordination and team support.",
     "image": "/people/ye-yu.webp"
   }
 ]
