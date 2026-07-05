@@ -74,8 +74,8 @@
     "name_en": "Ma Zhile",
     "role": "技术担当",
     "role_en": "Tech Lead",
-    "bio": "7 月接力技术担当，负责基地车技术系统支持与沿途技术协作。",
-    "bio_en": "July relay tech lead, supporting the MCV's technical systems and on-the-road collaboration.",
+    "bio": "负责基地车技术系统支持与沿途技术协作。",
+    "bio_en": "Supporting the MCV's technical systems and on-the-road collaboration.",
     "image": "/people/ma-zhile.webp"
   },
   {
@@ -84,8 +84,8 @@
     "name_en": "Zhou Yantong",
     "role": "媒体担当",
     "role_en": "Media Lead",
-    "bio": "7 月接力媒体担当，负责记录和传播基地车沿途故事。",
-    "bio_en": "July relay media lead, documenting and sharing stories from the MCV's journey.",
+    "bio": "负责记录和传播基地车沿途故事。",
+    "bio_en": "Documenting and sharing stories from the MCV's journey.",
     "image": "/people/zhou-yantong.webp"
   },
   {
@@ -94,8 +94,8 @@
     "name_en": "Ye Yu",
     "role": "领队",
     "role_en": "Team Lead",
-    "bio": "7 月接力领队，负责基地车行程协调与团队协作。",
-    "bio_en": "July relay team lead, coordinating the MCV's route and team collaboration.",
+    "bio": "负责基地车行程协调与团队协作。",
+    "bio_en": "Coordinating the MCV's route and team collaboration.",
     "image": "/people/ye-yu.webp"
   }
 ]
