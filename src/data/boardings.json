@@ -8,7 +8,12 @@
       "location": "深圳",
       "location_en": "Shenzhen"
     },
-    "disembarkedAt": null
+    "disembarkedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami",
+      "handoffTo": "ye-yu"
+    }
   },
   {
     "id": "b2",
@@ -51,7 +56,12 @@
       "location": "成都",
       "location_en": "Chengdu"
     },
-    "disembarkedAt": null
+    "disembarkedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami",
+      "handoffTo": "ma-zhile"
+    }
   },
   {
     "id": "b3",
@@ -109,6 +119,44 @@
       "date": "2026-06-01",
       "location": "成都",
       "location_en": "Chengdu"
+    },
+    "disembarkedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami",
+      "handoffTo": "zhou-yantong"
+    }
+  },
+  {
+    "id": "b9",
+    "crewId": "ye-yu",
+    "role": "领队",
+    "boardedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami"
+    },
+    "disembarkedAt": null
+  },
+  {
+    "id": "b10",
+    "crewId": "ma-zhile",
+    "role": "技术担当",
+    "boardedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami"
+    },
+    "disembarkedAt": null
+  },
+  {
+    "id": "b11",
+    "crewId": "zhou-yantong",
+    "role": "媒体担当",
+    "boardedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami"
     },
     "disembarkedAt": null
   }
