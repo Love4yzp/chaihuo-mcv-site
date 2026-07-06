@@ -49,7 +49,7 @@ const home: Record<Locale, Record<string, string>> = {
 
     'timeline.eyebrow': '在路上的人',
     'timeline.title': '一棒接一棒，200 天',
-    'timeline.body': '四个核心岗位接力前行——领队、技术担当、媒体担当、业务担当。',
+    'timeline.body': '四个核心岗位接力前行——领队、技术担当、媒体担当、场景担当。',
     'timeline.totalDays': '共 {days} 天',
     'timeline.today': '今日',
     'timeline.onTheRoad': '在路上',
@@ -120,7 +120,7 @@ const home: Record<Locale, Record<string, string>> = {
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
-    'timeline.body': 'Four core roles passed hand to hand — Team Lead, Tech Lead, Media Lead, Business Lead.',
+    'timeline.body': 'Four core roles passed hand to hand — Team Lead, Tech Lead, Media Lead, Scenario Lead.',
     'timeline.totalDays': '{days} days total',
     'timeline.today': 'Today',
     'timeline.onTheRoad': 'On the road',

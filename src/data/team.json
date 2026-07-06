@@ -102,20 +102,20 @@
     "id": "yang-huakai",
     "name": "杨华凯",
     "name_en": "Yang Huakai",
-    "role": "业务担当",
-    "role_en": "Business Lead",
-    "bio": "负责和客户沟通，了解客户的业务需求，沟通完整的应用解决方案。",
-    "bio_en": "Responsible for communicating with clients, understanding their business needs, and aligning on complete application solutions.",
+    "role": "场景担当",
+    "role_en": "Scenario Lead",
+    "bio": "负责和用户沟通，了解场景需求，共创解决方案。",
+    "bio_en": "Responsible for communicating with users, understanding their scenario needs, and co-creating solutions.",
     "image": "/people/yang-huakai.webp"
   },
   {
     "id": "cui-ming",
     "name": "崔明",
     "name_en": "Cui Ming",
-    "role": "业务担当",
-    "role_en": "Business Lead",
-    "bio": "负责和客户沟通，了解客户的业务需求，沟通完整的应用解决方案。",
-    "bio_en": "Responsible for communicating with clients, understanding their business needs, and aligning on complete application solutions.",
+    "role": "场景担当",
+    "role_en": "Scenario Lead",
+    "bio": "负责和用户沟通，了解场景需求，共创解决方案。",
+    "bio_en": "Responsible for communicating with users, understanding their scenario needs, and co-creating solutions.",
     "image": "/people/cui-ming.webp"
   }
 ]

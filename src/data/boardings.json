@@ -163,7 +163,7 @@
   {
     "id": "b12",
     "crewId": "yang-huakai",
-    "role": "业务担当",
+    "role": "场景担当",
     "boardedAt": {
       "date": "2026-06-01",
       "location": "成都",
@@ -179,7 +179,7 @@
   {
     "id": "b13",
     "crewId": "cui-ming",
-    "role": "业务担当",
+    "role": "场景担当",
     "boardedAt": {
       "date": "2026-07-01",
       "location": "哈密",
