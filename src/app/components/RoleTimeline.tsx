@@ -320,7 +320,7 @@ export default function RoleTimeline({
             >
               {t['timeline.currentlyAboard']}
             </motion.h3>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
               {activeSegments.map((seg) => (
                 <motion.div
                   key={seg.id}

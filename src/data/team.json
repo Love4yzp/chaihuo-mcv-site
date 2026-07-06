@@ -97,5 +97,25 @@
     "bio": "柴火创客空间总经理，负责基地车整体资源协调与团队支持。",
     "bio_en": "General Manager of Chaihuo Makerspace, responsible for overall resource coordination and team support.",
     "image": "/people/ye-yu.webp"
+  },
+  {
+    "id": "yang-huakai",
+    "name": "杨华凯",
+    "name_en": "Yang Huakai",
+    "role": "业务担当",
+    "role_en": "Business Lead",
+    "bio": "负责和客户沟通，了解客户的业务需求，沟通完整的应用解决方案。",
+    "bio_en": "Responsible for communicating with clients, understanding their business needs, and aligning on complete application solutions.",
+    "image": "/people/yang-huakai.webp"
+  },
+  {
+    "id": "cui-ming",
+    "name": "崔明",
+    "name_en": "Cui Ming",
+    "role": "业务担当",
+    "role_en": "Business Lead",
+    "bio": "负责和客户沟通，了解客户的业务需求，沟通完整的应用解决方案。",
+    "bio_en": "Responsible for communicating with clients, understanding their business needs, and aligning on complete application solutions.",
+    "image": "/people/cui-ming.webp"
   }
 ]

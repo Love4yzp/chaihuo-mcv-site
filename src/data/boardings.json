@@ -159,5 +159,32 @@
       "location_en": "Hami"
     },
     "disembarkedAt": null
+  },
+  {
+    "id": "b12",
+    "crewId": "yang-huakai",
+    "role": "业务担当",
+    "boardedAt": {
+      "date": "2026-06-01",
+      "location": "成都",
+      "location_en": "Chengdu"
+    },
+    "disembarkedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami",
+      "handoffTo": "cui-ming"
+    }
+  },
+  {
+    "id": "b13",
+    "crewId": "cui-ming",
+    "role": "业务担当",
+    "boardedAt": {
+      "date": "2026-07-01",
+      "location": "哈密",
+      "location_en": "Hami"
+    },
+    "disembarkedAt": null
   }
 ]

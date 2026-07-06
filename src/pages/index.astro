@@ -49,7 +49,7 @@ const segments = boardingsData
   })
   .filter((x): x is NonNullable<typeof x> => x !== null);
 
-const ROLE_ORDER = ['领队', '技术担当', '媒体担当'];
+const ROLE_ORDER = ['领队', '技术担当', '媒体担当', '业务担当'];
 const localizeRole = (zhRole: string): string => {
   if (locale === 'zh') return zhRole;
   const m = teamData.find((tm) => tm.role === zhRole);
