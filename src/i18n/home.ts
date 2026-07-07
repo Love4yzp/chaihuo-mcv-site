@@ -120,7 +120,8 @@ const home: Record<Locale, Record<string, string>> = {
 
     'timeline.eyebrow': 'People on the Road',
     'timeline.title': 'A Relay, 200 Days Long',
-    'timeline.body': 'Four core roles passed hand to hand — Team Lead, Tech Lead, Media Lead, Scenario Lead.',
+    'timeline.body':
+      'Four core roles passed hand to hand — Team Lead, Tech Lead, Media Lead, Scenario Lead.',
     'timeline.totalDays': '{days} days total',
     'timeline.today': 'Today',
     'timeline.onTheRoad': 'On the road',

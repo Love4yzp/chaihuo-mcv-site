@@ -32,7 +32,7 @@ function stripQuotes(value) {
 
 function parseFrontmatter(filePath) {
   const source = fs.readFileSync(filePath, 'utf8');
-  const match = source.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  const match = source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   check(Boolean(match), `${filePath}: missing frontmatter block`);
   if (!match) return { data: {}, body: '' };
 
