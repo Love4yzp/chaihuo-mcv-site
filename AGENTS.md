@@ -132,12 +132,12 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- `fix/yuque-journal-sync` — Fix Yuque journal sync workflow failure and refresh public journal cards.
+- None
 
 ### Completed Features
 
 - Home hero carousel has three background slides, including the snow mountain MCV image.
-- Yuque journal sync includes the latest visible DOC entries and runs on main pushes plus the 10-minute schedule.
+- Yuque journal sync includes the latest public DOC entries, runs daily/manual sync without dependency install, and skips inaccessible 401/403 docs.
 - Production deployment runbook documents the Yuque sync, Jenkins webhook, and pnpm lockfile debugging path.
 - Route map now extends through Lhasa, Golmud, Mangya, Ruoqiang, Korla, Aksu, and Shihezi, with completed route segments shown as solid lines and map pan/zoom gestures enabled.
 - Route map now extends from Karamay to Urumqi, with Urumqi highlighted as the latest visited stop.
@@ -148,6 +148,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 | Date | Branch | Description |
 | --- | --- | --- |
+| 2026-07-08 | fix/yuque-journal-sync | Restored Yuque journal sync by removing the failing dependency install, refreshed 3 public journal cards, skipped inaccessible 401/403 docs, and merged into main. |
 | 2026-07-02 | feature/location-auto-update | Added the Tracker Allen location update script, added Hami as stop 27, updated route copy to 28 cities, and merged into main. |
 | 2026-06-18 | dev | Extended the route map through Shihezi, added a hidden Korla return route point, and enabled map pan/zoom gestures before merging into main. |
 | 2026-06-03 | main | Fixed Yuque journal sync deployment, aligned pnpm lockfile for Docker builds, and documented the production debugging runbook. |
