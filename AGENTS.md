@@ -112,7 +112,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 **改装手记 "查看全部":** Links to external Yuque page: `https://www.yuque.com/chaihuo-mcv/home`.
 
-**Yuque journal sync:** `Sync Yuque Journals` GitHub Actions workflow syncs all visible Yuque `DOC` entries from `https://www.yuque.com/mouseart/mcv` every 10 minutes and on `main` pushes. It commits `src/data/yuque-journals.json` and `public/yuque-journals/*` changes back to `main`, which then triggers Jenkins deploy.
+**Yuque journal sync:** `Sync Yuque Journals` GitHub Actions workflow syncs visible, publicly accessible Yuque `DOC` entries from `https://www.yuque.com/mouseart/mcv` once per day and via manual dispatch. It commits `src/data/yuque-journals.json` and `public/yuque-journals/*` changes back to `main`, which then triggers Jenkins deploy. DOC entries that appear in the Yuque TOC but return 401/403 are skipped until public access is restored.
 
 **Production deployment debugging:** Production is served through Tengine/CDN and Jenkins, not Cloudflare Workers. For normal updates, ignore GitHub's Cloudflare Workers/Pages check; it is an unrelated external status check and is not the source of truth for `mcv.chaihuo.org`. If production is stale, check GitHub webhook deliveries for the Jenkins queue item, then inspect Jenkins job `chaihuo-chaihuo-mcv-site`. See `docs/deployment-yuque-sync.md`.
 
@@ -132,7 +132,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- None
+- `fix/yuque-journal-sync` — Fix Yuque journal sync workflow failure and refresh public journal cards.
 
 ### Completed Features
 
