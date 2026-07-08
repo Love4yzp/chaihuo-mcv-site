@@ -24,15 +24,22 @@ async function main() {
   const namespace = appData.book?.namespace ?? namespaceFromUrl(bookUrl);
   const entries = normalizeYuqueToc(appData.book?.toc ?? [], { namespace });
 
-  const withCovers = await mapWithConcurrency(entries, 4, async (entry) => {
-    const remoteCover = entry.coverImage ?? (await fetchCover(entry.href));
-    return {
-      ...entry,
-      updatedAt:
-        entry.updatedAt ?? appData.book?.content_updated_at ?? appData.book?.updated_at ?? null,
-      coverImage: remoteCover ? await downloadCoverImage(remoteCover, entry.slug) : null,
-    };
-  });
+  const withCovers = (
+    await mapWithConcurrency(entries, 4, async (entry) => {
+      const coverResult = entry.coverImage
+        ? { available: true, coverImage: entry.coverImage }
+        : await fetchCover(entry.href);
+      if (!coverResult.available) return null;
+
+      const remoteCover = coverResult.coverImage;
+      return {
+        ...entry,
+        updatedAt:
+          entry.updatedAt ?? appData.book?.content_updated_at ?? appData.book?.updated_at ?? null,
+        coverImage: remoteCover ? await downloadCoverImage(remoteCover, entry.slug) : null,
+      };
+    })
+  ).filter(Boolean);
 
   const payload = {
     source: {
@@ -58,10 +65,14 @@ async function main() {
 
 async function fetchCover(url) {
   try {
-    return extractCoverFromDocHtml(await fetchText(url));
+    return { available: true, coverImage: extractCoverFromDocHtml(await fetchText(url)) };
   } catch (error) {
+    if (error.status === 401 || error.status === 403) {
+      console.warn(`Skipping inaccessible Yuque doc ${url}: ${error.status}`);
+      return { available: false, coverImage: null };
+    }
     console.warn(`Unable to fetch cover for ${url}: ${error.message}`);
-    return null;
+    return { available: true, coverImage: null };
   }
 }
 
@@ -117,7 +128,9 @@ async function fetchText(url) {
       signal: controller.signal,
     });
     if (!response.ok) {
-      throw new Error(`GET ${url} failed with ${response.status} ${response.statusText}`);
+      const error = new Error(`GET ${url} failed with ${response.status} ${response.statusText}`);
+      error.status = response.status;
+      throw error;
     }
     return response.text();
   } finally {
