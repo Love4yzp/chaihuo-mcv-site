@@ -125,10 +125,14 @@ export default function CityPanel({
     );
   }
 
+  const visibleLegNumber = Math.max(
+    0,
+    cities.findIndex((c) => c.id === city.id),
+  );
   const legCounter = city.isOrigin
     ? null
     : (t['journal.legCounter'] ?? '{n} / {total}')
-        .replace('{n}', String(city.order))
+        .replace('{n}', String(visibleLegNumber))
         .replace('{total}', String(totalLegs));
 
   return (
