@@ -3,19 +3,49 @@
     "name": "柴火基地车车长日记",
     "namespace": "mouseart/mcv",
     "url": "https://www.yuque.com/mouseart/mcv",
-    "syncedAt": "2026-07-08T00:53:04.132Z",
+    "syncedAt": "2026-07-08T17:44:21.115Z",
     "intervalMinutes": 1440
   },
   "journals": [
     {
       "id": "276785277",
       "slug": "pdlfgvww5wcifc4b",
-      "title": "基地车日记|2026.07.06 伊吾→哈密：一场关于“移交”的山野大扫除",
+      "title": "基地车日记 | 2026.07.06 伊吾→哈密：一场关于“移交”的山野大扫除",
       "date": "2026-07-06",
       "city": "yuque",
       "href": "https://www.yuque.com/mouseart/mcv/pdlfgvww5wcifc4b",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/pdlfgvww5wcifc4b.jpg"
+    },
+    {
+      "id": "271441076",
+      "slug": "pdddwzqmaxzhhkcs",
+      "title": "基地车日记｜2026.05.24｜雅安 · 偶遇王老师 · 看熊猫 · 装抽屉 · 喝断片",
+      "date": "2026-05-24",
+      "city": "yaan",
+      "href": "https://www.yuque.com/mouseart/mcv/pdddwzqmaxzhhkcs",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
+      "coverImage": "/yuque-journals/pdddwzqmaxzhhkcs.jpg"
+    },
+    {
+      "id": "271085656",
+      "slug": "iuvktkwai5rzmwbh",
+      "title": "基地车日记｜2026.05.23｜成都-雅安 · EP 带我们回老家",
+      "date": "2026-05-23",
+      "city": "chengdu",
+      "href": "https://www.yuque.com/mouseart/mcv/iuvktkwai5rzmwbh",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
+      "coverImage": "/yuque-journals/iuvktkwai5rzmwbh.jpg"
+    },
+    {
+      "id": "270960113",
+      "slug": "gz8glrat2b6dn2tq",
+      "title": "基地车日记｜2026.05.22｜基地车首保 · 成都柴火 · Yuan 的第一顿酒",
+      "date": "2026-05-22",
+      "city": "chengdu",
+      "href": "https://www.yuque.com/mouseart/mcv/gz8glrat2b6dn2tq",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
+      "coverImage": "/yuque-journals/gz8glrat2b6dn2tq.jpg"
     },
     {
       "id": "270804201",
@@ -24,7 +54,7 @@
       "date": "2026-05-21",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/xpaaxhs5n9ggfi8z",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/xpaaxhs5n9ggfi8z.jpg"
     },
     {
@@ -34,7 +64,7 @@
       "date": "2026-05-18",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/ms0gqkuasd5norxc",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ms0gqkuasd5norxc.jpg"
     },
     {
@@ -44,7 +74,7 @@
       "date": "2026-05-17",
       "city": "yuque",
       "href": "https://www.yuque.com/mouseart/mcv/tyfswi0moe2b5r5i",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/tyfswi0moe2b5r5i.jpg"
     },
     {
@@ -54,7 +84,7 @@
       "date": "2026-05-16",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/ggdgbhe1x7mdacpr",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ggdgbhe1x7mdacpr.jpg"
     },
     {
@@ -64,7 +94,7 @@
       "date": "2026-05-15",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/qn4vmwgmt6nyfaxf",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/qn4vmwgmt6nyfaxf.jpg"
     },
     {
@@ -74,7 +104,7 @@
       "date": "2026-05-14",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/xeak3peemzg2b32o",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/xeak3peemzg2b32o.jpg"
     },
     {
@@ -84,7 +114,7 @@
       "date": "2026-05-13",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/ht67cbpabglkcrgl",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ht67cbpabglkcrgl.jpg"
     },
     {
@@ -94,7 +124,7 @@
       "date": "2026-05-11",
       "city": "mianyang",
       "href": "https://www.yuque.com/mouseart/mcv/vbvwp8l633kymq7g",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/vbvwp8l633kymq7g.jpg"
     },
     {
@@ -104,7 +134,7 @@
       "date": "2026-05-10",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/gv1o1bvqr2t39l39",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/gv1o1bvqr2t39l39.jpg"
     },
     {
@@ -114,7 +144,7 @@
       "date": "2026-05-09",
       "city": "chengdu",
       "href": "https://www.yuque.com/mouseart/mcv/or5eqf8mwcaxktos",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/or5eqf8mwcaxktos.jpg"
     },
     {
@@ -124,7 +154,7 @@
       "date": "2026-05-08",
       "city": "yibin",
       "href": "https://www.yuque.com/mouseart/mcv/pg0hgqlvma4eqgk5",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/pg0hgqlvma4eqgk5.jpg"
     },
     {
@@ -134,7 +164,7 @@
       "date": "2026-05-07",
       "city": "hezhang",
       "href": "https://www.yuque.com/mouseart/mcv/ykbof5ti7dbcprgg",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ykbof5ti7dbcprgg.jpg"
     },
     {
@@ -144,7 +174,7 @@
       "date": "2026-05-06",
       "city": "guiyang",
       "href": "https://www.yuque.com/mouseart/mcv/ro087qvawn7ekyk3",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ro087qvawn7ekyk3.jpg"
     },
     {
@@ -154,7 +184,7 @@
       "date": "2026-05-05",
       "city": "guiyang",
       "href": "https://www.yuque.com/mouseart/mcv/oy0cvk2b743yo0ct",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/oy0cvk2b743yo0ct.jpg"
     },
     {
@@ -164,7 +194,7 @@
       "date": "2026-05-04",
       "city": "guiyang",
       "href": "https://www.yuque.com/mouseart/mcv/gztd2pkrvi6ryzym",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/gztd2pkrvi6ryzym.jpg"
     },
     {
@@ -174,7 +204,7 @@
       "date": "2026-05-03",
       "city": "getuhe",
       "href": "https://www.yuque.com/mouseart/mcv/ygd1gfo0vm2ygfl5",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ygd1gfo0vm2ygfl5.jpg"
     },
     {
@@ -184,7 +214,7 @@
       "date": "2026-05-02",
       "city": "haokunhu",
       "href": "https://www.yuque.com/mouseart/mcv/qbbd3e8fxav4y469",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/qbbd3e8fxav4y469.jpg"
     },
     {
@@ -194,7 +224,7 @@
       "date": "2026-05-01",
       "city": "qibainong",
       "href": "https://www.yuque.com/mouseart/mcv/ov3bet9yonggc78k",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ov3bet9yonggc78k.jpg"
     },
     {
@@ -204,7 +234,7 @@
       "date": "2026-04-30",
       "city": "liuzhou-sandu",
       "href": "https://www.yuque.com/mouseart/mcv/gzlp7usk115m7dns",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/gzlp7usk115m7dns.jpg"
     },
     {
@@ -214,7 +244,7 @@
       "date": "2026-04-29",
       "city": "guangxi-science-museum",
       "href": "https://www.yuque.com/mouseart/mcv/ktc4kr4o0w4auwiy",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/ktc4kr4o0w4auwiy.jpg"
     },
     {
@@ -224,7 +254,7 @@
       "date": "2026-04-28",
       "city": "yulin-science-museum",
       "href": "https://www.yuque.com/mouseart/mcv/gp0di92ghrxehzxp",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/gp0di92ghrxehzxp.jpg"
     },
     {
@@ -234,7 +264,7 @@
       "date": "2026-04-27",
       "city": "yangjiang",
       "href": "https://www.yuque.com/mouseart/mcv/xlhvekiyqxokfmvm",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/xlhvekiyqxokfmvm.jpg"
     },
     {
@@ -244,7 +274,7 @@
       "date": "2026-04-26",
       "city": "yangjiang",
       "href": "https://www.yuque.com/mouseart/mcv/nwn7u7dg8ty4lcvy",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/nwn7u7dg8ty4lcvy.jpg"
     },
     {
@@ -254,8 +284,18 @@
       "date": "2026-04-25",
       "city": "yangjiang",
       "href": "https://www.yuque.com/mouseart/mcv/uo1n9qnofa7d1yvf",
-      "updatedAt": "2026-07-07T18:08:46.539Z",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/uo1n9qnofa7d1yvf.jpg"
+    },
+    {
+      "id": "276917532",
+      "slug": "hvo1ivnm31g46u4y",
+      "title": "基地车日记|2026.0707哈密→敦煌：人在囧途，电车版“生死时速”",
+      "date": null,
+      "city": "yuque",
+      "href": "https://www.yuque.com/mouseart/mcv/hvo1ivnm31g46u4y",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
+      "coverImage": "/yuque-journals/hvo1ivnm31g46u4y.jpg"
     }
   ]
 }
