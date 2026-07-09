@@ -81,6 +81,7 @@ describe('yuque journal sync helpers', () => {
 
   it('parses the first date in a Yuque journal title', () => {
     assert.equal(parseJournalDate('基地车日记｜2026.05.11-12｜绵阳骆驼房车'), '2026-05-11');
+    assert.equal(parseJournalDate('基地车日记|2026.0707哈密→敦煌'), '2026-07-07');
     assert.equal(parseJournalDate('没有日期'), null);
   });
 

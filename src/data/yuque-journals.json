@@ -3,10 +3,20 @@
     "name": "柴火基地车车长日记",
     "namespace": "mouseart/mcv",
     "url": "https://www.yuque.com/mouseart/mcv",
-    "syncedAt": "2026-07-08T17:44:21.115Z",
-    "intervalMinutes": 1440
+    "syncedAt": "2026-07-09T01:34:25.311Z",
+    "intervalMinutes": 10
   },
   "journals": [
+    {
+      "id": "276917532",
+      "slug": "hvo1ivnm31g46u4y",
+      "title": "基地车日记|2026.0707哈密→敦煌：人在囧途，电车版“生死时速”",
+      "date": "2026-07-07",
+      "city": "yuque",
+      "href": "https://www.yuque.com/mouseart/mcv/hvo1ivnm31g46u4y",
+      "updatedAt": "2026-07-08T15:39:21.770Z",
+      "coverImage": "/yuque-journals/hvo1ivnm31g46u4y.jpg"
+    },
     {
       "id": "276785277",
       "slug": "pdlfgvww5wcifc4b",
@@ -286,16 +296,6 @@
       "href": "https://www.yuque.com/mouseart/mcv/uo1n9qnofa7d1yvf",
       "updatedAt": "2026-07-08T15:39:21.770Z",
       "coverImage": "/yuque-journals/uo1n9qnofa7d1yvf.jpg"
-    },
-    {
-      "id": "276917532",
-      "slug": "hvo1ivnm31g46u4y",
-      "title": "基地车日记|2026.0707哈密→敦煌：人在囧途，电车版“生死时速”",
-      "date": null,
-      "city": "yuque",
-      "href": "https://www.yuque.com/mouseart/mcv/hvo1ivnm31g46u4y",
-      "updatedAt": "2026-07-08T15:39:21.770Z",
-      "coverImage": "/yuque-journals/hvo1ivnm31g46u4y.jpg"
     }
   ]
 }

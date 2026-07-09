@@ -31,9 +31,14 @@ export function extractAppData(html) {
 }
 
 export function parseJournalDate(title) {
-  const match = title.match(/(20\d{2})[.-](\d{2})[.-](\d{2})/);
-  if (!match) return null;
-  return `${match[1]}-${match[2]}-${match[3]}`;
+  const separatedMatch = title.match(/(20\d{2})[.-](\d{2})[.-](\d{2})/);
+  if (separatedMatch) {
+    return `${separatedMatch[1]}-${separatedMatch[2]}-${separatedMatch[3]}`;
+  }
+
+  const compactMatch = title.match(/(20\d{2})[.-](\d{2})(\d{2})/);
+  if (!compactMatch) return null;
+  return `${compactMatch[1]}-${compactMatch[2]}-${compactMatch[3]}`;
 }
 
 export function inferCityId(title) {

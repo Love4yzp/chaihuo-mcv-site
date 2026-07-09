@@ -49,7 +49,7 @@ async function main() {
       namespace,
       url: bookUrl,
       syncedAt: new Date().toISOString(),
-      intervalMinutes: 1440,
+      intervalMinutes: 10,
     },
     journals: withCovers,
   };
