@@ -132,12 +132,12 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- None
+- `fix/yuque-first-image-cover` — Use each Yuque journal's first inline image as its card cover.
 
 ### Completed Features
 
 - Home hero carousel has three background slides, including the snow mountain MCV image.
-- Yuque journal sync includes the latest public DOC entries, runs daily/manual sync without dependency install, and skips inaccessible 401/403 docs.
+- Yuque journal sync includes the latest public DOC entries, runs every 10 minutes or by manual dispatch without dependency install, and skips inaccessible 401/403 docs.
 - Production deployment runbook documents the Yuque sync, Jenkins webhook, and pnpm lockfile debugging path.
 - Route map now extends through Lhasa, Golmud, Mangya, Ruoqiang, Korla, Aksu, and Shihezi, with completed route segments shown as solid lines and map pan/zoom gestures enabled.
 - Route map now extends from Karamay to Urumqi, with Urumqi highlighted as the latest visited stop.

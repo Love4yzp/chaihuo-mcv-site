@@ -9,7 +9,7 @@ Cloudflare Workers/Pages GitHub check, because it is not the production deploy
 path for `mcv.chaihuo.org`.
 
 1. Yuque book updates at `https://www.yuque.com/mouseart/mcv`.
-2. GitHub Actions workflow `Sync Yuque Journals` runs every 10 minutes and on `main` pushes.
+2. GitHub Actions workflow `Sync Yuque Journals` runs every 10 minutes or by manual dispatch.
 3. The workflow runs `node scripts/sync-yuque-journals.mjs`.
 4. If `src/data/yuque-journals.json` or `public/yuque-journals/*` changes, the workflow commits `chore: sync yuque journals` to `main`.
 5. GitHub push webhook notifies Jenkins.

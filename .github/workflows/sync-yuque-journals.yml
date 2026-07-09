@@ -2,8 +2,8 @@ name: Sync Yuque Journals
 
 on:
   schedule:
-    # Run at 00:00 Asia/Shanghai every day.
-    - cron: '0 16 * * *'
+    # Check Yuque every 10 minutes. GitHub may delay scheduled runs during peak load.
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:

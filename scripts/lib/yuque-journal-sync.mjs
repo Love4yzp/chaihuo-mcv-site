@@ -31,9 +31,14 @@ export function extractAppData(html) {
 }
 
 export function parseJournalDate(title) {
-  const match = title.match(/(20\d{2})[.-](\d{2})[.-](\d{2})/);
-  if (!match) return null;
-  return `${match[1]}-${match[2]}-${match[3]}`;
+  const separatedMatch = title.match(/(20\d{2})[.-](\d{2})[.-](\d{2})/);
+  if (separatedMatch) {
+    return `${separatedMatch[1]}-${separatedMatch[2]}-${separatedMatch[3]}`;
+  }
+
+  const compactMatch = title.match(/(20\d{2})[.-](\d{2})(\d{2})/);
+  if (!compactMatch) return null;
+  return `${compactMatch[1]}-${compactMatch[2]}-${compactMatch[3]}`;
 }
 
 export function inferCityId(title) {
@@ -65,6 +70,39 @@ export function extractCoverFromDocHtml(html) {
 
   const appData = extractAppData(html);
   return appData.doc?.cover ?? null;
+}
+
+export function extractFirstImageFromDocContent(content) {
+  if (!content) return null;
+
+  const inlineImage = extractImageCard(content, 'image');
+  if (inlineImage) return inlineImage;
+
+  return extractImageCard(content, 'board');
+}
+
+function extractImageCard(content, cardName) {
+  const cardPattern = new RegExp(
+    `<card\\b(?=[^>]*\\bname=["']${cardName}["'])[^>]*\\bvalue=["']([^"']+)["'][^>]*>`,
+    'gi',
+  );
+
+  for (const match of content.matchAll(cardPattern)) {
+    try {
+      const encodedValue = decodeHtmlEntities(match[1]).replace(/^data:/, '');
+      const cardData = JSON.parse(decodeURIComponent(encodedValue));
+      if (cardName === 'image' && cardData.src) return cardData.src;
+
+      const boardImage = cardData.diagramData?.body?.find(
+        (item) => item.type === 'image' && item.image?.src,
+      );
+      if (boardImage) return boardImage.image.src;
+    } catch {
+      // Continue to the next media card when one card has malformed data.
+    }
+  }
+
+  return null;
 }
 
 export function imageExtensionFromUrl(url) {

@@ -1,9 +1,10 @@
-import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   extractAppData,
   extractCoverFromDocHtml,
+  extractFirstImageFromDocContent,
   normalizeYuqueToc,
 } from './lib/yuque-journal-sync.mjs';
 
@@ -22,13 +23,14 @@ async function main() {
   const bookHtml = await fetchText(bookUrl);
   const appData = extractAppData(bookHtml);
   const namespace = appData.book?.namespace ?? namespaceFromUrl(bookUrl);
+  const bookId = appData.book?.id;
   const entries = normalizeYuqueToc(appData.book?.toc ?? [], { namespace });
 
   const withCovers = (
     await mapWithConcurrency(entries, 4, async (entry) => {
       const coverResult = entry.coverImage
         ? { available: true, coverImage: entry.coverImage }
-        : await fetchCover(entry.href);
+        : await fetchCover(entry.href, entry.slug, bookId);
       if (!coverResult.available) return null;
 
       const remoteCover = coverResult.coverImage;
@@ -47,7 +49,7 @@ async function main() {
       namespace,
       url: bookUrl,
       syncedAt: new Date().toISOString(),
-      intervalMinutes: 1440,
+      intervalMinutes: 10,
     },
     journals: withCovers,
   };
@@ -63,9 +65,20 @@ async function main() {
   }
 }
 
-async function fetchCover(url) {
+async function fetchCover(url, slug, bookId) {
   try {
-    return { available: true, coverImage: extractCoverFromDocHtml(await fetchText(url)) };
+    const docHtml = await fetchText(url);
+    const fallbackCover = extractCoverFromDocHtml(docHtml);
+    if (!bookId) return { available: true, coverImage: fallbackCover };
+
+    const docResponse = await fetchJson(docApiUrl(slug, bookId));
+    return {
+      available: true,
+      coverImage:
+        extractFirstImageFromDocContent(docResponse.data?.content) ??
+        docResponse.data?.cover ??
+        fallbackCover,
+    };
   } catch (error) {
     if (error.status === 401 || error.status === 403) {
       console.warn(`Skipping inaccessible Yuque doc ${url}: ${error.status}`);
@@ -80,7 +93,6 @@ async function downloadCoverImage(url, slug) {
   const fileName = `${slug}.jpg`;
   const filePath = path.join(imageDir, fileName);
   await mkdir(imageDir, { recursive: true });
-  if (await fileExists(filePath)) return `/yuque-journals/${fileName}`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
@@ -98,7 +110,14 @@ async function downloadCoverImage(url, slug) {
       return url;
     }
 
-    await writeFile(filePath, Buffer.from(await response.arrayBuffer()), 'binary');
+    const nextImage = Buffer.from(await response.arrayBuffer());
+    const existingImage = await readFile(filePath).catch((error) => {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    });
+    if (!existingImage?.equals(nextImage)) {
+      await writeFile(filePath, nextImage);
+    }
     return `/yuque-journals/${fileName}`;
   } catch (error) {
     console.warn(`Unable to download cover ${url}: ${error.message}`);
@@ -106,6 +125,13 @@ async function downloadCoverImage(url, slug) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+function docApiUrl(slug, bookId) {
+  const url = new URL(`/api/docs/${slug}`, bookUrl);
+  url.searchParams.set('book_id', String(bookId));
+  url.searchParams.set('merge_dynamic_data', 'false');
+  return url.toString();
 }
 
 function coverDownloadUrl(url) {
@@ -133,6 +159,29 @@ async function fetchText(url) {
       throw error;
     }
     return response.text();
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchJson(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': userAgent,
+        Accept: 'application/json',
+        Referer: bookUrl,
+      },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      const error = new Error(`GET ${url} failed with ${response.status} ${response.statusText}`);
+      error.status = response.status;
+      throw error;
+    }
+    return response.json();
   } finally {
     clearTimeout(timeout);
   }
@@ -176,15 +225,6 @@ function comparablePayload(payload) {
     },
     journals: payload.journals ?? [],
   };
-}
-
-async function fileExists(filePath) {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function namespaceFromUrl(url) {
