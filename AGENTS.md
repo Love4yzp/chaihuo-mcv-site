@@ -132,7 +132,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- `fix/yuque-first-image-cover` — Use each Yuque journal's first inline image as its card cover.
+- None
 
 ### Completed Features
 
@@ -148,6 +148,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 | Date | Branch | Description |
 | --- | --- | --- |
+| 2026-07-09 | fix/yuque-first-image-cover | Replaced blank Yuque covers with article images, fixed compact journal date sorting, enabled 10-minute automatic sync, and merged into main. |
 | 2026-07-08 | fix/yuque-journal-sync | Restored Yuque journal sync by removing the failing dependency install, refreshed 3 public journal cards, skipped inaccessible 401/403 docs, and merged into main. |
 | 2026-07-02 | feature/location-auto-update | Added the Tracker Allen location update script, added Hami as stop 27, updated route copy to 28 cities, and merged into main. |
 | 2026-06-18 | dev | Extended the route map through Shihezi, added a hidden Korla return route point, and enabled map pan/zoom gestures before merging into main. |
