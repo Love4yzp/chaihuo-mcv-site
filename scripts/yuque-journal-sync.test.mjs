@@ -3,6 +3,7 @@ import { describe, it } from 'node:test';
 import {
   extractAppData,
   extractCoverFromDocHtml,
+  extractFirstImageFromDocContent,
   imageExtensionFromUrl,
   normalizeYuqueToc,
   parseJournalDate,
@@ -87,6 +88,65 @@ describe('yuque journal sync helpers', () => {
     const html = '<meta property="og:image" content="https://cdn.nlark.com/cover.png">';
 
     assert.equal(extractCoverFromDocHtml(html), 'https://cdn.nlark.com/cover.png');
+  });
+
+  it('extracts the first inline image from Yuque Lake document content', () => {
+    const firstImage = encodeURIComponent(
+      JSON.stringify({ src: 'https://cdn.nlark.com/first.jpeg', width: 2048 }),
+    );
+    const secondImage = encodeURIComponent(
+      JSON.stringify({ src: 'https://cdn.nlark.com/second.jpeg', width: 2048 }),
+    );
+    const content = [
+      '<p>Intro</p>',
+      `<card type="inline" name="image" value="data:${firstImage}"></card>`,
+      `<card type="inline" name="image" value="data:${secondImage}"></card>`,
+    ].join('');
+
+    assert.equal(extractFirstImageFromDocContent(content), 'https://cdn.nlark.com/first.jpeg');
+  });
+
+  it('returns null when Yuque Lake content has no inline image', () => {
+    assert.equal(extractFirstImageFromDocContent('<p>Text only</p>'), null);
+  });
+
+  it('extracts the first image nested in a Yuque board card', () => {
+    const board = encodeURIComponent(
+      JSON.stringify({
+        diagramData: {
+          body: [
+            { type: 'text', text: { value: 'Caption' } },
+            {
+              type: 'image',
+              image: { src: 'https://cdn.nlark.com/board-first.jpeg' },
+            },
+          ],
+        },
+      }),
+    );
+    const content = `<card type="block" name="board" value="data:${board}"></card>`;
+
+    assert.equal(
+      extractFirstImageFromDocContent(content),
+      'https://cdn.nlark.com/board-first.jpeg',
+    );
+  });
+
+  it('prefers the first inline image over images nested in an earlier board', () => {
+    const board = encodeURIComponent(
+      JSON.stringify({
+        diagramData: {
+          body: [{ type: 'image', image: { src: 'https://cdn.nlark.com/board.jpeg' } }],
+        },
+      }),
+    );
+    const image = encodeURIComponent(JSON.stringify({ src: 'https://cdn.nlark.com/inline.jpeg' }));
+    const content = [
+      `<card type="block" name="board" value="data:${board}"></card>`,
+      `<card type="inline" name="image" value="data:${image}"></card>`,
+    ].join('');
+
+    assert.equal(extractFirstImageFromDocContent(content), 'https://cdn.nlark.com/inline.jpeg');
   });
 
   it('detects image file extensions from Yuque cover urls', () => {

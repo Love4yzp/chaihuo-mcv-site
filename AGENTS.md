@@ -132,7 +132,7 @@ const logo = typeof logoImport === 'object' && logoImport !== null && 'src' in l
 
 ### Active Branches
 
-- None
+- `fix/yuque-first-image-cover` — Use each Yuque journal's first inline image as its card cover.
 
 ### Completed Features
 

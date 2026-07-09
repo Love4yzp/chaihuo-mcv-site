@@ -67,6 +67,39 @@ export function extractCoverFromDocHtml(html) {
   return appData.doc?.cover ?? null;
 }
 
+export function extractFirstImageFromDocContent(content) {
+  if (!content) return null;
+
+  const inlineImage = extractImageCard(content, 'image');
+  if (inlineImage) return inlineImage;
+
+  return extractImageCard(content, 'board');
+}
+
+function extractImageCard(content, cardName) {
+  const cardPattern = new RegExp(
+    `<card\\b(?=[^>]*\\bname=["']${cardName}["'])[^>]*\\bvalue=["']([^"']+)["'][^>]*>`,
+    'gi',
+  );
+
+  for (const match of content.matchAll(cardPattern)) {
+    try {
+      const encodedValue = decodeHtmlEntities(match[1]).replace(/^data:/, '');
+      const cardData = JSON.parse(decodeURIComponent(encodedValue));
+      if (cardName === 'image' && cardData.src) return cardData.src;
+
+      const boardImage = cardData.diagramData?.body?.find(
+        (item) => item.type === 'image' && item.image?.src,
+      );
+      if (boardImage) return boardImage.image.src;
+    } catch {
+      // Continue to the next media card when one card has malformed data.
+    }
+  }
+
+  return null;
+}
+
 export function imageExtensionFromUrl(url) {
   const pathname = new URL(url).pathname;
   const match = pathname.match(/\.([a-z0-9]+)$/i);
