@@ -76,5 +76,17 @@
     "label": "酒泉",
     "label_en": "Jiuquan",
     "province": "甘肃省"
+  },
+  "嘉峪关": {
+    "id": "jiayuguan",
+    "label": "嘉峪关",
+    "label_en": "Jiayuguan",
+    "province": "甘肃省"
+  },
+  "嘉峪关市": {
+    "id": "jiayuguan",
+    "label": "嘉峪关",
+    "label_en": "Jiayuguan",
+    "province": "甘肃省"
   }
 }
