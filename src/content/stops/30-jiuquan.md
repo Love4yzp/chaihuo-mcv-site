@@ -7,7 +7,7 @@ label_en: Jiuquan
 province: 甘肃省
 lng: 98.49432
 lat: 39.73255
-altitude: "0"
+altitude: "1487"
 relationType: community
 themes:
   - maker

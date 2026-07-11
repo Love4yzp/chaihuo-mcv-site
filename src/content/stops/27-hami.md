@@ -7,7 +7,7 @@ label_en: Hami
 province: 新疆维吾尔自治区
 lng: 93.515224
 lat: 42.819541
-altitude: "0"
+altitude: "764"
 relationType: community
 themes:
   - maker

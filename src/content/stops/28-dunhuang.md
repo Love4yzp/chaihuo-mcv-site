@@ -7,7 +7,7 @@ label_en: Dunhuang
 province: 甘肃省
 lng: 94.667664
 lat: 40.140364
-altitude: "0"
+altitude: "1143"
 relationType: community
 themes:
   - maker

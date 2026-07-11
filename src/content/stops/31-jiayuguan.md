@@ -7,7 +7,7 @@ label_en: Jiayuguan
 province: 甘肃省
 lng: 98.289152
 lat: 39.77313
-altitude: "0"
+altitude: "1659"
 relationType: community
 themes:
   - maker

@@ -7,7 +7,7 @@ label_en: Yumen
 province: 甘肃省
 lng: 97.045617
 lat: 40.291843
-altitude: "0"
+altitude: "1505"
 relationType: community
 themes:
   - maker
