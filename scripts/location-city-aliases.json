@@ -52,5 +52,29 @@
     "label": "敦煌",
     "label_en": "Dunhuang",
     "province": "甘肃省"
+  },
+  "玉门": {
+    "id": "yumen",
+    "label": "玉门",
+    "label_en": "Yumen",
+    "province": "甘肃省"
+  },
+  "玉门市": {
+    "id": "yumen",
+    "label": "玉门",
+    "label_en": "Yumen",
+    "province": "甘肃省"
+  },
+  "酒泉": {
+    "id": "jiuquan",
+    "label": "酒泉",
+    "label_en": "Jiuquan",
+    "province": "甘肃省"
+  },
+  "酒泉市": {
+    "id": "jiuquan",
+    "label": "酒泉",
+    "label_en": "Jiuquan",
+    "province": "甘肃省"
   }
 }
